@@ -1,0 +1,42 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Dispreport_Createcsv_WIN,105,65,920,503,Create CSV
+STTXT1,Dispreport_Createcsv_Corp_STTXT,35,25,114,24,Corp
+EFOBJL,Dispreport_Createcsv_Corp_EFOBJ,165,25,44,24,
+STTXT1,Dispreport_Createcsv_Fleet_STTXT,35,59,114,24,Fleet
+EFOBJL,Dispreport_Createcsv_Fleet_EFOBJ,165,59,114,24,
+STTXT1,Dispreport_Createcsv_Unit_STTXT,35,93,114,24,Unit
+EFOBJL,Dispreport_Createcsv_Unit_EFOBJ,165,93,114,24,
+STTXT1,Dispreport_Createcsv_Log_STTXT,35,127,114,24,Log
+EFOBJL,Dispreport_Createcsv_Log_EFOBJ,165,127,114,24,
+LBOBJ1,Dispreport_Createcsv_Csvlist_LBOBJ,39,157,250,200,
+PBOBJ1,Dispreport_Createcsv_Add_PBOBJ,307,201,114,24,&Add
+PBOBJ1,Dispreport_Createcsv_Modify_PBOBJ,307,237,114,24,&Modify
+PBOBJ1,Dispreport_Createcsv_Delete_PBOBJ,307,275,114,24,&Delete
+PBOBJ1,Dispreport_Createcsv_Csv_PBOBJ,313,23,114,24,CS&V
+EFOBJL,Dispreport_Createcsv_Filename_EFOBJ,434,23,450,24,
+STTXT1,Dispreport_Createcsv_Userid_STTXT,39,369,114,24,Userid
+EFOBJL,Dispreport_Createcsv_Userid_EFOBJ,173,369,114,24,
+STTXT1,Dispreport_Createcsv_Password_STTXT,307,369,114,24,Password
+EFOBJL,Dispreport_Createcsv_Password_EFOBJ,441,369,114,24,
+PBOBJ1,Dispreport_Createcsv_Ok_PBOBJ,39,409,114,24,&OK
+PBOBJ1,Dispreport_Createcsv_Cancel_PBOBJ,173,409,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Dispreport_Browse_WIN,10,100,650,335,Browse
+STTXT1,Dispreport_Browse_Directory_STTXT,41,25,65,24,Directory
+PBOBJ1,Dispreport_Browse_Back_PBOBJ,112,25,44,24,<<
+EFOBJL,Dispreport_Browse_Directory_EFOBJ,164,25,444,24,
+STTXT1,Dispreport_Browse_Extension_STTXT,366,57,69,24,Extension
+EFOBJL,Dispreport_Browse_Extension_EFOBJ,445,57,44,24,
+PBOBJ1,Dispreport_Browse_Refresh_PBOBJ,500,57,64,24,&Refresh
+STTXT1,Dispreport_Browse_Subdir_STTXT,41,57,104,24,Sub-Directories
+LBOBJ1,Dispreport_Browse_Subdir_LBOBJ,42,86,250,160,
+STTXT1,Dispreport_Browse_Files_STTXT,307,57,34,24,Files
+LBOBJ1,Dispreport_Browse_Files_LBOBJ,305,86,260,161,
+PBOBJ1,Dispreport_Browse_Ok_PBOBJ,45,255,114,24,&OK
+PBOBJ1,Dispreport_Browse_Cancel_PBOBJ,174,255,114,24,&Cancel
+PBOBJ1,Dispreport_Browse_Open_PBOBJ,375,255,114,24,&Open
+

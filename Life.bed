@@ -1,0 +1,452 @@
+//***************************************************************
+//* Name  : LIFE.BED
+//* Author: Forrest Bentley
+//* Date  : 10/18/2013
+//* Desc  : This program illustrates how to create the Game of Life
+//*         using B-Edit code. The user is prompted to enter a file
+//*         name to read in as the initial state for the game. Data is
+//*         entered into the file as '*' for a life organism in that
+//*         position. The data file is read in and the internal memory
+//*         file named LifeData, and is changed to include a border 
+//*         of '²' around the game world. For each generation the 
+//*         LifeData data is evaluated, and the temporary memory file
+//*         TempGrid is used to create the next generation population.
+//*         There are many ways to accomplish tasks, and this program 
+//*         shows some tricks to make programming easier. e.g. To
+//*         put a border around the game world the 'COLS' command is
+//*         used to focus changes on the first column, or the last column,
+//*         then the "RV" command is used to change all spaces, which
+//*         would be eithter the first column, or the last column from
+//*         a space to a '²'. Also look at the !c300 module to see
+//*         how using the file's positioning, and string parsing functions
+//*         are used to quickly count the number of neighbors for a
+//*         given "cell" in the game world.
+//*
+//* Note  : If you don't enter a file name then a random world will be 
+//*         created, process the data until it becomes extinct, or if
+//*         it becomes stagnent, then a new world will be generated and
+//*         processed, and so on, until you press 'b' to break. The
+//*         world that has the most generations will be saved in
+//*         random.dat, and the total generations will be stored in
+//*         randmax.dat so you can find the longest running random
+//*         world.
+//*
+//* Rules : 1. Any live cell with fewer than two live neighbours dies, 
+//*            as if caused by under-population.
+//*         2. Any live cell with two or three live neighbours lives 
+//*            on to the next generation.
+//*         3. Any live cell with more than three live neighbours dies, 
+//*            as if by overcrowding.
+//*         4. Any dead cell with exactly three live neighbours becomes 
+//*            a live cell, as if by reproduction.
+//*
+//***************************************************************
+
+integer Count
+string  LifeFile
+string  TempGridLine
+integer GridSize
+integer GridLen
+integer Row
+integer Col
+integer TestCol
+integer Neighbors
+integer Generation
+integer Population
+integer LastPopulation
+integer Stagnent
+string  Newline
+string  Done
+string  CurrCell
+string  NewCell
+string  Action
+integer Bottom
+integer TempCol
+integer RandomLife
+integer Density
+string  RandomRun = 'n'
+string  Exit = 'n'
+string  RandomMaxGenerations
+string  Fresh
+string  Savefilename
+integer Runs
+integer Randomfilenumber
+string  Randomfilename
+integer SleepDur = 0
+
+//******************************************************
+//* Main Processing
+//******************************************************
+    open Runsfile null
+    i:/@Runs@/
+!a100_main
+    call !b100_init
+    call !b200_process
+    call !b300_wrap
+    if (Exit) exit
+    if (RandomRun) goto !a100_main
+    exit
+
+//******************************************************
+//* This module will initialize the game
+//******************************************************
+!b100_init
+    system:"cls"
+    cursor 1,1
+    print:"*******************************************************"
+    print:"* This is the Game of Life rendered using B-Edit"
+    print:"*******************************************************"
+    file Runsfile
+    Runs = line
+    Runs ++
+    r:/@Runs@/
+    open TempGrid null
+    call !b200_file
+    GridSize = GridSize + 2
+    //*****************************
+    //* Create and Size the Grid
+    //*****************************
+    Count = 0
+    do
+        Count ++
+        call !b210_file_data
+        if (!eof)
++          size TempGridLine,@GridSize
++          file TempGrid
++          i:/@TempGridLine@/
++       endif
+        file LifeFile
+        f;1
+    until (eof)
+    call !b120_border    
+    cls
+    call !c110_print_generation
+    Bottom = Count + 6
+    return
+
+//******************************************************
+//* This module will put a border around the grid data
+//******************************************************
+!b120_border
+    file TempGrid
+    b
+    rs:/ /:/²/;@GridSize          //* Fix Top Line
+    cols 1,1
+    rs:/ /:/²/;*                  //* Fix left
+    cols @GridSize,@GridSize
+    b
+    rs:/ /:/²/;*                  //* Fix Right
+    noco
+    f;*
+    rs:/ /:/²/;*                  //* Fix Bottom Line
+    b
+    copy;*
+    file LifeFile
+    b
+    d;*
+    paste
+    b
+    return
+
+//******************************************************
+//* This module will read in an existing Life file
+//******************************************************
+!b200_file
+    if (RandomRun)
++      LifeFile = null
++   else
++      printx:"Please enter the file to process (blank for random):"
++      input LifeFile
++   endif
+    if  (LifeFile = null) 
++       call !b205_random
++   else
++       open LifeFile @LifeFile@ error print:"Error opening @LifeFile@" goto !b200_file
++   endif
+    GridSize = 0
+    b
+    do
+        if  (lline > GridSize) GridSize = lline
+        f;1
+    until (eof)
+    if  (lline > GridSize) GridSize = lline
+    b
+    copy;*
+    b
+    close OrigFile error
+    open OrigFile null
+    paste
+    b
+    file LifeFile
+    f;* 
+    i:' '
+    b
+    return
+
+//******************************************************
+//* This module will create a random world
+//******************************************************
+!b205_random
+    if (!RandomRun) printx:"Start fresh random processing(y-n)?" input Fresh
+    if  (Fresh)
++       RandomMaxGenerations = "0"
++   else
++       open RandomMax RandMax.dat error open RandomMax null i:/0/
++       RandomMaxGenerations = line
++       close RandomMax
++   endif
+
+    RandomRun = 'y'
+    open LifeFile null
+    random Density,10,15
+    random Row,10,20
+    random Col,30,60
+    do-Row
+        Row --
+        TempCol = Col
+        Newline = ' '
+        i:/ /
+        do-Col
+            TempCol --
+            random RandomLife,1,20
+            if  (RandomLife > Density) 
++               Newline = Newline + '*'
++           else
++               Newline = Newline + ' '
++           endif
+        until-Col (TempCol < 1)
+        Newline = Newline + ' '
+        i:/@Newline@/
+    until-Row (Row < 1)
+    i:/ /
+    b
+    return
+
+//******************************************************
+//* This module will use file data for each line in the Grid
+//******************************************************
+!b210_file_data
+    TempGridLine = null
+    if  (Count = 1) ib:/ / return
+    if (eof) return
+    TempGridLine = " " + line
+    return
+
+//******************************************************
+//* This module will process the game
+//******************************************************
+!b200_process
+    call !c100_generation
+    if (Population = LastPopulation)
++      Stagnent ++
++   else
++      Stagnent = 0
++   endif
+    if (Stagnent = 20) and (Generation > 500) and (RandomRun)
++      random Randomfilenumber,1000,9999
++      Randomfilename = "Stagnent-@Generation@.dat"
++      write OrigFile @Randomfilename
++      goto !b200_check
++   endif
+
+    if (Generation > 500) and (RandomRun)
++      if (Action = 'N') or (Exit)
++         random Randomfilenumber,1000,9999
++         Randomfilename = "Long-@Generation@.dat"
++         write OrigFile @Randomfilename
++         goto !b200_check
++   endif
+
+!b200_check
+    if (!Population) print:"Extinct!" return
+    if (Stagnent = 20) print:"Stagnent" return
+    LastPopulation = Population
+    if (Exit) return
+    if (Action = 'N') 
++      Action = null 
++      return
++   endif
+    goto !b200_process
+    return
+
+//******************************************************
+//* This module will wrapup the game
+//******************************************************
+!b300_wrap
+    if (RandomRun) and (Generation > RandomMaxGenerations)
++      open RandomMax null
++      i:/@Generation@/
++      write RandomMax RandMax.dat
++      close RandomMax
++      random Randomfilenumber,1000,9999
++      Randomfilename = "Rand-@Generation@.dat"
++      write OrigFile @Randomfilename
++      close OrigFile
++   endif
+
+    close LifeFile
+    close TempGrid
+
+    if (RandomRun) and (!Exit)
++      initialize
++      RandomRun = 'y'
++   endif
+    return
+
+//*********************************************
+//* Process 1 Generation
+//*********************************************
+!c100_generation
+    Generation ++
+    //************************
+    //* Put in the Border
+    //************************
+    file LifeFile
+    b
+    copy
+    file TempGrid
+    b d;*
+    paste
+    paste
+    b
+    file LifeFile
+    //************************
+    //* Process all Rows
+    //************************
+    Row = 0
+    do
+        f;1
+        split:/@line/;3
+        if (left != '²²²')
++          Row ++
++          call !c200_cols
++          file TempGrid
++          i:/@Newline/
++          file LifeFile
++       endif
+    until (left = '²²²')
+
+    //************************
+    //* Copy TempGrid to LifeFile
+    //************************
+    file TempGrid
+    b
+    cut;*
+    file LifeFile
+    b
+    d;*
+    paste
+    call !c110_print_generation
+    return
+
+//*********************************************
+//* Print 1 Generation
+//*********************************************
+!c110_print_generation
+    file LifeFile
+    b
+    fs:/*/;*
+    Population = pcount
+    cursor 1,1
+    if (RandomRun)
++      print:"Game of Life - BEdit      Run: @Runs@     Max Generations: @RandomMaxGenerations@"
++   else
++     print:"Game of Life - BEdit"
++   endif
+    print:"Generation: @Generation@" 
+    print:"Population: @Population@   "
+    b
+    p;*
+    b
+    print:"Press S=Slow F=Fast P=Pause W=Write N=Next B=Break"
+    cursor @Bottom,1
+    print:"                                                    "
+    print:"                                                    "
+    print:"                                                    "
+    cursor @Bottom,1
+    if  (SleepDur > 0) 
++       sleep @SleepDur
++   else
++       if  (SleepDur < 0)
++           SleepDur = 0
++   endif
+    if  (RandomRun) and (Generation > 999) Action = 'N' return
+    if (!key) return
+!c110_action
+    Action = null
+    inputc Action
+    upper Action
+    crush Action
+    if  (Action = null) system:"cls" return
+    if  (Action = 'B') Exit = 'y' return
+    if  (Action = 'P') wait system:"cls" return
+    if  (Action = 'S') SleepDur = SleepDur + 250 return
+    if  (Action = 'F') SleepDur = SleepDur - 250 return
+    if  (Action = 'N') return
+    if  (Action = 'W')
++       printx:"Please enter the filename to save to:" input Savefilename
++       write OrigFile @Savefilename error 
++       system:"cls"
++       return
++   endif
+    print:"Press S=Slow F=Fast P=Pause W=Write N=Next B=Break"
+    goto !c110_action
+    return
+
+//*********************************************
+//* Process the cols in 1 Row of the Grid
+//*********************************************
+!c200_cols
+    Col = 0
+    Newline = '²'
+    Done = 'n'
+    do
+        Col ++
+        split:/@line/;@Col
+        split:/@right/;1
+        if (left = '²')
++          Done = 'y'
++          Newline = Newline + '²'
++          goto !c200_done
++       endif
+        call !c300_count_neighbors
+        NewCell = ' '
+        if  (Neighbors < 2) or (Neighbors > 3) NewCell = ' '
+        if  (Neighbors = 2) NewCell = CurrCell
+        if  (Neighbors = 3) NewCell = '*'
+        Newline = Newline + NewCell
+    until (Done)
+!c200_done
+    return
+
+//*********************************************
+//* Count the Neighbors for one spot on the Grid
+//*********************************************
+!c300_count_neighbors
+    Neighbors = 0
+    file LifeFile
+    b
+    f;@Row
+    b;1
+    TestCol = Col - 1
+    split:/@line/;@TestCol
+    split:/@right/;1 if (left = '*') Neighbors ++ if (Neighbors > 3) goto !c300_done
+    split:/@right/;1 if (left = '*') Neighbors ++ if (Neighbors > 3) goto !c300_done
+    split:/@right/;1 if (left = '*') Neighbors ++ if (Neighbors > 3) goto !c300_done
+    f;1
+    split:/@line/;@TestCol
+    split:/@right/;1 if (left = '*') Neighbors ++ if (Neighbors > 3) goto !c300_done
+    split:/@right/;1 CurrCell = left
+    split:/@right/;1 if (left = '*') Neighbors ++ if (Neighbors > 3) goto !c300_done
+    f;1
+    split:/@line/;@TestCol
+    split:/@right/;1 if (left = '*') Neighbors ++ if (Neighbors > 3) b;1 goto !c300_done
+    split:/@right/;1 if (left = '*') Neighbors ++ if (Neighbors > 3) b;1 goto !c300_done
+    split:/@right/;1 if (left = '*') Neighbors ++ if (Neighbors > 3) b;1 goto !c300_done
+    b;1
+!c300_done
+    return
+
+//******************************************************
+//* End of Program: LIFE.BED
+//******************************************************

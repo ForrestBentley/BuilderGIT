@@ -1,0 +1,30 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Remote Property Maintenance (RPM)
+MENU,~Maintenance
+***ITEM,Rpm_Login_MSOBJ,Login
+***ITEM,Rpm_Idmaintenance_MSOBJ,Userid
+ITEM,Rpm_Dnsmaint_MSOBJ,Server Names
+ITEM,Rpm_Filemaint_MSOBJ,Property Files
+--------------------
+ITEM,Rpm_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Actions
+ITEM,Rpm_Compare_MSOBJ,~Compare
+ITEM,Rpm_Update_MSOBJ,~Update
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Rpm_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Rpm_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Rpm_Main_Guide_MSOBJ,~RPM User's Guide
+--------------------
+ITEM,Rpm_Main_About_MSOBJ,~About Rpm System

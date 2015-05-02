@@ -1,0 +1,2 @@
+RPM-data\cmfalgadfw01v\fltcmsmdev\catalog.ini[../fltcmsmDev_fatwire] Properties,Compare,cmfalgadfw01v[fltcmsmdev],cmfalgaqfw01v[fltcmsmqa],cmfalgaqfw02v[fltcmsmqa],cmfciohpfw01v[fltcmsmprod],cmfciohpfw02v[fltcmsmprod]
+mwb.cartsetdir=/fwshare/j2ee/tomcat/redhat/ews/fltcmsmDev_shared/gator/cartset/,,,,,,,""

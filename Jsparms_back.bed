@@ -1,0 +1,278 @@
+//********************************************************************************
+//* Program : Jsparms.bed
+//* Author  : Forrest Bentley
+//* Date    : 02/14/14
+//* Desc    : This program will read all JS files in an input directory 
+//*           (and all sub-directories) and identify functions that don't 
+//*           contain JSDoc comments.
+//* 
+//********************************************************************************
+//*              M A I N T E N A N C E       L O G
+//*
+//* Date       Author           Description
+//* ---------- ---------------- --------------------------------------------------
+//*
+//********************************************************************************
+
+    string Newline
+    string MacroCommand
+    string Done
+
+    int    CountJSFiles
+    int    CountJSErrorFiles
+    int    CountJSErrorFunctions
+    int    FunctionLineNumber
+    string FunctionName
+
+ 
+//****************************************************
+//* Main Procesing
+//****************************************************
+!a100_main
+    call !b100_init
+    call !b200_proc
+    call !b300_wrap
+    exit
+ 
+//****************************************************
+//* Initialization
+//****************************************************
+!b100_init
+    system:"cls"
+    print:"******************************************************************"
+    print:"* Begin Jsparms.bed    @date@ - @time@"
+    print:"* This program will read all JS files in an input directory"
+    print:"* (and all sub-directories) and identify functions that don't"
+    print:"* contain JSDoc comments."
+    print:"******************************************************************"
+    string Directory error
+    string Response error
+ 
+    printx:"Please enter the directory to process:"
+    input Directory
+    if-1  (Directory = null)
++       printx:"Do you want to exit?"
++       input Response
++       if-2 (!Response)
++          goto !b100_init 
++       else-2
++           exit
++   endif
+    return
+ 
+//****************************************************
+//* Process
+//****************************************************
+!b200_proc
+    string JSFilename
+
+    open Report null
+
+    //**********************************************
+    //* Directory List Processing 
+    //*     Input : Directory string initialized 
+    //*     Output: DirFileList file of files in Directory 
+    //**********************************************
+    call DirList.bed
+    file DirFileList
+    b
+    
+    string FileReady = 'y'
+    //**********************************************
+    //* Remove non JS files from the list
+    //**********************************************
+    do
+        if-1 (!eof)
++           scanr:/@line/:/./
++           pack right
++           upper right
++           if-2 (right != 'JS')
++               d;1
++           else-2
++               f;1
++   endif
+    until (eof)
+    //**********************************************
+    //* Process each JS file
+    //**********************************************
+    b
+    do
+        if  (!eof)
++           JSFilename = line
++           call !b250_process_js
++           endif
+        file DirFileList 
+        f;1
+    until (eof)
+    return
+ 
+//****************************************************
+//* Process 1 JS File
+//****************************************************
+!b250_process_js
+    string Params error
+    string CommentEnd
+    string CommentStart
+    string TestParam
+ 
+    system:"cls"
+    file Report
+    Newline = 'Processing @JSFilename@'
+    i:/@Newline
+    p
+    MacroCommand = |open JSCode @JSFilename@ error goto !b250_bad_js|
+    $MacroCommand
+    b
+    ib:/$*$Top/
+
+!b250_function_loop
+    //**********************************************
+    //* Separate the Params into the ParamsFile
+    //**********************************************
+    open ParamsFile null
+    file JSCode
+    pattern on
+    scan:/@line/:/*=*function*(/
+    pattern off
+    if (!found) goto !b250_next
+    FunctionName = left
+    print:"    function @left@"
+    Params = right
+    Done = 'n'
+    do
+        scan:/@Params/:/,/
+        if-1 (found)
++          Newline = left
++          crush Newline
++          file ParamsFile
++          i:/@Newline@/
++          file JSCode
++          Params = right
++       else-1
++          scan:/@Params/:/)/
++          if-2 (found)
++              Newline = left
++              crush Newline
++              file ParamsFile
++              i:/@Newline@/
++              file JSCode
++              Done = 'y'
++           else-2
++              f;1
++              if-3  (eof)
++                  Done = 'y'
++              else-3
++                  Params = line
++       endif
+    until (Done)
+
+    //**********************************************
+    //* Verify there are JSDoc Comments for each
+    //* Param in the ParamsFile
+    //**********************************************
+    file JSCode
+    ib:/$*$FGB/
+    CommentStart = 'n'
+    CommentEnd = 'n'
+!b250_backup
+    b;1
+    if  (line = '$*$Top')
++       goto !b250_find_params
++   endif
+    crush line
+    if (line = null) goto !b250_backup
+    scan:/@line/:|*/|
+    if  (found) 
++       CommentEnd = 'y'
++   endif
+    subs ^
+    pattern on
+    scan:/^line/:/@param {*}/
+    pattern off
+    subs @
+    if  (found) 
++       scan:/@right/:word
++       TestParam = left
++       call !b260_check_param
++       goto !b250_backup
++   endif      
+    if-1 (CommentEnd)
++      scan:/@line/:|/*|
++      if-2  (found)
++          goto !b250_check_all_params
++      else-2
++          goto !b250_backup
++   endif
+
+!b250_check_all_params
+    file ParamsFile
+    b
+    if (eof) goto !b250_relocate
+    CountJSErrorFiles++
+    CountJSErrorFunctions++
+    file Report
+    Newline = '    Function Error @FunctionName@ - Line @FunctionLineNumber@'
+
+!b250_relocate
+    fs:/$*$FGB/
+    d;1
+
+!b250_next
+    file JSCode
+    f;1
+    if  (eof)
++       goto !b250_done
+    goto !b250_function_loop
+
+!b250_done
+    close JSCode
+    return
+ 
+//**********************************************
+//* Unable to open JS file
+//**********************************************
+!b250_bad_js|
+    print:"Unable to open @JSFileName@"
+    wait
+    return
+
+//**********************************************
+//* Unable to open JS file
+//**********************************************
+!b260_check_param
+    scan:/@TestParam/:/[/ if (found) TestParam = '@left@@right@'
+    scan:/@TestParam/:/]/ if (found) TestParam = '@left@@right@'
+    crush TestParam
+    file ParamsFile
+    do
+        if (!eof)
++          if (line = TestParam)
++             d
++             goto !b260_done
++       endif
++       f;1
+    until (eof)
+!b260_done
+    file JSCode
+    return
+
+//****************************************************
+//* Wrapup
+//****************************************************
+!b300_wrap
+    print:"******************************************************************"
+    print:"* Jsparms Processing Complete    @date@ - @time@"
+    print:"* Output located at JSParms.rpt"
+    print:"******************************************************************"
+    write Report JSParms.rpt
+    return
+
+//****************************************************
+//* End of Program
+//****************************************************
+!z999_end_of_program
+    return
+ 
+//********************************************************************************
+//* End of program Jsparms.bed
+//********************************************************************************

@@ -1,0 +1,1112 @@
+//*******************************************************************************************************************
+//* Program   : BuilderConnect.BED                                           
+//* Author    : Forrest Bentley                                       
+//* Date      : 12/02/2014                                            
+//* Desc      : This program will update the connections on the Builder_Controls_WIN
+//*******************************************************************************************************************
+//*                                    C H A N G E        L O G
+//*
+//*    Date     Author           Description
+//* ----------  ---------------  ------------------------------------------------------------------------------------
+//* 12/02/2014  Forrest Bentley  Moved logic from BuilderLang.bed
+//*                              Changed Straight Arrows to point to/from outside of circle
+//* 12/06/2014  Forrest Bentley  Added Triangles, Boxround, and Rectangle connectors
+//* 12/07/2014  Forrest Bentley  Reorganized Triangle letters, added left/right triangles
+//* 12/31/2014  Forrest Bentley  Corrected deleting all connectors when started, delete only Builder_Control_WIN connectors
+//* 
+//*******************************************************************************************************************
+
+//****************************************************
+//* Update the Connection lines
+//****************************************************
+!m100_update_connect
+
+    //***************************
+    //* Remove current connectors
+    //***************************
+    file PaintFile error open PaintFile null
+    b
+    do
+        fs:/Builder_Control_WIN,Connector,/
+        if (!eof) d;1
+    until (eof)
+    //***************************
+    //* Add connectors
+    //***************************
+    ConnectFilename = '@Builder_System_Systemname_EFOBJ@.con'
+    close ConnectFile error
+    open ConnectFile @ConnectFilename error return
+    b
+    do
+        if-1  (!eof)
++           scan:/@line/:/_/
++           scan:/@right/:/_/
++           if-2  (left = WindowName)
++               scan:/@line/:/,/
++               ConnectObj1 = left
++               scan:/@right/:/,/
++               ConnectObj2 = left
++               if-3  (found) 
++                   ConnectLineType = right
++                   call !m110_connect
++               else-3
++                   ConnectLineType = 'Straight'
++                   call !m110_connect          
++       endif
+        file ConnectFile
+        if  (RemoveConnection)
++           RemoveConnection = 'n'
++           d;1
++       else
++           f;1
++       endif
+    until (eof)
+    write ConnectFile @ConnectFilename
+    close ConnectFile
+    file PaintFile
+    b
+    return
+
+//****************************************************
+//* Connect 2 Objects
+//****************************************************
+!m110_connect
+    Connect1Height = 0
+    Connect1Length = 0
+    Connect2Height = 0
+    Connect2Length = 0
+
+    ConnectLeft1X = 0
+    ConnectLeft1Y = 0
+    ConnectRight1X = 0
+    ConnectRight1Y = 0
+    ConnectTop1X = 0
+    ConnectTop1Y = 0
+    ConnectBottom1X = 0
+    ConnectBottom1Y = 0
+    ConnectLeft2X = 0
+    ConnectLeft2Y = 0
+    ConnectRight2X = 0
+    ConnectRight2Y = 0
+    ConnectTop2X = 0
+    ConnectTop2Y = 0
+    ConnectBottom2X = 0
+    ConnectBottom2Y = 0
+
+    Arrow = 0
+    if  (ConnectLineType = 'Straight1')
++       Arrow = 1
++   endif
+    if  (ConnectLineType = 'Straight2')
++       Arrow = 2
++   endif
+    if  (ConnectLineType = 'Straight3')
++       Arrow = 3
++   endif
+    if  (ConnectLineType = 'Straight4')
++       Arrow = 4
++   endif
+    if  (ConnectLineType = 'Bent1')
++       Arrow = 0
++   endif
+    if  (ConnectLineType = 'Bent1')
++       ConnectLineType = 'Bent'
++       Arrow = 1
++   endif
+    if  (ConnectLineType = 'Bent2')
++       ConnectLineType = 'Bent'
++       Arrow = 2
++   endif
+    if  (ConnectLineType = 'Bent3')
++       ConnectLineType = 'Bent'
++       Arrow = 3
++   endif
+    if  (ConnectLineType = 'Bent4')
++       ConnectLineType = 'Bent'
++       Arrow = 4
++   endif
+
+    //***************************
+    //* Object 1 Position
+    //***************************
+    ConnectObjname = ConnectObj1
+    //message = 'Object 1 @ConnectObjname@' window message info ok
+    Connect1X = 0 Connect1Y = 0 Connect1CX = 0 Connect1CY = 0
+    scanr:/@ConnectObjname/:/_/
+    ConnType1 = right
+    if  (right = 'Ellipse') or (right = 'Ellipse3D') or (right beginswith 'Box') or (right = 'Circle') or (right = 'Diamond') or (right = 'Line') or (right beginswith 'Arrow') or (right = 'Text') or (right = 'TextTilt') or (right = 'Bitmap') or (right = 'BitmapFit')  or (right beginswith 'Rectangle') or (right beginswith 'Triangle')
++       call !m120_paintobject Connect1X = ConnectX Connect1Y = ConnectY Connect1CX = ConnectCX Connect1CY = ConnectCY Connect1Height = ConnectHeight Connect1Length = ConnectLength
++       ConnOrig1X = ConnectX ConnOrig1Y = ConnectY ConnOrig1CX = ConnectCX ConnOrig1CY = ConnectCY
++       ConnectLeft1X = ConnectLeftX
++       ConnectRight1X = ConnectRightX
++       ConnectTop1X = ConnectTopX
++       ConnectBottom1X = ConnectBottomX
++       ConnectLeft1Y = ConnectLeftY
++       ConnectRight1Y = ConnectRightY
++       ConnectTop1Y = ConnectTopY
++       ConnectBottom1Y = ConnectBottomY
++   else
++       call !m120_non_paintobject_1
++       if-2  (ConnectLineType = 'Bent') or (Arrow != 0)
++           TextObject = 'y'
++           TempWork = Connect1CX / 2
++           ConnectLeft1X = Connect1X
++           ConnectRight1X = Connect1X + Connect1CX
++           ConnectTop1X = Connect1X + TempWork
++           ConnectBottom1X = Connect1X + TempWork
++           TempWork = Connect1CY / 2 
++           ConnectLeft1Y = Connect1Y + TempWork
++           ConnectRight1Y = Connect1Y + TempWork
++           ConnectTop1Y = Connect1Y 
++           ConnectBottom1Y = Connect1Y + Connect1CY
++       else-2
++           TextObject = 'n'
++           TempWork = Connect1CX / 2
++           Connect1X = Connect1X + TempWork
++           TempWork = Connect1CY / 2
++           Connect1Y = Connect1Y + TempWork
++           ConnectLeft1X = Connect1X
++           ConnectRight1X = Connect1X
++           ConnectTop1X = Connect1X
++           ConnectBottom1X = Connect1X
++           ConnectLeft1Y = Connect1Y
++           ConnectRight1Y = Connect1Y
++           ConnectTop1Y = Connect1Y 
++           ConnectBottom1Y = Connect1Y
++   endif
+    if (!TextObject)
++       ConnectLeft1X = Connect1X
++       ConnectRight1X = Connect1X
++       ConnectTop1X = Connect1X
++       ConnectBottom1X = Connect1X
++       ConnectLeft1Y = Connect1Y
++       ConnectRight1Y = Connect1Y
++       ConnectTop1Y = Connect1Y
++       ConnectBottom1Y = Connect1Y
++   endif
+
+    //***************************
+    //* Object 2 Position
+    //***************************
+    ConnectObjname = ConnectObj2
+    //message = 'Object 2 @ConnectObjname@' window message info ok
+    Connect2X = 0 Connect2Y = 0 Connect2CX = 0 Connect2CY = 0
+    scanr:/@ConnectObjname/:/_/
+    ConnType2 = right
+    if-1  (right = 'Ellipse') or (right = 'Ellipse3D') or (right beginswith 'Box') or (right = 'Circle') or (right = 'Diamond') or (right = 'Line') or (right beginswith 'Arrow') or (right = 'Text') or (right = 'TextTilt') or (right = 'Bitmap') or (right = 'BitmapFit')    or (right beginswith 'Rectangle') or (right beginswith 'Triangle')
++       call !m120_paintobject Connect2X = ConnectX Connect2Y = ConnectY Connect2CX = ConnectCX Connect2CY = ConnectCY Connect1Height = ConnectHeight Connect1Length = ConnectLength
++       ConnOrig2X = ConnectX ConnOrig2Y = ConnectY ConnOrig2CX = ConnectCX ConnOrig2CY = ConnectCY
++       ConnectLeft2X = ConnectLeftX
++       ConnectRight2X = ConnectRightX
++       ConnectTop2X = ConnectTopX
++       ConnectBottom2X = ConnectBottomX
++       ConnectLeft2Y = ConnectLeftY
++       ConnectRight2Y = ConnectRightY
++       ConnectTop2Y = ConnectTopY
++       ConnectBottom2Y = ConnectBottomY
++   else-1
++       call !m120_non_paintobject_2
++       if-2  (ConnectLineType = 'Bent') or (Arrow != 0)
++           TextObject = 'y'
++           TempWork = Connect2CX / 2
++           ConnectLeft2X = Connect2X
++           ConnectRight2X = Connect2X + Connect2CX
++           ConnectTop2X = Connect2X + TempWork
++           ConnectBottom2X = Connect2X + TempWork
++           TempWork = Connect2CY / 2 
++           ConnectLeft2Y = Connect2Y + TempWork
++           ConnectRight2Y = Connect2Y + TempWork
++           ConnectTop2Y = Connect2Y 
++           ConnectBottom2Y = Connect2Y + Connect2CY
++       else-2
++           TextObject = 'n'
++           TempWork = Connect2CX / 2
++           Connect2X = Connect2X + TempWork
++           TempWork = Connect2CY / 2
++           Connect2Y = Connect2Y + TempWork
++           ConnectLeft2X = Connect2X
++           ConnectRight2X = Connect2X
++           ConnectTop2X = Connect2X
++           ConnectBottom2X = Connect2X
++           ConnectLeft2Y = Connect2Y
++           ConnectRight2Y = Connect2Y
++           ConnectTop2Y = Connect2Y 
++           ConnectBottom2Y = Connect2Y
++   endif
+
+    if (!TextObject)
++       ConnectLeft2X = Connect2X
++       ConnectRight2X = Connect2X
++       ConnectTop2X = Connect2X
++       ConnectBottom2X = Connect2X
++       ConnectLeft2Y = Connect2Y
++       ConnectRight2Y = Connect2Y
++       ConnectTop2Y = Connect2Y
++       ConnectBottom2Y = Connect2Y
++   endif
+
+    //******************************
+    //* Adjust Connect Position
+    //******************************
+    if  (ConnectLineType = 'Bent')
++       call !m120_adjust_bent
++       goto !m110_newline
++   endif
+    if-1  (ConnectLeft1X > ConnectRight2X)
++       if-2  (ConnectBottom1Y > ConnectTop2Y) and (ConnectTop1Y < ConnectBottom2Y)
++           Connect1X = ConnectLeft1X
++           Connect1Y = ConnectLeft1Y
++           Connect2X = ConnectRight2X
++           Connect2Y = ConnectRight2Y
++           goto !m110_newline
++   endif
+
+    if-1  (ConnectRight1X >= ConnectLeft2X)
++       if-2 (ConnectTop1Y >= ConnectBottom2Y)
++          Connect1X = ConnectTop1X
++          Connect1Y = ConnectTop1Y
++          Connect2X = ConnectBottom2X
++          Connect2Y = ConnectBottom2Y
++          goto !m110_newline
++       else-2
++          Connect1X = ConnectBottom1X
++          Connect1Y = ConnectBottom1Y
++          Connect2X = ConnectTop2X
++          Connect2Y = ConnectTop2Y
++          goto !m110_newline
++   else-1
++          if-3  (ConnectBottom1Y >= ConnectTop2Y)
++              if-4  (ConnectTop1Y < ConnectBottom2Y)
++                  Connect1X = ConnectRight1X
++                  Connect1Y = ConnectRight1Y
++                  Connect2X = ConnectLeft2X
++                  Connect2Y = ConnectLeft2Y
++                  goto !m110_newline
++              else-4
++                  if-5 (ConnectTop1Y >= ConnectBottom2Y)
++                     Connect1X = ConnectTop1X
++                     Connect1Y = ConnectTop1Y
++                     Connect2X = ConnectBottom2X
++                     Connect2Y = ConnectBottom2Y
++                     goto !m110_newline
++                  else-5
++                     Connect1X = ConnectRight1X
++                     Connect1Y = ConnectRight1Y
++                     Connect2X = ConnectLeft2X
++                     Connect2Y = ConnectLeft2Y
++                     goto !m110_newline
++          else-3
++              if-6 (ConnectTop1Y >= ConnectBottom2Y)
++                 Connect1X = ConnectTop1X
++                 Connect1Y = ConnectTop1Y
++                 Connect2X = ConnectBottom2X
++                 Connect2Y = ConnectBottom2Y
++                 goto !m110_newline
++              else-6
++                 Connect1X = ConnectBottom1X
++                 Connect1Y = ConnectBottom1Y
++                 Connect2X = ConnectTop2X
++                 Connect2Y = ConnectTop2Y
++                 goto !m110_newline
++   endif
+
+    if-1  (ConnectLeft1X > ConnectRight2X)
++          Connect1X = ConnectLeft1X
++          Connect1Y = ConnectLeft1Y
++          Connect2X = ConnectRight2X
++          Connect2Y = ConnectRight2Y
++          goto !m110_newline
++   endif
+
+!m110_newline
+    if  (ConnectLineType = 'Bent')
++       goto !m110_newline_bent
++   endif
+
+    //********************************************
+    //* Adjust straight arrow position for Ball 1
+    //********************************************
+    if  (ConnectLineType beginswith 'Straight')
++       if  (Arrow > 0)
++           if  (ConnType1 = 'Ellipse') or (ConnType1 = 'Ellipse3D') or (ConnType1 = 'Circle')
++               call !m200_ball_arrow_1
++   endif
+    //********************************************
+    //* Adjust straight arrow position for Ball 2
+    //********************************************
+    if  (ConnectLineType beginswith 'Straight')
++       if  (Arrow > 0)
++           if  (ConnType2 = 'Ellipse') or (ConnType2 = 'Ellipse3D') or (ConnType2 = 'Circle')
++               call !m200_ball_arrow_2
++   endif
+
+    //********************************************
+    //* Draw the line/arrow
+    //********************************************
+    if-1  (Arrow = 0)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect1X@,@Connect1Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   else-1
++       if-2 (Arrow = 1)
++           Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect1X@,@Connect1Y@,@Connect2X@,@Connect2Y@,0,0,0'
++       else-2
++           Newline = 'Builder_Control_WIN,Connector,Arrow@Arrow@,@Connect1X@,@Connect1Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    file PaintFile
+    b
+    fs:/GroupRectangle/ if (eof) b
+    i:/@Newline/
+    //message = Newline window message info ok
+    return    
+    
+
+!m110_newline_bent
+    if  (BentType = 2) goto !m110_newline_bent_type2
+    if  (BentType = 3) goto !m110_newline_bent_type3
+    if  (BentType = 4) goto !m110_newline_bent_type4
+    if  (BentType = 5) goto !m110_newline_bent_type5
+    if  (BentType = 6) goto !m110_newline_bent_type6
+    if  (Arrow < 3)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect1X@,@Connect1Y@,@Connect1X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 3) 
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect1X@,@Connect2Y@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    if  (Arrow = 4) 
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect1X@,@Connect2Y@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    file PaintFile
+    b
+    fs:/GroupRectangle/ if (eof) b
+    i:/@Newline/
+    if  (Arrow = 0)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect1X@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 1)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect1X@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 2)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect1X@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect1X@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect1X@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    i:/@Newline/
+    return
+
+!m110_newline_bent_type2
+    if  (Arrow < 3)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect1X@,@Connect1Y@,@Connect2X@,@Connect1Y@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect2X@,@Connect1Y@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect2X@,@Connect1Y@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    file PaintFile
+    b
+    fs:/GroupRectangle/ if (eof) b
+    i:/@Newline/
+    if  (Arrow = 0)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect2X@,@Connect1Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 1)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect2X@,@Connect1Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 2)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect2X@,@Connect1Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect2X@,@Connect1Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect2X@,@Connect1Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    i:/@Newline/
+    return
+
+//***************************
+//* Obj1 right of Obj2
+//***************************
+!m110_newline_bent_type3
+    TempWork = Connect1X - Connect2X
+    TempWork /= 2
+    TempWork += Connect2X
+    if  (Arrow < 3)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect1X@,@Connect1Y@,@TempWork@,@Connect1Y@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@TempWork@,@Connect1Y@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@TempWork@,@Connect1Y@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    file PaintFile
+    b
+    fs:/GroupRectangle/ if (eof) b
+    i:/@Newline/
+    Newline = 'Builder_Control_WIN,Connector,Line,@TempWork@,@Connect1Y@,@TempWork@,@Connect2Y@,0,0,0'
+    i:/@Newline/
+    if  (Arrow = 0)
++       Newline = 'Builder_Control_WIN,Connector,Line,@TempWork@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 1)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@TempWork@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 2)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@TempWork@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@TempWork@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@TempWork@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    i:/@Newline/
+    return
+
+//***************************
+//* Obj1 below Obj2
+//***************************
+!m110_newline_bent_type4
+    TempWork = Connect1Y - Connect2Y
+    TempWork /= 2
+    TempWork += Connect2Y
+    if  (Arrow < 3)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect1X@,@Connect1Y@,@Connect1X@,@TempWork@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect1X@,@TempWork@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect1X@,@TempWork@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    file PaintFile
+    b
+    fs:/GroupRectangle/ if (eof) b
+    i:/@Newline/
+    Newline = 'Builder_Control_WIN,Connector,Line,@Connect1X@,@TempWork@,@Connect2X@,@TempWork@,0,0,0'
+    i:/@Newline/
+    if  (Arrow = 0)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect2X@,@TempWork@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 1)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect2X@,@TempWork@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 2)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect2X@,@TempWork@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect2X@,@TempWork@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect2X@,@TempWork@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    i:/@Newline/
+    return
+
+//***************************
+//* Obj1 left of Obj2
+//***************************
+!m110_newline_bent_type5
+    TempWork = Connect2X - Connect1X
+    TempWork /= 2
+    TempWork += Connect1X
+    if  (Arrow < 3)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect1X@,@Connect1Y@,@TempWork@,@Connect1Y@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@TempWork@,@Connect1Y@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@TempWork@,@Connect1Y@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    file PaintFile
+    b
+    fs:/GroupRectangle/ if (eof) b
+    i:/@Newline/
+    Newline = 'Builder_Control_WIN,Connector,Line,@TempWork@,@Connect1Y@,@TempWork@,@Connect2Y@,0,0,0'
+    i:/@Newline/
+    if  (Arrow = 0)
++       Newline = 'Builder_Control_WIN,Connector,Line,@TempWork@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 1)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@TempWork@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 2)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@TempWork@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@TempWork@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@TempWork@,@Connect2Y@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    i:/@Newline/
+    return
+
+//***************************
+//* Obj1 above Obj2
+//***************************
+!m110_newline_bent_type6
+    TempWork = Connect2Y - Connect1Y
+    TempWork /= 2
+    TempWork += Connect1Y
+    if  (Arrow < 3)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect1X@,@Connect1Y@,@Connect1X@,@TempWork@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect1X@,@TempWork@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect1X@,@TempWork@,@Connect1X@,@Connect1Y@,0,0,0'
++   endif
+    file PaintFile
+    b
+    fs:/GroupRectangle/ if (eof) b
+    i:/@Newline/
+    Newline = 'Builder_Control_WIN,Connector,Line,@Connect1X@,@TempWork@,@Connect2X@,@TempWork@,0,0,0'
+    i:/@Newline/
+    if  (Arrow = 0)
++       Newline = 'Builder_Control_WIN,Connector,Line,@Connect2X@,@TempWork@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 1)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect2X@,@TempWork@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 2)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect2X@,@TempWork@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 3)
++       Newline = 'Builder_Control_WIN,Connector,Arrow,@Connect2X@,@TempWork@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    if  (Arrow = 4)
++       Newline = 'Builder_Control_WIN,Connector,Arrow2,@Connect2X@,@TempWork@,@Connect2X@,@Connect2Y@,0,0,0'
++   endif
+    i:/@Newline/
+    return
+
+//****************************************************
+//* Adjust the connector positions for Bent connectors
+//****************************************************
+!m120_adjust_bent
+    //********************************
+    //* Obj1 upper right of Obj2
+    //********************************
+    if-1  (ConnectLeft1X >= ConnectRight2X)
++       if-2  (ConnectBottom1Y <= ConnectTop2Y)
++           DiffX = Connect1X - Connect2X
++           DiffY = Connect2Y - Connect1Y
++           if-3  (DiffX > DiffY)
++               BentType = 2
++               Connect1X = ConnectLeft1X
++               Connect1Y = ConnectLeft1Y
++               Connect2X = ConnectTop2X
++               Connect2Y = ConnectTop2Y
++               return
++           else-3
++               BentType = 1
++               Connect1X = ConnectBottom1X
++               Connect1Y = ConnectBottom1Y
++               Connect2X = ConnectRight2X
++               Connect2Y = ConnectRight2Y
++               return
++   endif
+    //********************************
+    //* Obj1 lower right of Obj2
+    //********************************
+    if-1  (ConnectLeft1X >= ConnectRight2X)
++       if-2  (ConnectTop1Y >= ConnectBottom2Y)
++           DiffX = Connect1X - Connect2X
++           DiffY = Connect1Y - Connect2Y
++           if-3  (DiffX > DiffY)
++               BentType = 2
++               Connect1X = ConnectLeft1X
++               Connect1Y = ConnectLeft1Y
++               Connect2X = ConnectBottom2X
++               Connect2Y = ConnectBottom2Y
++               return
++           else-3
++               BentType = 1
++               Connect1X = ConnectTop1X
++               Connect1Y = ConnectTop1Y
++               Connect2X = ConnectRight2X
++               Connect2Y = ConnectRight2Y
++               return
++   endif
+    //********************************
+    //* Obj1 lower left of Obj2
+    //********************************
+    if-1  (ConnectRight1X <= ConnectLeft2X)
++       if-2  (ConnectTop1Y >= ConnectBottom2Y)
++           DiffX = Connect2X - Connect1X
++           DiffY = Connect1Y - Connect2Y
++           if-3  (DiffX > DiffY)
++               BentType = 2
++               Connect1X = ConnectRight1X
++               Connect1Y = ConnectRight1Y
++               Connect2X = ConnectBottom2X
++               Connect2Y = ConnectBottom2Y
++               return
++           else-3
++               BentType = 1
++               Connect1X = ConnectTop1X
++               Connect1Y = ConnectTop1Y
++               Connect2X = ConnectLeft2X
++               Connect2Y = ConnectLeft2Y
++               return
++   endif
+    //********************************
+    //* Obj1 upper left of Obj2
+    //********************************
+    if-1  (ConnectRight1X <= ConnectLeft2X)
++       if-2  (ConnectBottom1Y <= ConnectTop2Y)
++           DiffX = Connect2X - Connect1X
++           DiffY = Connect2Y - Connect1Y
++           if-3  (DiffX > DiffY)
++               BentType = 2
++               Connect1X = ConnectRight1X
++               Connect1Y = ConnectRight1Y
++               Connect2X = ConnectTop2X
++               Connect2Y = ConnectTop2Y
++               return
++           else-3
++               BentType = 1
++               Connect1X = ConnectBottom1X
++               Connect1Y = ConnectBottom1Y
++               Connect2X = ConnectLeft2X
++               Connect2Y = ConnectLeft2Y
++               return
++   endif
+    //********************************
+    //* Obj1 right of Obj2
+    //********************************
+    if-1  (ConnectLeft1X >= ConnectRight2X)
++       if-2  (ConnectBottom1Y >= ConnectTop2Y) and (ConnectTop1Y <= ConnectBottom2Y)
++             BentType = 3
++             Connect1X = ConnectLeft1X
++             Connect1Y = ConnectLeft1Y
++             Connect2X = ConnectRight2X
++             Connect2Y = ConnectRight2Y
++             return
++   endif
+    //********************************
+    //* Obj1 below Obj2
+    //********************************
+    if-1  (ConnectTop1Y >= ConnectBottom2Y)
++       if-2  (ConnectRight1X >= ConnectLeft2X) and (ConnectLeft1X <= ConnectRight2X)
++             BentType = 4
++             Connect1X = ConnectTop1X
++             Connect1Y = ConnectTop1Y
++             Connect2X = ConnectBottom2X
++             Connect2Y = ConnectBottom2Y
++             return
++   endif
+    //********************************
+    //* Obj1 left of Obj2
+    //********************************
+    if-1  (ConnectRight1X <= ConnectLeft2X)
++       if-2  (ConnectBottom1Y >= ConnectTop2Y) and (ConnectTop1Y <= ConnectBottom2Y)
++             BentType = 5
++             Connect1X = ConnectRight1X
++             Connect1Y = ConnectRight1Y
++             Connect2X = ConnectLeft2X
++             Connect2Y = ConnectLeft2Y
++             return
++   endif
+    //********************************
+    //* Obj1 above Obj2
+    //********************************
+    if-1  (ConnectBottom1Y <= ConnectTop2Y)
++       if-2  (ConnectRight1X >= ConnectLeft2X) and (ConnectLeft1X <= ConnectRight2X)
++             BentType = 6
++             Connect1X = ConnectBottom1X
++             Connect1Y = ConnectBottom1Y
++             Connect2X = ConnectTop2X
++             Connect2Y = ConnectTop2Y
++             return
++   endif
+    return
+
+//****************************************************
+//* Find the PaintFile object for connecting
+//****************************************************
+!m120_paintobject
+    file PaintFile error open PaintFile null
+    b
+    SearchString = 'Builder_Control_WIN,@ConnectObjname@'
+    do
+        fs:/@SearchString@/
+        if-1  (!eof)
++           scan:/@line/:/,/
++           scan:/@right/:/,/
++           scan:/@right/:/,/
++           scan:/@right/:/,/ ConnectX = left  
++           scan:/@right/:/,/ ConnectY = left
++           scan:/@right/:/,/ ConnectCX = left
++           scan:/@right/:/,/ ConnectCY = left
++           call !m130_adjust
++           return
++       endif
+        f;1
+    until (eof)
+    RemoveConnection = 'y'
+    return
+
+//****************************************************
+//* Find the non-PaintFile object 1 for connecting
+//****************************************************
+!m120_non_paintobject_1
+    file Controls
+    b
+    fs:/@ConnectObjname/
+    if  (eof) goto !m120_remove_connection
+    MacroCommand = |window windowpos @ConnectObjname@ Connect1X Connect1Y Connect1CX Connect1CY| $MacroCommand
+    return
+
+!m120_remove_connection
+    RemoveConnection = 'y' 
+    return
+
+//****************************************************
+//* Find the non-PaintFile object 2 for connecting
+//****************************************************
+!m120_non_paintobject_2
+    file Controls
+    b
+    fs:/@ConnectObjname/
+    if  (eof) goto !m120_remove_connection
+    MacroCommand = |window windowpos @ConnectObjname@ Connect2X Connect2Y Connect2CX Connect2CY| $MacroCommand
+    return
+
+//****************************************************
+//* Adjust the X/Y positioning for the objects
+//****************************************************
+!m130_adjust
+    scanr:/@ConnectObjname/:/_/
+    if  (right = 'Bitmap')
++       TempWork = ConnectCX / 2
++       ConnectX += TempWork
++       TempWork = ConnectCY / 2
++       ConnectY += TempWork
++   endif
+    if  (right beginswith 'Box') or (right beginswith 'Rectangle') or (right beginswith 'Triangle')
++       if  (ConnectLineType != 'Bent') and (Arrow = 0)
++           TempWork = ConnectCX / 2
++           ConnectX += TempWork
++           TempWork = ConnectCY / 2
++           ConnectY += TempWork
++   endif
+    if  (right = 'Text')
++       TextObject = 'y'
++   else
++       TextObject = 'n'
++   endif
+
+    if  (right = 'Text')
++       if  (ConnectCX = 0)
++           ConnectCX = ConnectCY
++   endif
+    if  (right = 'Text')
++       ConnectCY = ConnectCX
++       ConnectCX = 0
++   endif
+    if  (right = 'Text')
++       TempWork = ConnectCY * 4 / 7 * 2
++       ConnectHeight = TempWork
++       call !m140_text_length
++       //message = 'ConnectCX[@ConnectCX@] ConnectCY[@ConnectCY@] ConnectHeight[@ConnectHeight@] ConnectLength[@ConnectLength@]' window message info ok
++   endif
+    if  (right = 'Diamond')
++       TextObject = 'y'
++       ConnectTopX = ConnectX
++       ConnectBottomX = ConnectX
++       TempWork = ConnectCX / 2
++       ConnectRightX = ConnectX + TempWork
++       ConnectLeftX = ConnectX - TempWork
++       ConnectTopY = ConnectY
++       ConnectBottomY = ConnectY + ConnectCY
++       TempWork = ConnectCY / 2
++       ConnectRightY = ConnectY + TempWork
++       ConnectLeftY = ConnectY + TempWork
++       return
++   endif
+    if  (right = 'BitmapFit') and (ConnectCY != 0)
++       TextObject = 'y'
++       TempWork = ConnectCX / 2 
++       ConnectTopX = ConnectX + TempWork
++       ConnectBottomX = ConnectX + TempWork
++       ConnectRightX = ConnectX + ConnectCX
++       ConnectLeftX = ConnectX
++       TempWork = ConnectCY / 2 
++       ConnectTopY = ConnectY
++       ConnectBottomY = ConnectY + ConnectCY
++       ConnectRightY = ConnectY + TempWork
++       ConnectLeftY = ConnectY + TempWork
++       //message = 'bitmap ConnectX[@ConnectX@] ConnectY[@ConnectY@] ConnectCX[@ConnectCX@] ConnectCY[@ConnectCY@] ConnectLeftX[@ConnectLeftX@] ConnectRightX[@ConnectRightX@] ConnectTopX[@ConnectTopX@] ConnectBottomX[@ConnectBottomX@] ConnectLeftY[@ConnectLeftY@] ConnectRightY[@ConnectRightY@] ConnectTopY[@ConnectTopY@] ConnectBottomY[@ConnectBottomY@]' window message info ok
++       return
++   endif
+    if  (right beginswith 'Box') or (right beginswith 'Rectangle')
++       if  (ConnectLineType = 'Bent') or (Arrow != 0)
++           TextObject = 'y'
++           TempWork = ConnectCX / 2 
++           ConnectTopX = ConnectX + TempWork
++           ConnectBottomX = ConnectX + TempWork
++           ConnectRightX = ConnectX + ConnectCX
++           ConnectLeftX = ConnectX
++           TempWork = ConnectCY / 2 
++           ConnectTopY = ConnectY
++           ConnectBottomY = ConnectY + ConnectCY
++           ConnectRightY = ConnectY + TempWork
++           ConnectLeftY = ConnectY + TempWork
++           return
++   endif
+
+    if  (right = 'Ellipse') or (right = 'Ellipse3D') or (right = 'Circle')
++       if  (ConnectLineType = 'Bent') or (Arrow != 0)
++           TextObject = 'y'
++           TempWork = ConnectCX / 2 
++           ConnectTopX = ConnectX
++           ConnectBottomX = ConnectX
++           ConnectRightX = ConnectX + TempWork
++           ConnectLeftX = ConnectX - TempWork
++           TempWork = ConnectCY / 2 
++           ConnectTopY = ConnectY - TempWork
++           ConnectBottomY = ConnectY + TempWork
++           ConnectRightY = ConnectY
++           ConnectLeftY = ConnectY
++           return
++   endif
+
+    if  (right beginswith 'Triangle')
++   else
++       return
++   endif
+    if  (right = 'TriangleA') or (right = 'TriangleB') or (right = 'TriangleI') or (right = 'TriangleJ')
++       if  (ConnectLineType = 'Bent') or (Arrow != 0)
++           TextObject = 'y'
++           TempWork = ConnectCX / 2 
++           ConnectTopX = ConnectX + TempWork
++           ConnectBottomX = ConnectX + TempWork
++           ConnectRightX = ConnectX + TempWork
++           ConnectLeftX = ConnectX + TempWork
++           TempWork /= 2
++           ConnectRightX = ConnectRightX + TempWork
++           ConnectLeftX = ConnectLeftX - TempWork
++           TempWork = ConnectCY / 2 
++           ConnectTopY = ConnectY
++           ConnectBottomY = ConnectY + ConnectCY
++           ConnectRightY = ConnectY + TempWork
++           ConnectLeftY = ConnectY + TempWork
++           return
++   endif
+    if  (right = 'TriangleC') or (right = 'TriangleD') or (right = 'TriangleK') or (right = 'TriangleL')
++       if  (ConnectLineType = 'Bent') or (Arrow != 0)
++           TextObject = 'y'
++           TempWork = ConnectCX / 2 
++           ConnectTopX = ConnectX + TempWork
++           ConnectBottomX = ConnectX + TempWork
++           ConnectRightX = ConnectX + ConnectCX
++           ConnectLeftX = ConnectX
++           TempWork = ConnectCY / 2 
++           ConnectRightY = ConnectY + TempWork
++           ConnectLeftY = ConnectY + TempWork
++           ConnectTopY = ConnectY + TempWork
++           ConnectBottomY = ConnectY + TempWork
++           TempWork /= 2
++           ConnectTopY -= TempWork
++           ConnectBottomY += TempWork
++           return
++   endif
+    if  (right = 'TriangleE') or (right = 'TriangleM')
++       if  (ConnectLineType = 'Bent') or (Arrow != 0)
++           TextObject = 'y'
++           TempWork = ConnectCX / 2 
++           ConnectTopX = ConnectX + ConnectCX
++           ConnectBottomX = ConnectX + TempWork
++           ConnectRightX = ConnectX + ConnectCX
++           ConnectLeftX = ConnectX + TempWork
++           TempWork = ConnectCY / 2 
++           ConnectTopY = ConnectY
++           ConnectBottomY = ConnectY + ConnectCY
++           ConnectRightY = ConnectY + TempWork
++           ConnectLeftY = ConnectY + TempWork
++           return
++   endif
+    if  (right = 'TriangleF') or (right = 'TriangleN')
++       if  (ConnectLineType = 'Bent') or (Arrow != 0)
++           TextObject = 'y'
++           TempWork = ConnectCX / 2 
++           ConnectTopX = ConnectX
++           ConnectBottomX = ConnectX + TempWork
++           ConnectRightX = ConnectX + TempWork
++           ConnectLeftX = ConnectX
++           TempWork = ConnectCY / 2 
++           ConnectTopY = ConnectY
++           ConnectBottomY = ConnectY + ConnectCY
++           ConnectRightY = ConnectY + TempWork
++           ConnectLeftY = ConnectY + TempWork
++           return
++   endif
+
+    if  (right = 'TriangleG') or (right = 'TriangleO')
++       if  (ConnectLineType = 'Bent') or (Arrow != 0)
++           TextObject = 'y'
++           TempWork = ConnectCX / 2 
++           ConnectTopX = ConnectX + TempWork
++           ConnectBottomX = ConnectX + ConnectCX
++           ConnectRightX = ConnectX + ConnectCX
++           ConnectLeftX = ConnectX + TempWork
++           TempWork = ConnectCY / 2 
++           ConnectTopY = ConnectY
++           ConnectBottomY = ConnectY + ConnectCY
++           ConnectRightY = ConnectY + TempWork
++           ConnectLeftY = ConnectY + TempWork
++           return
++   endif
+    if  (right = 'TriangleH') or (right = 'TriangleP')
++       if  (ConnectLineType = 'Bent') or (Arrow != 0)
++           TextObject = 'y'
++           TempWork = ConnectCX / 2 
++           ConnectTopX = ConnectX + TempWork
++           ConnectBottomX = ConnectX
++           ConnectRightX = ConnectX + TempWork
++           ConnectLeftX = ConnectX
++           TempWork = ConnectCY / 2 
++           ConnectTopY = ConnectY
++           ConnectBottomY = ConnectY + ConnectCY
++           ConnectRightY = ConnectY + TempWork
++           ConnectLeftY = ConnectY + TempWork
++           return
++   endif
+    
+    return
+
+//****************************************************
+//* Find the Length of the Text
+//****************************************************
+!m140_text_length
+    CharCountUpper = 0
+    CharCountLower = 0
+    CharCountSpace = 0
+    scanr:/@line/:/,/
+    do
+        split:/@right/;1
+        if-1  (left = ' ')
++           CharCountSpace ++
++       else-1
++           CharTest = left
++           upper CharTest
++           if-2  (CharTest = left)
++               CharCountUpper ++
++           else-2
++               CharCountLower ++
++       endif
+    until (right = null)
+    ConnectLength = ConnectHeight * CharCountLower * 3 / 6
+    TempWork = ConnectHeight * CharCountUpper * 4 / 5
+    ConnectLength += TempWork
+    TempWork = ConnectHeight * CharCountSpace * 1 / 5
+    ConnectLength += TempWork
+    //message = 'ConnectLength[@ConnectLength@] ConnectX[@ConnectX@] line[@line@] ConnectHeight[@ConnectHeight@] CharCount[@CharCount@]' window message info ok
+
+    //****************************
+    //* Text X Coordinates
+    //****************************
+    ConnectLeftX = ConnectX
+    ConnectRightX = ConnectX + ConnectLength
+    TempWork = ConnectLength / 2
+    ConnectTopX = ConnectX + TempWork
+    ConnectBottomX = ConnectX + TempWork
+
+    //****************************
+    //* Text Y Coordinates
+    //****************************
+    TempWork = ConnectHeight / 2
+    ConnectLeftY = ConnectY + TempWork
+    ConnectRightY = ConnectY + TempWork
+    ConnectTopY = ConnectY
+    ConnectBottomY = ConnectY + ConnectHeight
+
+    return
+
+//****************************************************
+//* Connect straight arrow to Ball 1
+//****************************************************
+!m200_ball_arrow_1
+    if  (ConnType2 = 'Ellipse') or (ConnType2 = 'Ellipse3D') or (ConnType2 = 'Circle')
++       ConnectTwoX = ConnOrig2X
++       ConnectTwoY = ConnOrig2Y
++   else
++       ConnectTwoX = Connect2X
++       ConnectTwoY = Connect2Y
++   endif
+
+    ConnHeight = ConnOrig1Y - ConnectTwoY
+    ConnTempHeight = ConnHeight * ConnHeight
+    ConnLength = ConnOrig1X - ConnectTwoX
+    ConnTempLength = ConnLength * ConnLength
+    ConnRadius = ConnTempHeight + ConnTempLength
+    Zerotest = ConnRadius
+    if  (Zerotest < 1) ConnRadius = 1
+    ConnRadius = sqrt(ConnRadius)
+    ConnTempWork = ConnLength / ConnRadius
+    ConnAngle = acos(ConnTempWork)
+    ConnTempWork = cos(ConnAngle)
+    ConnTempWork = ConnTempWork * Connect1CX
+    ConnTempWork = ConnTempWork / 2
+    Connect1X = ConnOrig1X - ConnTempWork
+
+    ConnTempWork = sin(ConnAngle)
+    ConnTempWork = ConnTempWork * Connect1CY
+    ConnTempWork = ConnTempWork / 2
+    if  (ConnOrig1Y > Connect2Y)
++       Connect1Y = ConnOrig1Y - ConnTempWork
++   else
++       Connect1Y = ConnOrig1Y + ConnTempWork
++   endif
+    return
+
+//****************************************************
+//* Connect straight arrow to Ball 2
+//****************************************************
+!m200_ball_arrow_2
+    if  (ConnType1 = 'Ellipse') or (ConnType1 = 'Ellipse3D') or (ConnType1 = 'Circle')
++       ConnectOneX = ConnOrig1X
++       ConnectOneY = ConnOrig1Y
++   else
++       ConnectOneX = Connect1X
++       ConnectOneY = Connect1Y
++   endif
+
+    ConnHeight = ConnOrig2Y - ConnectOneY
+    ConnTempHeight = ConnHeight * ConnHeight
+    ConnLength = ConnOrig2X - ConnectOneX
+    ConnTempLength = ConnLength * ConnLength
+    ConnRadius = ConnTempHeight + ConnTempLength
+    Zerotest = ConnRadius
+    if  (Zerotest < 1) ConnRadius = 1
+    ConnRadius = sqrt(ConnRadius)
+    ConnTempWork = ConnLength / ConnRadius
+    ConnAngle = acos(ConnTempWork)
+    ConnTempWork = cos(ConnAngle)
+    ConnTempWork = ConnTempWork * Connect2CX
+    ConnTempWork = ConnTempWork / 2
+    Connect2X = ConnOrig2X - ConnTempWork
+
+    ConnTempWork = sin(ConnAngle)
+    ConnTempWork = ConnTempWork * Connect2CY
+    ConnTempWork = ConnTempWork / 2
+    if  (ConnOrig2Y > Connect1Y)
++       Connect2Y = ConnOrig2Y - ConnTempWork
++   else
++       Connect2Y = ConnOrig2Y + ConnTempWork
++   endif
+
+    return
+
+//****************************************************
+//* End of program BuilderConnect.bed
+//****************************************************

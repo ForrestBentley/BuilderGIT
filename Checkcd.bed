@@ -1,0 +1,4128 @@
+//************************************************************************
+//* Program : Checkcd.bed
+//* Author  : Forrest Bentley
+//* Date    : February 20, 2002
+//* Desc    : This program will read all Java source to ensure adherance to
+//*           GECFS standards
+//*
+//* Condition                   Warning Level         Error Level
+//* ------------------------    -------------         -----------
+//* Comment Lines                   < 5%                  < 2%
+//* <!-- Comment Line					   Any
+//* Total Code Lines                > 2500                > 3500
+//* Length of Code Line             > 250                 > 500
+//* JSP Java Code                   > 80%                 > 90%
+//* JSP Java Code                   > 2000                > 3000   
+//* HTML in Java not JSP          Any Active
+//* Hardcoded URL's               Any Active
+//* Hardcoded IP's                Commented            Any Active
+//* FileInputStream usage         ANY Active
+//* Display Lines                 ANY Active
+//* JS File Size                    > 8k                  > 16k
+//* HTML File Size                  > 10k                 > 20k
+//* GIF File Size                   > 5k                  > 10k
+//* JPG File Size                   > 5k                  > 10k
+//* SRC= lines                      > 15                  > 20
+//* JS Function                     > 20                  > 40
+//* JS Function Size                > 100                 > 200
+//*
+//************************************************************************
+//*                          Change Log
+//*
+//* Author             Date      Description
+//* ---------------- ----------  ------------------------------------------
+//* F.Bentley        02/25/2002  Added Any <!-- Comment Error
+//* F.Bentley        03/01/2002  Added Special Search Strings (use ##&# and &&## for CICS Transactions)
+//*                              Added HTML and js (Long night with VOS Commlogs!)
+//* F.Bentley        03/05/2002  Corrected IP Warning Counter on Total Line
+//* F.Bentley        04/05/2002  Corrected <!-- comment checking (JavaScript for Netscape)
+//* F.Bentley        04/26/2002  Improved Warning and Error Level Numbers
+//*                              Corrected Warning Count included in Total for Presentation not in JSP
+//*                              Corrected JSP Java Code Counter
+//*                              Added check for gif, jpg, js, and html file size
+//* F.Bentley        04/29/2002  Hardcoded URL changed from Error to Warning
+//*                              Added Checks for Total number of SRC/URL
+//*                              Added Checks for JS Function Counts
+//* F.Bentley        04/30/2002  Added Function Size Check
+//* F.Bentley        05/09/2002  Added Start/Stop Time
+//* F.Bentley        06/20/2002  Corrected infinite loop when js function had {} on last line
+//* F.Bentley        07/05/2002  Added code to check for SQL Standards
+//* F.Bentley        07/08/2002  Corrected @ data in SQL files
+//*                              Added 'SQL' to output warning messages
+//*                              Correctly copy all sql lines to output file
+//* F.Bentley        07/17/2002  Added logic to capture 'insert into' sql
+//* F.Bentley        07/24/2002  Added logic to convert MRS CICS Tran Codes
+//*                              Corrected to handle upper case extensions
+//*                              Changed code to not require comments for files without extenstions
+//* F.Bentley        07/25/2002  Added CICS Search Strings
+//*                              Added logic to convert Balsum,Warranty,FleetQuery,PM CICS Tran Codes
+//* F.Bentley        08/01/2002  Corrected Output File Mixup after converting trancodes
+//* F.Bentley        08/06/2002  Added WA CICS Search Strings
+//* F.Bentley        08/14/2002  Corrected file open fgbfile recordsize > 5000 error 
+//* F.Bentley        09/30/2002  Corrected Processing Null File Loop Error
+//* F.Bentley        10/17/2002  Added Sigma Calculation
+//* F.Bentley        10/18/2002  Added LogFile
+//* F.Bentley        10/25/2002  Added CHECKLOG.CSV
+//*                              Corrected ProcFile change back to CurrFile
+//* F.Bentley        10/29/2002  Added Restart Backup File Writes
+//* F.Bentley        10/30/2002  Added Output Variable File
+//* F.Bentley        10/31/2002  Added removal of backrest files when complete
+//*                              Added Full Restarting
+//* F.Bentley        11/01/2002  Added additional CICS Checks CP##, ##R&, SE##
+//* F.Bentley        11/06/2002  Added code to store the System Name in SYSNAME.TXT for use by CU-3090 and FIXSQL
+//* F.Bentley        11/07/2002  Exit if file is too large on open (Causing VUV to abort).
+//*                              Fixed Loss of last line (previously f;1 d;* to remove excess data:VUV)
+//* F.Bentley        11/15/2002  Added AppNames.txt file to verify Application Name entered.
+//* F.Bentley        11/19/2002  Added 15 Errors to output checklog.csv
+//* F.Bentley        12/07/2002  Added chklist.txt input file
+//* F.Bentley        12/12/2002  Fixed abort if CSV files are currently open.
+//* F.Bentley        12/19/2002  Better message for too large files stop program.
+//* F.Bentley        12/30/2002  Changed println check to System.out.println
+//*                              Skip Comment % warn/error for JS
+//* F.Bentley        01/03/2003  Added Logic to capture continue (+) sql lines
+//* F.Bentley        01/07/2003  Integrated XML Deploy Checker, & check deploy.dat data output to codesrch.txt
+//* F.Bentley        01/09/2003  Added System Name to the output Deploy.dat file
+//* F.Bentley        01/10/2003  Prevent Deployn.txt write if no XML files
+//* F.Bentley        01/13/2003  Corrected Deploy_Count = 0 abort when creating Deploy.dat
+//* F.Bentley        01/14/2003  Added CICS call conversion (DbRead & DbWrite) for NA, etc...
+//* F.Bentley        01/30/2003  Corrected SQL abort when large lines (>5000) are present (Informatica Log Files)
+//*                              Process Log files (Informatica) for SQL
+//* F.Bentley        01/31/2003  Cleaned up the SQL Retrieval for Informatica
+//*                              Added Deploy.dat open to restart process
+//* F.Bentley        06/27/2003  Added !e265_find_update to consolidate single 'Update' line
+//* F.Bentley        07/22/2003  Added Tibco Message Capture Logic
+//* F.Bentley        08/08/2003  Changed to handle .ini the same as .h files
+//* F.Bentley        08/29/2003  Added logic to handle cc and pc files as CPP (Preventative Maintenance System)
+//* F.Bentley        10/06/2004  Added STPROCNA.CSV output file 
+//* F.Bentley        10/07/2004  Corrected restart for STPROCNA.CSV
+//* F.Bentley        10/08/2004  Cleaned up STPROCNA.CSV output
+//* F.Bentley        10/11/2004  Cleaned up STPROCNA.CSV output
+//* F.Bentley        10/14/2004  Cleaned up !f600_check_ip and added warning report line for hardcoded IPs
+//* F.Bentley        10/15/2004  Fixed !f600_check_ip looking for proper ip addresses (IPDotCount)
+//* F.Bentley        10/19/2004  Added code to allow processing of 3090 Cobol/JCL/Copy/Proc/ADSO code for IP Checking.
+//* F.Bentley        10/21/2004  Removed *.csv from backrest to allow the removal of the backrest dir when complete.
+//* F.Bentley        10/22/2004  Added properties scanning
+//* F.Bentley        11/02/2004  Added logic to scan XML (for IPs)
+//* F.Bentley        11/03/2004  Added .process extension for Tibco
+//* F.Bentley        12/03/2004  Changed to bypass <!-- comments for xml
+//* F.Bentley        12/07/2004  Added Misc error/warning
+//*                              Errors:
+//*                                  sun.net
+//*                                  Instance Variables in Action class
+//*                                  printStackTrace
+//*                                  import .*
+//*                              Warnings:
+//* F.Bentley        12/14/2004  Changed System.out.println to an error
+//* F.Bentley        12/17/2004  Stopped erase question and special search question when restarting.
+//*                              Stopped Instance Variables in Action classes errors if they're static
+//* F.Bentley        12/29/2004  Stopped Instance Variables in ActionForm classes
+//*                              Stopped IP errors if they're commented
+//* F.Bentley        01/01/2005  Ignore Instance Variable Errors if commented
+//* F.Bentley        01/03/2005  Changed required comment % for XML and properties files
+//*                              Added check for # comments in properties files
+//* F.Bentley        01/27/2005  Added SQL checks in properties (Tibco FileType) files
+//*                              Added -- comments check for sql files (!f201_sql_comments)
+//*                              Don't include :// as a comment
+//*                              Added Total Tibco files processed
+//*                              Read checkcd.log for last processed directory for system
+//* F.Bentley        01/28/2005  Added check for sql TRIM warning
+//*                              Added critwarn.txt critical warning file, and appended the text to the checkcd.txt report
+//*                              Added \\fs1\itdoc\CodeCheck\MASTER.LOG file & capture of IP address for master.log
+//* F.Bentley        03/22/2005  Added RptHist to contain the Checkcd.txt file including system name in the filename
+//* F.Bentley        04/04/2005  Bypass TRIM test for Stored Procedures
+//* F.Bentley        06/23/2005  Fixed system directory search to find last usable directory after grand.bat has run
+//* F.Bentley        06/24/2005  Added check for SM_LOCAL (Error since we want to use GE_LOCALE)
+//* F.Bentley        06/27/2005  Added Version Number
+//* F.Bentley        06/29/2005  Write the output report to AAALastRun-Checkcd.txt to make the last run easy to find
+//* F.Bentley        08/08/2005  Added link to Standards Document to the end of the error report
+//* F.Bentley        08/09/2005  Added check for filesize > 250000 which is too large to open and process
+//* F.Bentley        08/15/2005  Added checks for <html> and warnings to check for non-resource bundled output
+//*                              Added check to ensure no directory name has spaces
+//* F.Bentley        09/02/2005  Removed prompt for retaining existing eas files if chklist.txt exists
+//* F.Bentley        09/12/2005  Added Checkcd.xml output as requested by Ben Nielsen for use in Cruise Control
+//* F.Bentley        09/22/2005  Added check for proper listbox code overlaying the menu, inproper code causes secure/insecure warnings
+//* F.Bentley        10/05/2005  Added stratification of errors to the checkcd.xml file
+//*                              Added Log4j checking code
+//* F.Bentley        03/07/2006  Added comment to output indicating what's required for log4j
+//* F.Bentley        04/20/2007  Added code to compress spaces out of directories
+//* F.Bentley        01/12/2014  Added Automatic startup so Builder.bed can call Checkcd.bed
+//************************************************************************
+
+string Version = "V2007.04.20"
+
+//************************************************************************
+//*                              To Do
+//*
+//* Check js files for // comments (error)
+//*
+//* Any method with line count >250 Warning, >500 Error
+//* Java in JSP should be by bytes >20% Warning, >30% Error (Change)
+//* Resource Bundling Multilingual
+//* 'string +' any usage warning/error
+//* Any SQL in db access bean is an error (getConnection or executeQuery with SELECT, DELETE, UPDATE, INSERT, COMMIT, CREATE)
+//* Any database work outside an EJBObject is an error
+//* Check/Count SessionBean & EJBObject
+//* "select * from x where applicationname = "+varname     Error
+//* "select * from x where applicationname = ?"            OK
+//* J2EE Compliance
+//* Check for width and height specified in any HTML (warning if not set)
+//* For loops in JS (Warning)
+//* .fo file <!-- --> Comments
+//* List of all JS files used (+size)   "-----.js"
+//* Javascript in 0 file below html (causes errors if clicks prior to complete loading)
+//*                 <HTML> with later 'function ' first on line
+//*
+//* Tie to Deploy.bed
+//* Check for 'replicated' to ensure cluster aware deployments
+//* <weblogic-web-app>
+//*	  <description>WebLogic Descriptor</description> 
+//*	 <session-descriptor>
+//*		 <session-param>
+//*			  <param-name>PersistentStoreType</param-name> 
+//*			  <param-value>replicated</param-value> 
+//*		  </session-param>
+//*	  </session-descriptor>
+//* Shashank's Requests:
+//*    Also could you please check if this tool considers "<%--   This is a comment line --%>" as a valid comment line.
+//*    I was also thinking if we can put one check in the tool that checks whether all the objects with session scope
+//*    implements Serializable interface as we have been told by BEA that this might be the cause of weblogic server
+//*    crashing down intermittently.
+//*     Comments
+//*             <HTML>
+//*             <TABLE>
+//*			<%-- MAIN CONTENT AREA : END --%>
+//*			<TR><TD>Content here....
+//*			</TD></TR>
+//*
+//*			<%-- FOOTER : START--%>
+//*
+//*			<TR><TD>Footer here....
+//*			</TD></TR>
+//*
+//*		<TABLE>
+//*		</HTML> (Serializable, and <%-- --> Comments)
+//* 
+//************************************************************************
+
+string  Newline
+string  CurrDir
+string  Sysline
+string  CurrentDirectory
+string  Newdir
+string  Filename
+string  Testline
+string  ReportLine
+string  CheckSystem
+string  CheckDir
+string  FileType
+string  JavaScriptOn
+
+string  ErrorLine
+
+float   GrandTotalCodeLines
+
+integer TotalLines
+integer TotalCodeLines
+integer TotalComments
+dollar  CommentPercent
+float   CommentCompute
+integer Errors
+integer Warnings
+integer JSPJavaCode
+dollar  JSPJavaPercent
+integer TotalDisplays
+integer TotalSRCLines
+integer TotalSRCLinesinFile
+integer TotalFunctions
+integer TotalFunctionsinFile
+
+string  JavaHTMLWarningFlag
+
+integer TotalJavaFiles
+integer TotalJspFiles
+integer TotalHTMLFiles
+integer TotalJSFiles
+integer TotalCPPFiles
+integer TotalHFiles
+integer TotalRCFiles
+integer TotalGIFFiles
+integer TotalJPGFiles
+integer TotalSQLFiles
+integer TotalTibcoFiles
+
+integer CommentWarnings
+integer CommentErrors
+integer CodeLineWarnings
+integer CodeLineErrors
+integer JSPJavaPercentWarnings
+integer JSPJavaPercentErrors
+integer JSPJavaCodeWarnings
+integer JSPJavaCodeErrors
+integer HardcodedUrlWarnings
+integer HardcodedIPErrors
+integer HardcodedIPWarnings
+integer FileWarnings
+integer DisplayWarnings
+integer LineLengthWarnings
+integer LineLengthErrors
+integer LineLengthWarningCount
+integer LineLengthErrorCount
+integer JavaHTMLWarnings
+integer JSPCommentErrors
+integer JSPCommentErrorCount
+integer FileSizeWarnings
+integer FileSizeErrors
+integer SRCLineWarnings
+integer SRCLineErrors
+integer FunctionWarnings
+integer FunctionErrors
+integer FunctionSizeWarnings
+integer FunctionSizeErrors
+integer SQLWarnings
+integer SQLErrors
+integer MiscWarnings
+integer MiscErrors
+
+integer SpecialSearchStringTotal
+integer SpecialSearchStringIndex
+string  SpecialSearchStringPtr
+string  SpecialSearchPatternPtr
+string  SpecialSearchStringName
+string  SpecialSearchString
+string  SpecialSearchPattern
+integer SpecialSearchStringFound
+
+float   FileSize
+integer FunctionLines
+string  FunctionSizeWarningFlag
+string  FunctionSizeErrorFlag
+integer FunctionCount
+string  FunctionName
+string  FunctionOutputLine
+integer FunctionStartLine
+string  LastFunctionFile
+string  FunctionTestDone
+
+integer rightparen
+integer leftparen
+integer pass
+integer copycount
+
+string  CICSSearch
+
+string  TestFile
+
+float   FDefects
+float   FLines
+float   FOpportunities = 16
+float   FMillion = 1000000
+
+float   DPMO
+string  DPMOPrint
+string  Sigma
+float   FTest
+float   FZero = 0
+
+string  StartDate
+string  StartTime
+
+string  Response
+integer Syscount
+string  OutputFileName
+
+string  CheckAppName
+string  AppNameOK
+
+string  SQLLine
+string  Continued
+
+string  webxmlfile
+string  weblogicxmlfile
+string  ejbjarxmlfile
+string  weblogicejbjarxmlfile
+
+string Deploy_XML_Directory
+string Deploy_Web_XML_File
+string Deploy_Weblogic_XML_File
+string Deploy_System_Line
+string Deploy_Line
+
+string Deploy_Application_Name
+
+string Deploy_xml_level1
+string Deploy_xml_level2
+string Deploy_xml_ident
+string Deploy_xml_data
+
+string Deploy_CurrentFile
+string Deploy_Finished            = 'n'
+
+string Deploy_Servlet_Name
+string Deploy_Servlet_Class
+string Deploy_FirstServlet        = 'y'
+string Deploy_URL_Pattern
+
+string Deploy_Extension
+string Deploy_Mime_Type
+string Deploy_FirstMime           = 'y'
+
+string Deploy_Taglib_URI
+string Deploy_Taglib_Location
+string Deploy_FirstTaglib         = 'y'
+
+string Deploy_Param_Name
+string Deploy_Param_Value
+string Deploy_FirstParam          = 'y'
+string Deploy_Param_Type
+
+string Deploy_First_EJB            = 'y'
+string Deploy_EJB_Name
+string Deploy_First
+string Deploy_EJBJarXMLName
+string Deploy_EJB_File
+string Deploy_EJB_Section
+string IncludeEJB
+
+string Deploy_Newline
+
+integer Deploy_Count
+string Deploy_Output_File
+
+string DeployCheckSystem
+string DeployCheckData
+string DeployCheckLine
+string DeployDelete
+
+integer SQLSize
+string  SQLNewLine
+string  Informatica
+
+string  UpdateLine
+
+string  TibcoProject
+string  TibcoName
+string  TibcoValue
+
+string  ProcedureName
+integer ProcLen
+
+integer IPDotCount
+string  IPUsed
+
+string  ClassName
+string  IPAddress
+
+string  CheckForResourceBundling = 'n'
+integer HTMLFileCount = 0
+
+integer CriticalWarningCount = 0
+
+string  JavaProject = 'n'
+string  ContainsLog4jXML = 'n'
+
+string  RenameDir
+string  PreRenameDir
+
+string  Automatic = 'n'
+
+//******************************************************************************************************
+//After this number of files has been processed backup all files & variables
+//******************************************************************************************************
+integer BACKUP_SIZE = 20
+integer BackupCount
+string  BackupLine
+string  Restart = 'n'
+
+string VersionLine
+
+//************************************************************************
+//* Main
+//************************************************************************
+!a100_main
+    call !b100_init
+    call !b200_proc_dir
+    call !aD100_main_process
+    call !b300_wrap
+    exit
+
+//************************************************************************
+//* Initialization
+//************************************************************************
+!b100_init
+    system:"cls" cls
+    print:"*******************************************************************************"
+    print:"*                            GECFS Code Scanner                               *"
+    VersionLine = "*                                @Version@                                  *"
+    print:"@VersionLine@"
+    print:"*                                                                             *"
+    print:"* This system will scan all system source files (Java, JSP, HTML, JS, C++)    *"
+    print:"* files in an input directory, including all subdirectories, verifying GECFS  *"
+    print:"* standards are followed.                                                     *"
+    print:"*                                                                             *"
+    print:"* Output Files:                                                               *"
+    print:"*     checkcd.txt    Output Summary Report file                               *"
+    print:"*     codedtl.txt    Output Detail Report file                                *"
+    print:"*     function.txt   Output list of functions                                 *"
+    print:"*     codesrch.txt   Output list of all files checked                         *"
+    print:"*******************************************************************************"
+
+    if (exists Checkcd.dir)
++      open Checkcd.dir Checkcd.dir
++      CheckSystem = line
++      f;1
++      CurrDir = line
++      close Checkcd.dir
++      Automatic = 'y'
++   endif
+
+    //***************************************
+    //* Check for Prior Data Files
+    //***************************************
+    system:"md eas"
+    if (Automatic)
++      system:"del eas\syscount.txt"
++      system:"del eas\cu-3090.*"
++      system:"del eas\fixsql.*"
++      goto !b100_auto1
++   endif
+
+    if (exists eas\syscount.txt) if (!exists c:\cdcheck\chklist.txt) if (!exists backrest\Backup.txt)
++      print:"The EAS directory already contains files!"
++      printx:"Do you want to erase the previous data files?"
++      input Response
++      if (Response)
++         system:"del eas\syscount.txt"
++         system:"del eas\cu-3090.*"
++         system:"del eas\fixsql.*"
++   endif
+
+!b100_auto1
+    //****************************************
+    //* Update the Syscount.txt file
+    //* Line 1:Checkcd
+    //*      2:CU-3090
+    //*      3:FIXSQL
+    //****************************************
+    if (exists eas\syscount.txt)
++      open SyscountFile eas\syscount.txt
++      b
++      Syscount = line
++   else
++      open SyscountFile null
++      Syscount = 0
++      i:/0/
++      i:/0/
++      i:/0/
++      b
++   endif
+    Syscount ++
+    r:/@Syscount/
+    write SyscountFile eas\syscount.txt
+    close SyscountFile
+
+    //***************************************
+    //* Check for Restart
+    //***************************************
+    if (exists backrest\Backup.txt) 
++      print:"*********************************************************"
++      print:"* Restarting CHECKCD.BED"
++      print:"*"
++      Restart = 'y'
++      call !v200_restore
++      SpecialSearchStringTotal = 0
++      print:"* System Name : @CheckSystem@"
++      print:"* Directory   : @CheckDir@"
++      print:"*********************************************************"
++      open DeployData deploy.dat error open DeployData null
++      goto !b100_rest1
++   endif
+
+    open CriticalWarnings null
+    i:/Please check the following Critical Warnings:/
+    i:/===========================================================/
+    write CriticalWarnings critwarn.txt
+    close CriticalWarnings
+
+    open ReportFile null
+    open ProcFile null
+    open FileSizeFile null
+    open DeployData deploy.dat error open DeployData null
+    open StoredProcedureNames null i:/Procedure Name,File Name/
+    open FunctionList null
+
+    i:/Function List/
+    i:/                                                                  Start    Size/
+    i:/                                                                  -----    ----/
+    open DtlReport null
+
+!b100_input_app_name
+    //*************************************
+    //* Check for Multi System Run
+    //*************************************
+    if (exists ChkList.txt)
++      open ChkList ChkList.txt
++      scan:/@line/:/,/ 
++      d
++      write ChkList ChkList.txt
++      close ChkList
++      CheckSystem = left
++      CurrDir = right
++      CheckDir = right
++      print:"Multi-System Scan : System [@left@] Dir[@right@]"
++      CICSSearch = 'y'
++      open sysname null
++      i:/@CheckSystem@/
++      write sysname SYSNAME.TXT
++      close sysname
++      goto !b100_rest1
++   endif
+    system:"cls" cls
+    if  (Automatic)
++       printx:"Please enter the Application name to check:"
++       print:"@CheckSystem@"
++   else
++       printx:"Please enter the Application name to check:"
++       input CheckSystem
++   endif
+
+    //************************************************************************
+    //* Check the Application name against the Official Application Name List
+    //************************************************************************
+    if (!exists AppNames.txt) open AppNames null write AppNames AppNames.txt close AppNames
+    open AppNames AppNames.txt
+    b
+    CheckAppName = "$*$ @CheckSystem@"
+    fs:/@CheckAppName@/
+    AppNameOK = 'n'
+    if (!eof) AppNameOK = 'y'
+    if (eof)
++      print:"@CheckSystem@ isn't an Official System Name in AppNames.txt"
++      printx:"Do you want to add it(y-n,?)?"
++      input Response
++      if (Response)
++         i:/@CheckAppName@/
++         write AppNames AppNames.txt
++         AppNameOK = 'y'
++   endif
+    close AppNames
+    if (Response = '?')
++      Response = ""
++      print:"=========== Official Applicaiton Names =============="
++      open AppNames AppNames.txt b p;* close AppNames
++      print:"====================================================="
++   endif
+    if (!AppNameOK) goto !b100_input_app_name
+
+    open sysname null
+    i:/@CheckSystem@/
+    write sysname SYSNAME.TXT
+    close sysname
+
+    Response = "System[@CheckSystem@]"
+    open checkcd.log checkcd.log error goto !b100_new_checkcd
+    goto !b100_checkcd_ok
+!b100_new_checkcd
+    open checkcd.log null
+    i:/**************************************************************/
+    i:/*                Code Check Processing Log                   */
+    i:/**************************************************************/
+    write checkcd.log checkcd.log
+    b
+
+!b100_checkcd_ok
+    if (Automatic)
++      goto !b100_directory_entered
++   endif
+    direction up
+    b;*
+    //print:"Looking for @Response@" p wait
+    scan:/@line/:/@Response/ if (found) goto !b100_found_system
+!b100_system_loop
+    fs:/@Response/
+    if (eof) p wait goto !b100_enter_directory
+!b100_found_system
+    system:"cls" cls
+    scan:/@line/:/Dir[/ scan:/@right/:/]/
+    if (left = null) f;1 goto !b100_system_loop
+    Response = "Please enter the directory that contains for @CheckSystem@"
+    print:"@Response@"
+    Response = "Blank if you'd like to use @left@ :"
+    printx:/@Response@/
+    input CurrDir
+    if (CurrDir = null) CurrDir = left print:"Using Directory : @CurrDir@"
+    goto !b100_directory_entered
+
+!b100_enter_directory
+    system:"cls" cls
+    Response = "Please enter the directory that contains @CheckSystem@ :"
+    printx:"@Response@"
+    input CurrDir
+!b100_directory_entered
+    direction down
+    close checkcd.log error
+    CheckDir = CurrDir
+    //print:"CurrDir[@CurrDir@]" wait
+
+    if  (Automatic)
++       CICSSearch = 'n'
++   else
++       printx:"Look for CICS Transactions(y-n)?"
++       input CICSSearch
++   endif
+
+!b100_rest1
+    //******************************************************
+    //* Special CICS Search Strings
+    //******************************************************
+    if (CICSSearch)
++       SpecialSearchString = '##S#'
++       SpecialSearchPattern = 'y'
++       SpecialSearchStringTotal ++
++       SpecialSearchStringName = "SpecialSearchString" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchString
++       SpecialSearchStringName = "SpecialSearchPattern" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchPattern
++       SpecialSearchString = '##R#'
++       SpecialSearchPattern = 'y'
++       SpecialSearchStringTotal ++
++       SpecialSearchStringName = "SpecialSearchString" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchString
++       SpecialSearchStringName = "SpecialSearchPattern" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchPattern
++       SpecialSearchString = 'FP##'
++       SpecialSearchPattern = 'y'
++       SpecialSearchStringTotal ++
++       SpecialSearchStringName = "SpecialSearchString" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchString
++       SpecialSearchStringName = "SpecialSearchPattern" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchPattern
++       SpecialSearchString = 'VSR#'
++       SpecialSearchPattern = 'y'
++       SpecialSearchStringTotal ++
++       SpecialSearchStringName = "SpecialSearchString" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchString
++       SpecialSearchStringName = "SpecialSearchPattern" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchPattern
++       SpecialSearchString = 'CP##'
++       SpecialSearchPattern = 'y'
++       SpecialSearchStringTotal ++
++       SpecialSearchStringName = "SpecialSearchString" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchString
++       SpecialSearchStringName = "SpecialSearchPattern" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchPattern
++       SpecialSearchString = '##R&'
++       SpecialSearchPattern = 'y'
++       SpecialSearchStringTotal ++
++       SpecialSearchStringName = "SpecialSearchString" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchString
++       SpecialSearchStringName = "SpecialSearchPattern" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchPattern
++       SpecialSearchString = 'SE##'
++       SpecialSearchPattern = 'y'
++       SpecialSearchStringTotal ++
++       SpecialSearchStringName = "SpecialSearchString" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchString
++       SpecialSearchStringName = "SpecialSearchPattern" + SpecialSearchStringTotal
++       string @SpecialSearchStringName
++       @SpecialSearchStringName = SpecialSearchPattern
++   endif
+
+    if (exists ChkList.txt) goto !b100_search_string_ok
+    if (Restart) goto !b100_search_string_ok
+
+    //**************************************************
+    //* Input Special Search Strings
+    //**************************************************
+    system:"cls" cls
+    print:"*******************************************************************************"
+    print:"* Special Search String Entry"
+    print:"* Pattern matching characters are :"
+    print:"*       ? = Match on any character"
+    print:"*       # = Match on any number"
+    print:"*       & = Match on any alpha character"
+    print:"*       ~ = Match on any special character"
+    print:"*       * = Match to end or next char (e.g. 'very*test' will find 'very fast test')
+    print:"*"
+    print:"*******************************************************************************"
+    do
+        if (Automatic = 'y')
++          SpecialSearchString = null
++       else
++          printx:"Please enter any special string to search for:"
++          input SpecialSearchString
++       endif
+
+        if (SpecialSearchString != null)
++          printx:"Should this match by pattern(y-n)?"
++          input SpecialSearchPattern
++          SpecialSearchStringTotal ++
++          SpecialSearchStringName = "SpecialSearchString" + SpecialSearchStringTotal
++          string @SpecialSearchStringName
++          @SpecialSearchStringName = SpecialSearchString
++          SpecialSearchStringName = "SpecialSearchPattern" + SpecialSearchStringTotal
++          string @SpecialSearchStringName
++          @SpecialSearchStringName = SpecialSearchPattern
+    until (SpecialSearchString = null)
+
+!b100_search_string_ok
+    if (Restart) goto !b100_rest2
+    open CodeSearch null
+    if (SpecialSearchStringTotal = 0) goto !b100_search_string_done
+    i:"********************** List of Special Strings ****************************"
+    Newline = "SpecialSearchStringTotal=@SpecialSearchStringTotal@"
+    i:/@Newline@/
+    SpecialSearchStringIndex = 0
+    do
+        SpecialSearchStringIndex ++
+        SpecialSearchStringPtr = "@SpecialSearchString" + SpecialSearchStringIndex
+        SpecialSearchString = "@SpecialSearchStringPtr"
+//        printx:"String @SpecialSearchStringIndex@ = @SpecialSearchString@        "
+
+        SpecialSearchPatternPtr = "@SpecialSearchPattern" + SpecialSearchStringIndex
+        SpecialSearchPattern = "@SpecialSearchPatternPtr"
+//        print:"Pattern = @SpecialSearchPattern@ "
+        Newline = "String @SpecialSearchStringIndex@ = Search:@SpecialSearchString@    Pattern:@SpecialSearchPattern@"
+        i:/@Newline@/
+    until (SpecialSearchStringIndex = SpecialSearchStringTotal)
+    i:"***************************************************************************"
+    i:/ /
+!b100_search_string_done
+    print:"***************************************************************************"
+
+!b100_start
+    ReportLine = "**********************************************************************************************************"
+    call !z100_report_line file DtlReport i:/@ReportLine/
+    ReportLine = "*                                             GE Fleet Services                              Date:@date@"
+    call !z100_report_line file DtlReport i:/@ReportLine/
+    ReportLine = "*                                         Java Standards Code Scan                     Start Time:@time@"
+    call !z100_report_line file DtlReport i:/@ReportLine/
+    ReportLine = "*                                            System:@CheckSystem@"
+    call !z100_report_line file DtlReport i:/@ReportLine/
+    ReportLine = "*                                       Code Check Version:@Version@"
+    call !z100_report_line file DtlReport i:/@ReportLine/
+    ReportLine = "**********************************************************************************************************"
+    call !z100_report_line file DtlReport i:/@ReportLine/
+
+    open SQLFile null
+    open DirectoryFile null
+    i:/@CurrDir@/
+    StartDate = date
+    StartTime = time
+!b100_rest2
+    return
+
+//************************************************************************
+//* Main Process
+//************************************************************************
+!b200_proc_dir
+    if (Restart) goto !b200_rest1
+    file DirectoryFile
+    b  //FGB07242002
+    if (eof) goto !b200_done
+    CurrDir = line
+    d
+    call !c100_expand_dir
+!b200_rest1
+    call !c200_proc_files
+    goto !b200_proc_dir
+!b200_done
+    return
+
+//************************************************************************
+//* Wrapup
+//************************************************************************
+!b300_wrap
+   //************************
+   //* Cleanup Files
+   //************************
+    system:"cls" cls
+   system:"del fgbdir"
+   system:"del fgbfile"
+   system:"del checkcd.dir"
+
+   //************************
+   //* Finish the Report
+   //************************
+   write DtlReport Codedtl.txt
+   close DtlReport
+   write FunctionList Function.txt
+   close FunctionList
+   write SQLFile Codedtl.sql
+   close SQLFile
+   write StoredProcedureNames STPROCNA.CSV
+   close StoredProcedureNames
+
+   if (JavaProject = 'y') and (ContainsLog4jXML != 'Y')
++     ReportLine = " "
++     call !z100_report_line
++     ReportLine = "Misc Error : Java Applications must use Log4j! (Include log4j.xml in source directories & package)"
++     call !z100_report_line
++     Errors ++
++     MiscErrors ++
++   endif
+
+   ReportLine = " "
+   call !z100_report_line
+
+   ReportLine = "**********************************************************************************************************" call !z100_report_line
+
+   ReportLine = "Code Scan Summary"
+   call !z100_report_line
+
+   ReportLine = " " call !z100_report_line
+
+   ReportLine = "Java  Files Scanned : @TotalJavaFiles@" call !z100_report_line_print
+   ReportLine = "JSP   Files Scanned : @TotalJspFiles@" call !z100_report_line_print 
+   ReportLine = "HTML  Files Scanned : @TotalHTMLFiles@" call !z100_report_line_print 
+   ReportLine = "JS    Files Scanned : @TotalJSFiles@" call !z100_report_line_print 
+   ReportLine = "CPP/C Files Scanned : @TotalCPPFiles@" call !z100_report_line_print 
+   ReportLine = "H     Files Scanned : @TotalHFiles@" call !z100_report_line_print 
+   ReportLine = "RC    Files Scanned : @TotalRCFiles@" call !z100_report_line_print 
+   ReportLine = "GIF   Files Scanned : @TotalGIFFiles@" call !z100_report_line_print 
+   ReportLine = "JPG   Files Scanned : @TotalJPGFiles@" call !z100_report_line_print 
+   ReportLine = "SQL   Files Scanned : @TotalSQLFiles@" call !z100_report_line_print 
+   ReportLine = "Tibco Files Scanned : @TotalTibcoFiles@" call !z100_report_line_print 
+   ReportLine = " " call !z100_report_line_print 
+   ReportLine = "Total SRC'd Files  : @TotalSRCLines@" call !z100_report_line_print 
+   ReportLine = "Total JS Functions : @TotalFunctions@" call !z100_report_line_print 
+   Newline = "@GrandTotalCodeLines@" 
+   scan:/@Newline@/:/./
+   ReportLine = "Total Code Lines   : @left@" call !z100_report_line_print 
+   FLines = left
+
+   ReportLine = " "
+   call !z100_report_line
+
+   if (SpecialSearchStringTotal > 0)
++     ReportLine = "Special Search String(s) Found @SpecialSearchStringFound@ Times"
++     call !z100_report_line_print
++     ReportLine = " "
++     call !z100_report_line
++  endif
+
+   ReportLine = 'Conditions Checked            Warnings    Errors' call !z100_report_line_print
+   ReportLine = '----------------------------  --------    ------' call !z100_report_line_print     
+   ReportLine = 'Code Lines per File'
+   size ReportLine,30
+   Newline = '        @CodeLineWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @CodeLineErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = "JSP <!-- --> Comments"
+   size ReportLine,42
+   Newline = '      @JSPCommentErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = 'Code Line length'
+   size ReportLine,30
+   Newline = '        @LineLengthWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @LineLengthErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = 'Comment Line low %'
+   size ReportLine,30
+   Newline = '        @CommentWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @CommentErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = 'Presentation not in JSP'
+   size ReportLine,30
+   Newline = '        @JavaHTMLWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = 'Java in JSP Code %'
+   size ReportLine,30
+   Newline = '        @JSPJavaPercentWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @JSPJavaPercentErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = 'Java in JSP Code Lines'
+   size ReportLine,30
+   Newline = '        @JSPJavaCodeWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @JSPJavaCodeErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = 'File Usage'
+   size ReportLine,30
+   Newline = '        @FileWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = 'Active Displays (println)'
+   size ReportLine,40
+   Newline = '        @DisplayWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = "Hardcoded URL's"
+   size ReportLine,30
+   Newline = '        @HardcodedUrlWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = "Hardcoded IP's"
+   size ReportLine,30
+   Newline = '        @HardcodedIPWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @HardcodedIPErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = "HTML/JS/GIF/JPG File Size"
+   size ReportLine,30
+   Newline = '        @FileSizeWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @FileSizeErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = "SRC= Lines"
+   size ReportLine,30
+   Newline = '        @SRCLineWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @SRCLineErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = "JS Functions"
+   size ReportLine,30
+   Newline = '        @FunctionWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @FunctionErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = "JS Function Size"
+   size ReportLine,30
+   Newline = '        @FunctionSizeWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @FunctionSizeErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = "SQL"
+   size ReportLine,30
+   Newline = '        @SQLWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @SQLErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = "Misc"
+   size ReportLine,30
+   Newline = '        @MiscWarnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @MiscErrors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   ReportLine = '                              --------    ------' call !z100_report_line_print     
+   ReportLine = 'Totals'
+   size ReportLine,30
+   Newline = '        @Warnings@' splitr:/@Newline/;8 ReportLine = '@ReportLine@@right@    '
+   Newline = '      @Errors@' splitr:/@Newline/;6 ReportLine = '@ReportLine@@right@' call !z100_report_line_print
+
+   //********************************
+   //* Compute Sigma
+   //********************************
+   FDefects = Errors
+   ReportLine = ' ' call !z100_report_line_print
+   DPMO = FLines * FOpportunities
+   if (DPMO = FZero) DPMO = 0 else DPMO = FDefects / DPMO
+   DPMO = DPMO * FMillion
+   Newline = '@DPMO@'
+   scan:/@Newline@/:/./
+   DPMOPrint = left
+   ReportLine = "DPMO = @left@"
+   call !z100_report_line_print
+   ReportLine = ' ' call !z100_report_line_print   
+
+   if (DPMO < 3.4) Sigma = '6.0' goto !b300_sigma_done
+
+   if (DPMO < 5) Sigma = '5.9' goto !b300_sigma_done
+   if (DPMO < 8) Sigma = '5.8' goto !b300_sigma_done
+   if (DPMO < 10) Sigma = '5.7' goto !b300_sigma_done
+   if (DPMO < 20) Sigma = '5.6' goto !b300_sigma_done
+   if (DPMO < 30) Sigma = '5.5' goto !b300_sigma_done
+   if (DPMO < 40) Sigma = '5.4' goto !b300_sigma_done
+   if (DPMO < 70) Sigma = '5.3' goto !b300_sigma_done
+   if (DPMO < 100) Sigma = '5.2' goto !b300_sigma_done
+   if (DPMO < 150) Sigma = '5.1' goto !b300_sigma_done
+   if (DPMO < 230) Sigma = '5.0' goto !b300_sigma_done
+
+   if (DPMO < 330) Sigma = '4.9' goto !b300_sigma_done
+   if (DPMO < 480) Sigma = '4.8' goto !b300_sigma_done
+   if (DPMO < 680) Sigma = '4.7' goto !b300_sigma_done
+   if (DPMO < 960) Sigma = '4.6' goto !b300_sigma_done
+   if (DPMO < 1350) Sigma = '4.5' goto !b300_sigma_done
+   if (DPMO < 1860) Sigma = '4.4' goto !b300_sigma_done
+   if (DPMO < 2550) Sigma = '4.3' goto !b300_sigma_done
+   if (DPMO < 3460) Sigma = '4.2' goto !b300_sigma_done
+   if (DPMO < 4660) Sigma = '4.1' goto !b300_sigma_done
+   if (DPMO < 6210) Sigma = '4.0' goto !b300_sigma_done
+
+   if (DPMO < 8190) Sigma = '3.9' goto !b300_sigma_done
+   if (DPMO < 10700) Sigma = '3.8' goto !b300_sigma_done
+   if (DPMO < 13900) Sigma = '3.7' goto !b300_sigma_done
+   if (DPMO < 17800) Sigma = '3.6' goto !b300_sigma_done
+   if (DPMO < 22700) Sigma = '3.5' goto !b300_sigma_done
+   if (DPMO < 28700) Sigma = '3.4' goto !b300_sigma_done
+   if (DPMO < 35900) Sigma = '3.3' goto !b300_sigma_done
+   if (DPMO < 44600) Sigma = '3.2' goto !b300_sigma_done
+   if (DPMO < 54800) Sigma = '3.1' goto !b300_sigma_done
+   FTest = 668 FTest = FTest * 100 if (DPMO < FTest) Sigma = '3.0' goto !b300_sigma_done
+
+   FTest = 808 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.9' goto !b300_sigma_done
+   FTest = 968 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.8' goto !b300_sigma_done
+   FTest = 1150 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.7' goto !b300_sigma_done
+   FTest = 1350 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.6' goto !b300_sigma_done
+   FTest = 1580 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.5' goto !b300_sigma_done
+   FTest = 1840 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.4' goto !b300_sigma_done
+   FTest = 2120 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.3' goto !b300_sigma_done
+   FTest = 2420 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.2' goto !b300_sigma_done
+   FTest = 2740 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.1' goto !b300_sigma_done
+   FTest = 3080 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.0' goto !b300_sigma_done
+
+   FTest = 3440 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.9' goto !b300_sigma_done
+   FTest = 3820 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.8' goto !b300_sigma_done
+   FTest = 4200 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.7' goto !b300_sigma_done
+   FTest = 4600 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.6' goto !b300_sigma_done
+   FTest = 5000 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.5' goto !b300_sigma_done
+   FTest = 5400 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.4' goto !b300_sigma_done
+   FTest = 5700 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.3' goto !b300_sigma_done
+   FTest = 6100 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.2' goto !b300_sigma_done
+   FTest = 6500 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.1' goto !b300_sigma_done
+   FTest = 6900 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.0' goto !b300_sigma_done
+
+   FTest = 7200 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.9' goto !b300_sigma_done
+   FTest = 7500 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.8' goto !b300_sigma_done
+   FTest = 7800 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.7' goto !b300_sigma_done
+   FTest = 8100 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.6' goto !b300_sigma_done
+   FTest = 8400 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.5' goto !b300_sigma_done
+   FTest = 8600 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.4' goto !b300_sigma_done
+   FTest = 8800 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.3' goto !b300_sigma_done
+   FTest = 9000 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.2' goto !b300_sigma_done
+   Sigma = '0.1' goto !b300_sigma_done
+
+!b300_sigma_done
+   ReportLine = "Sigma = @Sigma@"
+   call !z100_report_line_print
+   ReportLine = " " call !z100_report_line_print //FGB 11/08/2002
+   f;1 d;*
+
+   //***********************************
+   //* Write out the end time and finish
+   //***********************************
+   file ReportFile
+   b
+   fs:/System:/
+   ReportLine = line
+   size ReportLine,89
+   ReportLine = "@ReportLine@End Time:@time@"
+   r:/@ReportLine@/
+
+   open CriticalWarnings critwarn.txt
+   b copy;*
+   file ReportFile
+   if (pcount > 2)
++     f;*
++     i:/ /
++     paste
++  endif 
+
+   close CriticalWarnings
+
+   file ReportFile
+   b
+   fs:/Sigma =/
+   i:" "
+   i:/Notes:/
+   i:/====================================================================================================================================/
+   i:"For a complete listing of standards please review GlobalApplicationFrameworkArchitecture.doc"
+   if (CheckForResourceBundling = 'y')
++     i:" "
++     Newline = "Please ensure that the @HTMLFileCount@ <HTML> file(s) are properly resource bundled!"
++     i:/@Newline@/
++  endif
+
+   write ReportFile Checkcd.txt
+   //*************************************
+   //* Write History
+   //*************************************
+   system:"md RptHist"
+   Newline = "del RptHist\@CheckSystem@-Checkcd.txt"
+   system:"@Newline@"
+   Newline = "copy Checkcd.txt RptHist\@CheckSystem@-Checkcd.txt"
+   system:"@Newline@"
+   Newline = "del RptHist\AAALastRun-Checkcd.txt"
+   system:"@Newline@"
+   Newline = "copy Checkcd.txt RptHist\AAALastRun-Checkcd.txt"
+   system:"@Newline@"
+    system:"cls" cls
+
+   OutputFileName = "EAS\CHECKCD.@Syscount@"
+   write ReportFile @OutputFileName
+   close ReportFile
+   write CodeSearch CodeSrch.txt
+   close CodeSearch
+   print:"CODE CHECK COMPLETE!"
+
+   open LogFile Checkcd.log error open LogFile null
+   f;*
+   Newline = "@GrandTotalCodeLines@" 
+   scan:/@Newline@/:/./
+   Newline = "CHECKCD @Version@ Start[@StartDate@ @StartTime@] End [@date@ @time@] System[@CheckSystem@] Dir[@CheckDir@] Lines[@left@] Checks[15] Errors[@Errors@] DPMO[@DPMOPrint@] Sigma[@Sigma@]"
+   i:/@Newline/
+   write LogFile Checkcd.log
+   close LogFile
+
+   //**********************************************
+   //* Write out Master Log File
+   //**********************************************
+   system:"ipconfig >fgbcfg"
+   system:"cls" cls
+   open IPConfig fgbcfg error IPAddress = null goto !b300_open_master
+   b
+   fs:/IP Address/
+   scanr:/@line/:word
+   IPAddress = right
+!b300_open_master
+   open LogFile MASTER.LOG error open LogFile null
+   f;*
+   Newline = "@Newline@  IP Address:@IPAddress@"
+   i:/@Newline/
+   write LogFile MASTER.LOG error
+   close LogFile
+   close IPConfig error
+   system:"del fgbcfg"
+    system:"cls" cls
+!b300_master_error
+   open CSVFile CHECKLOG.CSV error open CSVFile null i:/Program,Start Date,Start Time,End Date,End Time,System,Directory,Units,Opportunities,Defects,DPMO,Sigma,>3500 Lines per File,<!-- Lines,Lines >500 Chars,<2% Comments,>90% Java,>3000 Java,Hardcoded IP,File Size Errors,SRC= >20,JS > 40Functions,JS Function >200 Lines,SQL Errors,Misc/
+   f;*
+   Newline = "@GrandTotalCodeLines@" 
+   scan:/@Newline@/:/./
+   Newline = "CHECKCD,@StartDate@,@StartTime@,@date@,@time@,@CheckSystem@,@CheckDir@,@left@,@FOpportunities@,@Errors@,@DPMOPrint@,@Sigma@"
+   Newline = "@Newline@,@CodeLineErrors@,@JSPCommentErrors@,@LineLengthErrors@,@CommentErrors@,@JSPJavaPercentErrors@,@JSPJavaCodeErrors@"
+   Newline = "@Newline@,@HardcodedIPErrors@,@FileSizeErrors@,@SRCLineErrors@,@FunctionErrors@,@FunctionSizeErrors@,@SQLErrors@,@MiscErrors@,@Version@"   i:/@Newline/
+!b300_csv
+   write CSVFile CHECKLOG.CSV error print:"Please close all csv files!" wait goto !b300_csv
+   close CSVFile
+
+   //*************************************************************
+   //* Write Checkcd.xml
+   //*************************************************************
+   open Checkcd.xml null
+   i:/<?xml version="1.0" encoding="UTF-8"?>/
+   i:/<!DOCTYPE Code_Check_Results/
+   i:/[/
+   i:/ /
+   i:/     <!ELEMENT Code_Check_Results (Version, System, Directory, Run_Date, Run_Time, Total_Lines, Total_Errors, Total_Warnings, Sigma_Level, DPMO, Opportunities)>/
+   i:/     <!ELEMENT Version (#PCDATA)>/
+   i:/     <!ELEMENT System (#PCDATA)>/
+   i:/     <!ELEMENT Directory (#PCDATA)>/
+   i:/     <!ELEMENT Run_Date (#PCDATA)>/
+   i:/     <!ELEMENT run_Time (#PCDATA)>/
+   i:/     <!ELEMENT Total_Lines (#PCDATA)>/
+   i:/     <!ELEMENT Total_Errors (#PCDATA)>/
+   i:/     <!ELEMENT Total_Warnings (#PCDATA)>/
+   i:/     <!ELEMENT Sigma_Level (#PCDATA)>/
+   i:/     <!ELEMENT Sigma_Level (#PCDATA)>/
+   i:/     <!ELEMENT Opportunities (#PCDATA)>/
+   i:/     <!ELEMENT DPMO (#PCDATA)>/
+   i:/     <!ELEMENT Code_Line_Errors (#PCDATA)>/
+   i:/     <!ELEMENT JSP__Comment_Errors (#PCDATA)>/
+   i:/     <!ELEMENT Line_Length_Errors (#PCDATA)>/
+   i:/     <!ELEMENT Comment_Errors (#PCDATA)>/
+   i:/     <!ELEMENT JSP_Java_Percent_Errors (#PCDATA)>/
+   i:/     <!ELEMENT JSP_Java_Code_Errors (#PCDATA)>/
+   i:/     <!ELEMENT Display_Errors (#PCDATA)>/
+   i:/     <!ELEMENT Hardcoded_IP_Errors (#PCDATA)>/
+   i:/     <!ELEMENT File_Size_Errors (#PCDATA)>/
+   i:/     <!ELEMENT Src_Line_Errors (#PCDATA)>/
+   i:/     <!ELEMENT Function_Errors (#PCDATA)>/
+   i:/     <!ELEMENT Function_Size_Errors (#PCDATA)>/
+   i:/     <!ELEMENT SQL_Errors (#PCDATA)>/
+   i:/     <!ELEMENT Misc_Errors (#PCDATA)>/
+   i:/     <!ELEMENT Critical_Warnings (#PCDATA)>/
+   i:/     <!ELEMENT HTML_File_Count_Check_Multilingual (#PCDATA)>/
+   i:/]>/
+   i:/ /
+   i:/<Code_Check_Results>/
+   Newline = "     <Version> @Version@ </Version>" i:/@Newline/
+   Newline = "     <System> @CheckSystem@ </System>" i:/@Newline/
+   Newline = "     <Directory> @CheckDir@ </Directory>" i:/@Newline/
+   Newline = "     <Run_Date> @StartDate@ </Run_Date>" i:/@Newline/
+   Newline = "     <Run_Time> @StartTime@ </Run_Time>" i:/@Newline/
+   Newline = "@GrandTotalCodeLines@"
+   scan:/@Newline@/:/./
+   Newline = "     <Total_Lines> @left@ </Total_Lines>" i:/@Newline/
+   Newline = "     <Total_Errors> @Errors@ </Total_Errors>" i:/@Newline/
+   Newline = "     <Total_Warnings> @Warnings@ </Total_Warnings>" i:/@Newline/
+   Newline = "     <Sigma_Level> @Sigma@ </Sigma_Level>" i:/@Newline/
+   Newline = "     <Opportunities> @FOpportunities@ </Opportunities>" i:/@Newline/
+   Newline = "     <DPMO> @DPMOPrint@ </DPMO>" i:/@Newline/
+   Newline = "     <Code_Line_Errors> @CodeLineErrors@ </Code_Line_Errors>" i:/@Newline/
+   Newline = "     <JSP__Comment_Errors> @JSPCommentErrors@ </JSP__Comment_Errors>" i:/@Newline/
+   Newline = "     <JSP__Comment_Errors> @LineLengthErrors@ </JSP__Comment_Errors>" i:/@Newline/
+   Newline = "     <Comment_Errors> @CommentErrors@ </Comment_Errors>" i:/@Newline/
+   Newline = "     <JSP_Java_Percent_Errors> @JSPJavaPercentErrors@ </JSP_Java_Percent_Errors>" i:/@Newline/
+   Newline = "     <JSP_Java_Code_Errors> @JSPJavaCodeErrors@ </JSP_Java_Code_Errors>" i:/@Newline/
+   Newline = "     <Display_Errors> @DisplayWarnings@ </Display_Errors>" i:/@Newline/
+   Newline = "     <Hardcoded_IP_Errors> @HardcodedIPErrors@ </Hardcoded_IP_Errors>" i:/@Newline/
+   Newline = "     <File_Size_Errors> @FileSizeErrors@ </File_Size_Errors>" i:/@Newline/
+   Newline = "     <Src_Line_Errors> @SRCLineErrors@ </Src_Line_Errors>" i:/@Newline/
+   Newline = "     <Function_Errors> @FunctionErrors@ </Function_Errors>" i:/@Newline/
+   Newline = "     <Function_Size_Errors> @FunctionSizeErrors@ </Function_Size_Errors>" i:/@Newline/
+   Newline = "     <SQL_Errors> @SQLErrors@ </SQL_Errors>" i:/@Newline/
+   Newline = "     <Misc_Errors> @MiscErrors@ </Misc_Errors>" i:/@Newline/
+   Newline = "     <Critical_Warnings> @CriticalWarningCount@ </Critical_Warnings>" i:/@Newline/
+   Newline = "     <HTML_File_Count_Check_Multilingual> @HTMLFileCount@ </HTML_File_Count_Check_Multilingual>" i:/@Newline/
+
+   i:"</Code_Check_Results>"
+   i:/ /
+
+   write Checkcd.xml Checkcd.xml
+   close Checkcd.xml
+
+   system:"del backrest\*.txt"
+   system:"del backrest\*.csv"
+   system:"rd backrest"
+    system:"cls" cls
+   print:"Starting notepad" //wait
+   system:"start notepad checkcd.txt"
+   sleep 1000
+
+//   wait
+   return
+
+//************************************************************************
+//* Expand the directory
+//************************************************************************
+!c100_expand_dir
+    scan:/@CurrDir@/:/ /
+//    if (found)
+//+      print:"Please rename @CurrDir@ removing all embedded spaces!"
+//+      wait
+//+      exit
+//+   endif
+    if (found) 
++      PreRenameDir = CurrDir
++      call !c150_rename_space_dir
++      file DirectoryFile
++   endif
+    Sysline = 'dir "@CurrDir@" > fgbdir'
+    system:"@Sysline@"
+    system:"cls" cls
+    return
+
+//************************************************************************
+//* Remove spaces from directories with spaces
+//************************************************************************
+!c150_rename_space_dir
+    RenameDir = PreRenameDir
+    crush RenameDir
+    Newline = 'move "@PreRenameDir@" "@RenameDir@"'
+    //print:"-----------------------------------------"
+    //print:/@Newline@/
+    //print:"-----------------------------------------"
+    system:/@Newline/
+    system:"cls" cls
+    Warnings ++
+    ReportLine = "" size ReportLine,10
+    ReportLine = '@ReportLine@*-*-*-* Spaces in Directory Warning : @Newline@'
+    call !z100_report_line_print
+    return
+    
+//************************************************************************
+//* Process the files
+//************************************************************************
+!c200_proc_files
+    if (Restart) print:"Restart Engaged" Restart = 'n' goto !c200_rest1
+    close CurrFile error
+    open CurrFile fgbdir
+    close FileList error
+    open FileList null
+    file CurrFile
+//    b p;* wait
+    b
+!c200_loop
+    if (eof) goto !c200_done
+    scan:/@line/:word
+    if (left = "Volume") goto !c200_next
+
+    //******************************************
+    //* set the directory name
+    //******************************************    
+    if (left = "Directory") 
++      scanr:/@line/:"Directory of "
++      CurrentDirectory = right // ReportLine = "@CurrentDirectory@" call !z100_report_line_print file CurrFile
++      goto !c200_next
++   endif
+
+    scan:/@line/:/File(s)/ if (found) goto !c200_next
+    scan:/@line/:/Dir(s)/ if (found) goto !c200_next
+    Testline = line
+    pack Testline
+    if (Testline = null) goto !c200_next
+
+    //******************************************
+    //* Add new directories to the DirectoryFile
+    //******************************************    
+    scan:/@line/:/<DIR>/
+    if (found)
++      scanr:/@line/:word
++      if (right = '.') goto !c200_next
++   endif
+    if (found)
++      scanr:/@line/:word
++      if (right = '..') goto !c200_next
++   endif
+    scan:/@line/:/<DIR>          /
+    if (found)
++      Newdir = '@CurrentDirectory@\@right@'
++      scanr:/@Newdir/:" "
++      if (found)
++          PreRenameDir = Newdir
++          call !c150_rename_space_dir
++          Newdir = RenameDir
++          file CurrFile
++      endif
++   endif
+    scan:/@line/:/<DIR>          /
+    if (found)
++      file DirectoryFile
++      f;*
++      i:/@Newdir@/     // print:"added @Newdir@" wait
++      b
++      file CurrFile
++      goto !c200_next
++   endif
+
+    scan:/@line@/:/Copy of/
+    if (found) goto !c200_next
+
+    scanr:/@line@/:word
+    Filename = '@CurrentDirectory@\@right@'
+
+    //print:"line[@line@] right[@right@] CurrentDirectory[@CurrentDirectory@] Filename[@Filename@]" wait
+
+    //**************************FGB ADDED TO BYPASS NULL FILES 09/30/2002 *******************************************
+    file ProcFile f;* i:/@Filename@/ write ProcFile ProcFile.txt
+    file CurrFile
+    TestFile = right
+    crush TestFile
+    if (TestFile = '') goto !c200_next
+
+    //********************************************
+    //* Hold XML Deployment Descriptor File Names
+    //********************************************
+    if (right = "web.xml") Deploy_Web_XML_File = Filename
+    if (right = "weblogic.xml") Deploy_Weblogic_XML_File = Filename
+    if (right = "ejb-jar.xml") Deploy_EJBJarXMLName = Filename
+    if (right = "weblogic-ejb-jar.xml") Deploy_EJB_File = Filename 
+
+    //******************************************
+    //* Filter out only the files to be scanned
+    //******************************************
+    if (right = "fgbdir") goto !c200_next
+    if (right = "fgbfile") goto !c200_next
+    scanr:/@Filename@/:/./
+    if (!found) FileType = null goto !c200_ok
+
+    if (right = 'jar') or (right = 'JAR') or (right = 'war') or (right = 'WAR') or (right = 'ear') or (right = 'EAR') or (right = 'java') or (right = 'JAVA') JavaProject = 'y'
+
+    if (right = 'java') or (right = 'JAVA') FileType = "Java" goto !c200_ok
+    if (right = 'jsp') or (right = 'JSP')  FileType = "JSP" goto !c200_ok
+    if (right = 'js') or (right = 'JS') FileType = "js" goto !c200_ok
+    if (right = 'html') or (right = 'HTML') or (right = 'HTM') or (right = 'htm') FileType = "html" goto !c200_ok
+    if (right = 'cpp') or (right = 'CPP') FileType = "cpp" goto !c200_ok
+    if (right = 'c') or (right = 'C') FileType = "cpp" goto !c200_ok
+    if (right = 'cc') or (right = 'CC') FileType = "cpp" goto !c200_ok
+    if (right = 'pc') or (right = 'PC') FileType = "cpp" goto !c200_ok
+    if (right = 'h') or (right = 'H') or (right = 'hpp') or (right = 'HPP') FileType = "h" goto !c200_ok
+    if (right = 'properties') or (right = 'PROPERTIES') FileType = "h" goto !c200_ok
+    if (right = 'ini') or (right = 'INI') FileType = "h" goto !c200_ok
+    if (right = 'rc') or (right = 'RC') FileType = "rc" goto !c200_ok
+    if (right = 'gif') or (right = 'GIF') FileType = 'gif' goto !c200_ok
+    if (right = 'jpg') or (right = 'JPG') FileType = 'jpg' goto !c200_ok
+    if (right = 'sql') or (right = 'SQL') FileType = 'sql' goto !c200_ok
+    if (right = 'log') or (right = 'LOG') FileType = 'log' goto !c200_ok
+    if (right = 'dat') or (right = 'DAT') if (CheckSystem = 'Tibco') FileType = 'Tibco' goto !c200_ok
+    if (right = 'process') or (right = 'PROCESS') FileType = 'Tibco' goto !c200_ok
+    if (right = 'xml') or (right = 'XML') FileType = "h" goto !c200_ok
+    if (right = 'cob') or (right = 'jcl') or (right = 'prc') or (right = 'cpy') or (right = 'ads') or (right = 'prm') FileType = 'js' goto !c200_ok
+    goto !c200_next
+
+!c200_ok
+    file ProcFile f;* i:/    Processing/ write ProcFile ProcFile.txt
+    file CurrFile
+    scanr:/@line/:word
+    scanr:/@left/:word
+    file FileSizeFile
+    b
+    d;*
+    i:/@right/
+    rs:/,/://;*
+    FileSize = line
+
+    //****************************************
+    //* Check File Size
+    //****************************************
+    if (FileType != 'gif') and (FileType != 'jpg')
++      if (FileSize > 250000)
++          print:"File Too Large to Process @Filename@" 
++          ReportLine = "@Filename@"
++          call !z100_report_line
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Error (File Too Large to Process @FileSize@)"
++          Errors ++
++          FileSizeErrors ++
++          call !z100_report_line_print
++          goto !c200_next
++   endif
+
+    file CurrFile
+    Sysline = 'copy @Filename@ fgbfile'
+    system:"@Sysline@"
+    system:"cls" cls
+//    print:"@Sysline@" wait
+
+    call !d100_scan_one_file
+
+    print:"**************************File Scan Complete****************************"
+    call !v100_backup
+
+!c200_rest1
+    file CurrFile
+
+!c200_next
+    file CurrFile
+    f
+    if (eof) goto !c200_done
+    goto !c200_loop
+!c200_done
+    close CurrFile
+    return
+
+//************************************************************************
+//* Scan one file
+//************************************************************************
+!d100_scan_one_file
+    Informatica = 'n'
+    FunctionSizeWarningFlag = 'n'
+    FunctionSizeErrorFlag = 'n'
+    print:"Scanning @Filename@"
+    ReportLine = "@Filename@"
+    call !z100_report_line
+    file CodeSearch
+    i:/@Filename@/
+    file DtlReport i:/@ReportLine/
+
+    //******************************************
+    //* Check for log4j.properties
+    //******************************************
+    lower Filename
+    scan:/@Filename@/:/log4j.properties/
+    if (found)
++         print:"Invalid use of log4j, must use log4j.xml!" 
++         ReportLine = null
++         size ReportLine,70
++         ErrorLine = "Invalid use of log4j.properties, must use log4j.xml!"
++         ReportLine = "@ReportLine@ ***Misc Error : @ErrorLine@"
++         call !z100_report_line_print
++         Errors ++
++         MiscErrors ++
++         call !z200_detail_report
++   endif
+
+    //******************************************
+    //* Check for log4j.xml
+    //******************************************
+    scan:/@Filename@/:/log4j.xml/ if (found) ContainsLog4jXML = 'y'
+
+    //******************************************
+    //* Check HTML File Size
+    //******************************************
+    if (FileType = 'html') 
++      if (FileSize > 20000)
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Error (File Size @FileSize@)"
++          Errors ++
++          FileSizeErrors ++
++          call !z100_report_line_print
++   endif
+    if (FileType = 'html') 
++      if (FileSize > 10000) and (FileSize < 20001)
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Warning (File Size @FileSize@)"
++          Warnings = Warnings + 1
++          FileSizeWarnings ++
++          call !z100_report_line_print
++   endif
+
+    //******************************************
+    //* Check JS File Size
+    //******************************************
+    if (FileType = 'js') 
++      if (FileSize > 16000)
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Error (File Size @FileSize@)"
++          Errors ++
++          FileSizeErrors ++
++          call !z100_report_line_print
++   endif
+    if (FileType = 'js') 
++      if (FileSize > 8000) and (FileSize < 16001)
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Warning (File Size @FileSize@)"
++          Warnings = Warnings + 1
++          FileSizeWarnings ++
++          call !z100_report_line_print
++   endif
+
+    //******************************************
+    //* Check GIF File Size
+    //******************************************
+    if (FileType = 'gif')
++      TotalGIFFiles ++
++      if (FileSize > 10000)
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Error (File Size @FileSize@)"
++          Errors ++
++          FileSizeErrors ++
++          call !z100_report_line_print
++   endif
+    if (FileType = 'gif') 
++      if (FileSize > 5000) and (FileSize < 10001)
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Warning (File Size @FileSize@)"
++          Warnings = Warnings + 1
++          FileSizeWarnings ++
++          call !z100_report_line_print
++   endif
+
+    //******************************************
+    //* Check JPG File Size
+    //******************************************
+    if (FileType = 'jpg')
++      TotalJPGFiles ++
++      if (FileSize > 10000)
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Error (File Size @FileSize@)"
++          Errors ++
++          FileSizeErrors ++
++          call !z100_report_line_print
++   endif
+    if (FileType = 'jpg') 
++      if (FileSize > 5000) and (FileSize < 10001)
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Warning (File Size @FileSize@)"
++          Warnings = Warnings + 1
++          FileSizeWarnings ++
++          call !z100_report_line_print
++   endif
+
+    //******************************************
+    //* Process each file type
+    //******************************************
+    if (FileType != 'gif') and (FileType != 'jpg') 
++      open SourceFile fgbfile error print:"@Filename@ file too large to process. Please remove it and restart CHECKCD.BED! The developer should reduce the length of lines in this file!" wait exit
++      if (CICSSearch) and (FileType != 'log') //////////////////////// Fix CICS Calls /////////////////////////////////
++         b rs:/Q6COD100/:/88R0/;*
++         b rs:/Q6COD101/:/90R0/;*
++         b rs:/Q6COD102/:/54R0/;*
++         b rs:/QCCOVE01/:/05R0/;*
++         b rs:/TBAPPC_ASSET/:/05R0/;*
++         b rs:/QQCOODMU/:/89R0/;*
++         b rs:/QECOBLSM/:/77R0/;*
++         b rs:/QCCOWARR/:/19R0/;*
++         b rs:/QCCOVINU/:/43R0/;*
++         b rs:/QECOTAXC/:/57R0/;*
++         b rs:/TBAPPC_CLIENT_FIND/:/15R0/;*
++         b rs:/TBAPPC_WP_FIND/:/10R0/;*
++         b rs:/IDR_INSTRUMENT/:/19R0/;*
++         b rs:/APPC_FQUERY/:/34R0/;*
++         b rs:/APPC_BILL_ACCESS/:/34R0/;*
++         b rs:/APPC_CUST_ACCESS/:/34R0/;*
++         b rs:/APPC_NOTE_ACCESS/:/34R0/;*
++         b rs:/APPC_NVP_ACCESS/:/34R0/;*
++         b rs:/APPC_TR_ACCESS/:/34R0/;*
++         b rs:/TBAPPC_ASSET_FIND/:/46R0/;*
++         b rs:/APPC_UNIT_ACCESS/:/34R0/;*
++         b rs:/APPC_VRG_ACCESS/:/34R0/;*
++         b rs:/IDR_HIST/:/18R0/;*
++         b rs:/transaction.retrieve/:/92R7/;*
++         b rs:/transaction.update/:/92R8/;*
++         b rs:/IDR_AFFLTN/:/03R0/;*
++         b rs:/IDR_SUPPL/:/04R0/;*
++         b rs:/IDR_ASSET/:/05R0/;*
++         b rs:/IDR_REPLOG/:/06R0/;*
++         b rs:/IDR_CLIENT/:/07R0/;*
++         b rs:/IDR_WA/:/08R0/;*
++         b rs:/IDR_INDIV/:/39R0/;*
++         b rs:/IDR_INDIV_UPDATE/:/42R0/;*
++         b rs:/IDR_ASSET_ASSOCIATED/:/41R0/;*
++         b rs:/IDR_LB_HIST_DETAIL/:/11R0/;*
++         b rs:/IDR_HIST/:/18R0/;*
++         b rs:/IDR_ATA_CODE/:/01R0/;*
++         b rs:'5 /*Asset*/':'05R0';*
++         b rs:'5/*':'05R0';*
++         b rs:/ 104,/:/04R0/;*
++         b rs:/ 198,/:/98R0/;*
++         b rs:/ 116,/:/16R0/;*
++         b rs:/ 176,/:/76R0/;*
++         b rs:/ 148,/:/48R0/;*
++         b rs:/ 149,/:/49R0/;*
++         b rs:/ 152,/:/52R0/;*
++         b rs:/ 153,/:/53R0/;*
++         b rs:/ 160,/:/60R0/;*
++         b rs:/ 161,/:/61R0/;*
++         b rs:/ 162,/:/62R0/;*
++         b rs:/ 163,/:/63R0/;*
++         b rs:/ 164,/:/64R0/;*
++         b rs:/ 165,/:/65R0/;*
++         b rs:/ 166,/:/66R0/;*
++         b rs:/ 167,/:/67R0/;*
++         b rs:/ 168,/:/68R0/;*
++         b rs:/ 169,/:/69R0/;*
++         b rs:/ 170,/:/70R0/;*
++         b rs:/ 171,/:/71R0/;*
++         b rs:/ 175,/:/75R0/;*
++         b rs:/ 176,/:/76R0/;*
++         b rs:/QBCOTAX1/:/20R0/;*
++         b rs:/TBAPPC_NTNL_ACCNTS+3/:/58R0/;*
++         b rs:/TBAPPC_NTNL_ACCNTS+2/:/57R0/;*
++         b rs:/TBAPPC_NTNL_ACCNTS+1/:/56R0/;*
++         b rs:/TBAPPC_NTNL_ACCNTS/:/55R0/;*
++         b rs:/TBAPPC_TAX_CODES/:/57R0/;*
++         b rs:/QECONABS/:/72R0/;*
++         b rs:/IDR_REIM_ONE/:/28R0/;*
++         b rs:/IDR_REIM_SUM/:/27R0/;*
++         b rs:/IDR_SSPCT_SUM/:/99R0/;*
++         b rs:/IDR_SSPCT_ONE/:/24R0/;*
++         b rs:/IDR_SSPCT_TEST/:/25R0/;*
++         b rs:/IDR_SUPPL_SUM/:/12R0/;*
++         b rs:/TBAPPC_SUP_FIND/:/12R0/;*
++         b rs:/IDR_LB_HIST_DETAIL/:/11R0/;*
++         b
++         call !d101_check_deploydata
++   endif
+
+//*****************************************************************
+//* Check for HTML files to warn on proper resource bundling
+//*****************************************************************
+    if (FileType != 'gif') and (FileType != 'jpg')
++      file SourceFile b
++      fs:/<html>/-/<HTML>/
++      if (!eof)
++          LineLengthWarningCount ++ 
++          CheckForResourceBundling = 'y'
++          HTMLFileCount ++
++          Warnings ++
++          ReportLine = "" size ReportLine,70
++          ReportLine = '@ReportLine@<HTML> File : *** Please ensure proper multilingual resource bundling'
++          call !z100_report_line_print
++          file SourceFile b
++   endif
+
+
+    if (FileType = 'Java') or (FileType = 'JAVA') call !e100_scan_java
+    if (FileType = 'jsp') or (FileType = 'JSP') call !e200_scan_jsp    
+    if (FileType = 'html') or (FileType = 'HTML') call !e210_scan_html
+    if (FileType = 'js') or (FileType = 'JS') call !e220_scan_js 
+    if (FileType = 'cpp') or (FileType = 'CPP') call !e230_scan_cpp
+    if (FileType = 'h') or (FileType = 'H') call !e240_scan_h
+    if (FileType = 'rc') or (FileType = 'RC') call !e250_scan_rc
+    if (FileType = 'sql') or (FileType = 'SQL') call !e260_scan_sql
+    if (FileType = 'log') or (FileType = 'LOG') call !e150_scan_log
+    if (FileType = 'Tibco') call !e280_scan_tibco
+
+!d100_done
+    close SourceFile error
+    return
+
+//************************************************************************
+//* Check Deploy.dat for matches
+//************************************************************************
+!d101_check_deploydata
+    file DeployData
+    b
+!d101_loop
+    if (eof) goto !d101_done
+    scan:/@line/:/$*$/
+    DeployCheckSystem = left
+    scan:/@right/:/$*$/
+    DeployCheckData = right
+    DeployCheckLine = line
+    file SourceFile
+    b
+    fs:/@DeployCheckData/
+    if (!eof)
++      file CodeSearch
++      Newline = "       USES @DeployCheckLine@"
++      i:/@Newline/
++   endif
+    file DeployData
+    f;1
+    goto !d101_loop
+!d101_done
+    file SourceFile
+    b
+    return
+
+//************************************************************************
+//* Scan Java Files
+//************************************************************************
+!e100_scan_java
+    b
+    call !g100_capture_sql
+    TotalJavaFiles = TotalJavaFiles + 1
+    call !e300_common_checks
+    call !f700_check_sql
+
+    //************************************************************************
+    //* Check for Secure/non-Secure Error Code for menu overlays
+    //************************************************************************
+!e100_menu_overlay
+    file SourceFile
+    b
+    fs:/src="about:blank"/-/src='about:blank'/
+    if (!eof) goto !e100_overlay_error
+    b
+    fs:/src="#"/-/src='#'/
+    if (!eof) goto !e100_overlay_error
+    goto !e100_sun_imports
+
+!e100_overlay_error
+    ReportLine = null
+    size ReportLine,70
+
+    ErrorLine = "Improper Menu Overlay Code (src="about:blank") may cause secure/non-secure error"
+    ReportLine = "@ReportLine@ ***Misc Error : @ErrorLine@"
+    call !z100_report_line_print
+    Errors ++
+    MiscErrors ++
+    call !z200_detail_report
+
+    //************************************************************************
+    //* Check for sun imports
+    //************************************************************************
+!e100_sun_imports
+    file SourceFile
+    b
+    fs:/import sun./
+    if (eof) goto !e100_star_imports
+    ReportLine = null
+    size ReportLine,70
+
+    ErrorLine = "import sun. : @line@"
+    ReportLine = "@ReportLine@ ***Misc Error : @line@"
+    call !z100_report_line_print
+    Errors ++
+    MiscErrors ++
+    call !z200_detail_report
+
+!e100_star_imports
+    //************************************************************************
+    //* Check for imports with *
+    //************************************************************************
+    file SourceFile
+    b
+!e100_star_loop
+    if (eof) goto !e100_check_printstacktrace
+    fs:/import /
+    if (eof) goto !e100_check_printstacktrace
+    scan:/@line/:/.*;/
+    if (!found) f;1 goto !e100_star_loop
+    ReportLine = null
+    size ReportLine,70
+
+    ErrorLine = "import .* : @line@"
+    ReportLine = "@ReportLine@ ***Misc Error : @line@"
+    call !z100_report_line_print
+    Errors ++
+    MiscErrors ++
+    call !z200_detail_report
+    file SourceFile
+    f;1
+    goto !e100_star_loop
+
+!e100_check_printstacktrace
+    //************************************************************************
+    //* Check for printstacktrace
+    //************************************************************************
+    file SourceFile
+    b
+!e100_printstacktrace_loop
+    if (eof) goto !e100_check_instance_var
+    fs:/.printStackTrace/
+    if (eof) goto !e100_check_instance_var
+    scan:/@line/:/.printStackTrace/ scan:"@left":"//" if (found) f;1 goto !e100_printstacktrace_loop
+    ReportLine = null
+    size ReportLine,70
+
+    ErrorLine = "printStackTrace : @line@"
+    ReportLine = "@ReportLine@ ***Misc Error : @line@"
+    call !z100_report_line_print
+    Errors ++
+    MiscErrors ++
+    call !z200_detail_report
+    file SourceFile
+    f;1
+    goto !e100_printstacktrace_loop
+
+!e100_check_instance_var
+    //************************************************************************
+    //* Check for instance variables in action classes
+    //************************************************************************
+    file SourceFile
+    b
+!e100_instance_var_loop
+    //print:"!e100_instance_var_loop" wait
+    if (eof) goto !e100_done
+    fs:/ extends Action/-/ extends DispatchAction/
+    if (eof) goto !e100_done
+    scan:/@line/:/ActionForm/ if (found) f goto !e100_instance_var_loop
+    scan:/@line/:/class/ if (!found) f goto !e100_instance_var_loop
+    //print:"@line@" wait
+    scan:/@line/:/ extends /
+    scanr:/@left/:word
+    ClassName = right
+    //print:"ClassName[@ClassName@]" wait
+    fs:/{/
+    if (eof) goto !e100_done
+!e100_instance_var_search
+    f;1
+    if (eof) goto !e100_done
+    scan:/@line/:/(/ if (found) f;1 goto !e100_instance_var_loop
+    scan:/@line/:/;/ if (!found) goto !e100_instance_var_search
+    scan:/@line/:word
+    if (left = null) goto !e100_instance_var_search
+    scan:/@line/:/static / 
+    if (found) f;1 goto !e100_instance_var_search
+
+    scan:/@line/:"/*" if (found) fs:"*/" goto !e100_instance_var_search
+
+
+    ReportLine = null
+    size ReportLine,70
+    ErrorLine = "Action Class Instance Variables : @ClassName@"
+    ReportLine = "@ReportLine@ ***Misc Error : Instance Variables in @ClassName@"
+    call !z100_report_line_print
+    Errors ++
+    MiscErrors ++
+    call !z200_detail_report
+    file SourceFile
+    f;1
+    goto !e100_instance_var_loop
+    
+!e100_done
+    //print:"e100_done" wait
+    file SourceFile
+    return
+
+//************************************************************************
+//* Scan Log Files (Informatica)
+//************************************************************************
+!e150_scan_log
+    //print:"e150_scan_log"
+    scan:'@Filename@':'\informatica\'
+    if (!found) return
+    //print:"Informatica File"
+    call !e270_reduce_line_size
+    b
+    Informatica = 'y'
+    call !g100_capture_sql
+    !f700_check_sql
+    return
+
+//************************************************************************
+//* Scan Java Files
+//************************************************************************
+!e200_scan_jsp
+    call !g100_capture_sql
+    file SourceFile 
+    b
+    TotalJspFiles = TotalJspFiles + 1
+    call !e300_common_checks
+    call !f300_check_sql
+    call !f400_check_jsp_code_size
+    call !f700_check_sql
+    return
+
+//************************************************************************
+//* Scan HTML Files
+//************************************************************************
+!e210_scan_html
+    TotalHTMLFiles ++
+    call !e300_common_checks
+    call !f300_check_sql
+    call !f400_check_jsp_code_size
+
+    //************************************************************************
+    //* Check for Secure/non-Secure Error Code for menu overlays
+    //************************************************************************
+!e100_menu_overlay
+    file SourceFile
+    b
+    fs:/src="about:blank"/-/src='about:blank'/
+    if (!eof) goto !e210_menu_overlay_error
+    b
+    fs:/src="#"/-/src='#'/
+    if (!eof) goto !e210_menu_overlay_error
+    goto !e210_return
+
+!e210_menu_overlay_error
+    ReportLine = null
+    size ReportLine,70
+
+    ErrorLine = "Improper Menu Overlay Code (src="about:blank") may cause secure/non-secure error"
+    ReportLine = "@ReportLine@ ***Misc Error : @ErrorLine@"
+    call !z100_report_line_print
+    Errors ++
+    MiscErrors ++
+    call !z200_detail_report
+!e210_return
+    return
+
+//************************************************************************
+//* Scan JS Files
+//************************************************************************
+!e220_scan_js
+    TotalJSFiles ++
+    call !e300_common_checks
+    call !f300_check_sql
+    return
+
+//************************************************************************
+//* Scan CPP Files
+//************************************************************************
+!e230_scan_cpp
+    call !g100_capture_sql
+    file SourceFile b
+    TotalCPPFiles ++
+    call !e300_common_checks
+    call !f300_check_sql
+    call !f700_check_sql
+    return
+
+//************************************************************************
+//* Scan H Files
+//************************************************************************
+!e240_scan_h
+    TotalHFiles ++
+    call !e300_common_checks
+    call !f300_check_sql
+    return
+
+//************************************************************************
+//* Scan RC Files
+//************************************************************************
+!e250_scan_rc
+    TotalRCFiles ++
+    call !e300_common_checks
+    call !f300_check_sql
+    return
+
+//************************************************************************
+//* Scan SQL (stored procedures) Files
+//************************************************************************
+!e260_scan_sql
+    b
+    subs |
+    rs:/@/:/-/;* //wait
+    subs @
+    b
+
+    call !e265_find_update
+
+    call !e270_reduce_line_size
+
+    case off 
+    clear 
+!e260_loop
+    call !e260_procedure
+    scan:/@line/:/create or replace /
+    if (found) goto !e260_found    
+    scan:/@line/:/insert /
+    if (found) goto !e260_found
+    scan:/@line/:/update /
+    if (found) goto !e260_found
+    scan:/@line/:/delete /
+    if (found) goto !e260_found
+    scan:/@line/:/from /
+    if (found) goto !e260_found
+    scan:/@line/:/select /
+    if (found) goto !e260_found
+    goto !e260_next
+!e260_found
+    copy
+!e260_next
+    f
+    if (!eof) goto !e260_loop        
+    file SQLFile 
+    i:/**************************************/ 
+    i:/@Filename@/ 
+    paste 
+    case on 
+    file SourceFile b
+    if (FileType = "Tibco")
++      TotalTibcoFiles ++
++   else
++      TotalSQLFiles ++
++   endif
+    call !e300_common_checks
+    call !f700_check_sql
+    return
+
+!e260_procedure
+    scan:/@line/:/procedure/ if (found) goto !e260_procedure_found
+    scan:/@line/:/PROCEDURE/ if (found) goto !e260_procedure_found
+    return
+
+!e260_procedure_found
+    scan:/@right/:word
+    ProcedureName = left
+
+    split:/@ProcedureName/;1
+    if (left = "'") return
+    if (ProcedureName = 'are') return
+    if (ProcedureName = '_error') return
+    scan:/@ProcedureName@/:'*/' if (found) return
+
+    scan:/@ProcedureName@/:/;/ if (found) ProcedureName = left
+    scan:/@ProcedureName@/:/(/ if (found) ProcedureName = left
+    scan:/@ProcedureName@/:/,/ if (found) ProcedureName = left
+    scan:/@ProcedureName@/:/'/ if (found) ProcedureName = left
+
+    if (ProcedureName = null) return
+
+    scan:/@ProcedureName@/:/_/ if (found) goto !e260_procedure_ok
+
+    ProcLen = len(ProcedureName)
+    if (ProcLen < 10) return
+    
+!e260_procedure_ok
+    scanr:/@Filename@/:/\/
+    Newline = "@ProcedureName@,@right@/
+    file StoredProcedureNames
+    i:/@Newline/
+    file SourceFile
+    return
+    
+
+//************************************************************************
+//* Consolidate lines if single line 'Update'
+//************************************************************************
+!e265_find_update
+    b
+!e265_loop
+    fs:/Update/
+    if (eof) b return
+    UpdateLine = line
+    crush UpdateLine
+    if (UpdateLine != 'Update') goto !e265_next
+    f
+    if (eof) return
+    UpdateLine = "Update @line@"
+    r:/@UpdateLine@/
+
+!e265_next
+    f
+    if (eof) return
+    goto !e265_loop
+
+//************************************************************************
+//* Reduce the size of the SQL lines (Informatica Log Files are Large)
+//************************************************************************
+!e270_reduce_line_size
+    b
+    print:"Reducing Line Size..."
+!e270_reduce_line_size_loop
+    if (eof) goto !e270_done
+    SQLSize = len(line)
+    if (SQLSize < 900) goto !e270_next
+    //print:"fgb e270 [@line@]" wait
+    split:/@line/;300
+    d
+    b;1
+!e270_reduce_loop
+    SQLNewLine = left
+    //print:"fgb left[@left@]" wait
+    //print:"fgb right[@right@]" wait
+    scan:/@right/:/,/
+    if (!found) print:"Unable to reduce SQL Line Size > 900" goto !e270_next
+    SQLNewLine = '@SQLNewLine@@left@,'
+    i:/@SQLNewLine@/
+    //print:"fgb split [@line@]" wait
+    SQLNewLine = right
+    SQLSize = len(SQLNewLine)
+    if (SQLSize < 900) i:/@SQLNewLine/ goto !e270_next
+    split:/@SQLNewLine/;300
+    goto !e270_reduce_loop
+
+!e270_next
+    f
+    goto !e270_reduce_line_size_loop
+!e270_done
+    //print:"fgb e270_done" wait
+    //write SourceFile c:\cdcheck\src.txt
+    //print:"SplitSource at c:\cdcheck\src.txt" wait
+    b
+    return
+
+//************************************************************************
+//* Tibco Data File
+//************************************************************************
+!e280_scan_tibco
+    call !e260_scan_sql
+    file SourceFile
+    b
+    fs:/"_project"/
+    if (eof) TibcoProject = "Tibco" else fs:/value="/ scan:/@line/:/value="/ scan:/@right/:/"/ TibcoProject = left
+    b
+!e280_global_loop
+    fs:/GLOBAL_SUBSTITUTION/
+    if (eof) goto !e280_global_done
+    scan:/@line/:/"/
+    scan:/@right/:/__/
+    scan:/@right/:/__/
+    scan:/@right/:/"/
+    TibcoName = left
+    scan:/@right/:/"/
+    scan:/@right/:/"/
+    TibcoValue = left
+    Newline = "      TibcoData|@TibcoProject@|GLOBAL:@TibcoName@|@TibcoValue@"
+    file CodeSearch
+    i:/@Newline/
+    file SourceFile
+    f;1
+    if (!eof) goto !e280_global_loop
+!e280_global_done
+    b
+!e280_messages_loop
+    fs:/<assoc name="/-/"subject"/
+    if (eof) goto !e280_messages_done
+    scan:/@line/:/"subject"/ if (found) goto !e280_subject
+    scan:/@line/:/<assoc name="activity"/
+    if (found) goto !e280_activity
+    scan:/@line/:/<assoc name="starter"/
+    if (found) goto !e280_activity
+    f
+    if (eof) goto !e280_messages_done
+    goto !e280_messages_loop
+!e280_activity
+    fs:/value="/
+    scan:/@line/:/value="/ scan:/@right/:/"/
+    TibcoName = left
+    Newline = "      TibcoData|@TibcoProject@|@TibcoName@|"
+    file CodeSearch
+    i:/@Newline/
+    file SourceFile
+    f;1
+    if (!eof) goto !e280_messages_loop
+!e280_subject
+    scan:/@line/:/value="/
+    scan:/@right/:/"/
+    TibcoValue = left
+    if (TibcoValue != "") Newline = "      TibcoData|@TibcoProject@|@TibcoName@|Subject:@TibcoValue@"
+    file CodeSearch
+    i:/@Newline/
+    file SourceFile
+    f;1
+    if (!eof) goto !e280_messages_loop
+!e280_messages_done
+    return
+
+//************************************************************************
+//* Perform all common checks (Java & JSP)
+//************************************************************************
+!e300_common_checks
+    //***************************************
+    //* Fix the line begining with @ problem
+    //***************************************
+    b
+    subs |
+    rs:/@/:/-/;* //wait
+    subs @
+    b
+    call !f100_count_lines
+    call !f200_count_comments
+    call !f500_check_hardcoded_url
+    call !f600_check_file_usage
+
+    //************************************************************************
+    //* Check log4j.xml for additivity="false" (Standard)
+    //************************************************************************
+    scan:/@Filename@/:/log4j.xml/
+    if (!found) goto !e300_sun_imports
+    file SourceFile
+    b
+    fs:/additivity/-/ADDITIVITY/
+    if (eof) goto !e300_log4j_error
+    scan:/@line/:/additivity/ if (!found) scan:/@line/:/ADDITIVITY/
+    scan:/@right/:/false/ if (found) goto !e300_sun_imports
+
+!e300_log4j_error
+    ReportLine = null
+    size ReportLine,70
+    ReportLine = "@ReportLine@ ***Misc Error : additivity must be set to false"
+    call !z100_report_line_print
+    Errors ++
+    MiscErrors ++
+    call !z200_detail_report
+    
+
+!e300_sun_imports
+    //************************************************************************
+    //* Check for sun imports
+    //************************************************************************
+    file SourceFile
+    b
+    fs:/SM_LOCAL/
+    if (eof) goto !e300_return
+    ReportLine = null
+    size ReportLine,70
+
+    ErrorLine = "SM_LOCAL used : @line@"
+    ReportLine = "@ReportLine@ ***Misc Error SM_Local Used: @line@"
+    call !z100_report_line_print
+    Errors ++
+    MiscErrors ++
+    call !z200_detail_report
+
+!e300_return
+    file SourceFile
+    return
+
+//************************************************************************
+//* Count Lines
+//************************************************************************
+!f100_count_lines
+    LineLengthWarningCount = 0
+    LineLengthErrorCount = 0
+    b
+    f;*
+    TotalLines = pcount + 1
+    b
+    TotalCodeLines = 0
+    if (FileType = 'sql') print:"     Counting Lines"
+    do
+        if (SpecialSearchStringTotal > 0) call !f150_special_strings
+        Newline = line
+        pack Newline
+        if (Newline != null) 
++          TotalCodeLines = TotalCodeLines + 1 
++          GrandTotalCodeLines = GrandTotalCodeLines + 1
++       endif
+        if (lline > 250) 
++          LineLengthWarningCount ++ 
++          LineLengthWarnings ++ 
++          Warnings ++
++          //call !f100_print
++          ErrorLine = 'Line Length Warning on line @lineno@' call !z200_detail_report
++          file SourceFile
++       else 
++          if (lline > 500) 
++             LineLengthErrorCount ++ 
++             LineLengthErrors ++
++             Errors ++
++             ErrorLine = 'Line Length Error on line @lineno@' call !z200_detail_report
++             file SourceFile
++       endif
+        f
+    until (eof)
+    b
+
+    if (FileType = 'sql') print:"     Counting Source Lines"
+    //**********************************
+    //* Count SRC Lines
+    //**********************************
+    TotalSRCLinesinFile = 0
+    do
+        fs:/src=/-/import url(/
+        if (!eof)
++           TotalSRCLines ++
++           TotalSRCLinesinFile ++
++           f
+    until (eof)
+    b
+
+    //**********************************
+    //* Count Functions
+    //**********************************
+    TotalFunctionsinFile = 0
+    FunctionTestDone = 'n'
+    if (FileType = 'sql') print:"     Counting Functions"
+    do
+        fs:/function /
+        if (!eof)
++           TotalFunctions ++
++           TotalFunctionsinFile ++
++           call !f110_function_size
+    until (eof) or (FunctionTestDone)
+    b
+
+
+    //**********************************
+    //* Locate Java/CPP Class'/Functions
+    //**********************************
+    //print:"Checking for Class' [@FileType@]" wait
+    if (FileType = 'Java') or (FileType = 'cpp') else goto !f100_public_private_done 
+    do
+        fs:/public /-/private /
+        if (!eof)
++           call !f101_public_private
++       endif
+        f;1
+    until (eof)
+
+!f100_public_private_done
+    b
+    return
+
+//**********************************
+//* Locate Java/CPP Class'/Functions
+//**********************************
+!f101_public_private
+    scan:/@line/:/(/
+    if (found) goto !f101_function
+    scan:/@line/:/{/
+    if (!found)
++      f
++      if (!eof)
++         scan:/@line/:/{/
++         b;1
++         if (!found)
++            return
++   endif
+    if (eof) return
+    scan:/@line/:/class/
+    if (!found) return
+    scan:/@right/:word
+    FunctionName = left
+    goto !f101_function_found
+    
+!f101_function
+    scanr:/@left/:word
+    FunctionName = right
+!f101_function_found
+    //**************************************
+    //* Write the FunctionList data
+    //**************************************
+    if (LastFunctionFile != Filename)
++      FunctionOutputLine = Filename
++      file FunctionList
++      i:/@FunctionOutputLine@/
++      LastFunctionFile = Filename
++      p
++   endif
+    file FunctionList
+    FunctionOutputLine = '    @FunctionName@'
+    i:/@FunctionOutputLine@/
+    file SourceFile
+    return
+
+
+//!f100_print
+//    b copy;* open tempfile null paste write tempfile tempfile close tempfile file SourceFile
+//    print:"============================================================================================"
+//    b
+//    do
+//        p print:"@lline@" wait f
+//    until (eof)
+//    print:"============================================================================================"
+//    return
+
+//************************************************************************
+//* Function Size
+//************************************************************************
+!f110_function_size
+    FunctionLines = 0
+    FunctionCount = 0
+    scan:/@line/:/function/
+    scan:/@right/:word
+    FunctionName = left
+    scan:/@FunctionName@/:/(/ 
+    if (found) 
++      FunctionName = left
++   else
++      f
++      TotalFunctions --
++      TotalFunctionsinFile --
++      return
++   endif
+    FunctionStartLine = lineno
+    FunctionTestDone = 'n'
+    fs:/{/
+    do
+        scan:/@line/:/{/
+        if (found) FunctionCount ++
+        scan:/@line/:/}/
+        if (found) FunctionCount --
+        FunctionLines ++
+        //print:"@FunctionCount@ [@FunctionName@] @line@" wait
+        f
+    until (eof) or (FunctionCount < 1)
+    if (eof) FunctionTestDone = 'y'
+    //**************************************
+    //* Write the FunctionList data
+    //**************************************
+    if (LastFunctionFile != Filename)
++      FunctionOutputLine = Filename
++      file FunctionList
++      i:/@FunctionOutputLine@/
++      LastFunctionFile = Filename
++   endif
+    FunctionOutputLine = '    @FunctionName@'
+    size FunctionOutputLine,65
+    FunctionOutputLine = '@FunctionOutputLine@ @FunctionStartLine@'
+    size FunctionOutputLine,74
+    FunctionOutputLine = '@FunctionOutputLine@ @FunctionLines@'
+
+//    FunctionOutputLine = 'File[@Filename@] Function[@FunctionName@] Line[@FunctionStartLine@] Size[@FunctionLines@]'
+    file FunctionList
+    i:/@FunctionOutputLine@/
+    file SourceFile
+
+    if (FunctionLines > 200)
++      FunctionSizeErrorFlag = 'y'
++      Errors ++
++      FunctionSizeErrors ++
++      ErrorLine = 'Function @FunctionName@ Size @FunctionLines@ Error on line @FunctionStartLine@' call !z200_detail_report
++      file SourceFile
++   else
++      if (FunctionLines > 100)
++         FunctionSizeWarningFlag = 'y'
++         Warnings ++
++         FunctionSizeWarnings ++
++         ErrorLine = 'Function @FunctionName@ Size @FunctionLines@ warning on line @FunctionStartLine@' call !z200_detail_report
++         file SourceFile
++   endif
+    return
+
+//************************************************************************
+//* Search for Special Strings
+//************************************************************************
+!f150_special_strings
+    SpecialSearchStringIndex = 0
+    do
+        SpecialSearchStringIndex ++
+        SpecialSearchStringPtr = "@SpecialSearchString" + SpecialSearchStringIndex
+        SpecialSearchString = "@SpecialSearchStringPtr"
+//        print:"A String @SpecialSearchStringIndex@ = @SpecialSearchString@"
+
+        SpecialSearchPatternPtr = "@SpecialSearchPattern" + SpecialSearchStringIndex
+        SpecialSearchPattern = "@SpecialSearchPatternPtr@"
+//        dump * wait
+
+//        print:"Pattern = @SpecialSearchPattern@ "
+
+//        print:"String @SpecialSearchString@ @SpecialSearchPattern@" dump * wait
+
+        if (SpecialSearchPattern) pattern on
+        scan:/@line/:/@SpecialSearchString@/
+        pattern off
+        if (found)
++          SpecialSearchStringFound ++
++          Newline = "    Found @SpecialSearchString@ on line:@lineno@ @line@"
++          file CodeSearch
++          i:/@Newline@/ 
++          file SourceFile
++          print:"Found @SpecialSearchString@ line:@lineno@ @line@"
++       endif
+    until (SpecialSearchStringIndex = SpecialSearchStringTotal)
+    return
+
+//************************************************************************
+//* Count Comments
+//************************************************************************
+!f200_count_comments
+    b
+    TotalComments = 0
+    TotalDisplays = 0
+    JavaHTMLWarningFlag = 'n'
+    JSPCommentErrorCount = 0
+
+    if (FileType = 'sql') call !f201_sql_comments
+    if (FileType = 'JSP') or (FileType = 'html') goto !f200_loop
+    fs:/<HTML>/-/<html>/
+    if (eof) b goto !f200_loop
+    JavaHTMLWarnings ++
+    Warnings ++
+    JavaHTMLWarningFlag = 'y'
+!f200_loop
+    //**************************
+    //* Look for <script lines
+    //**************************    
+    scan:/@line/:/<script/
+    if (found) JavaScriptOn = 'Y' //print:"JavaScriptOn[@JavaScriptOn@][@line@]" wait
+    scan:'@line':'</script'
+    if (found) JavaScriptOn = 'N' //print:"JavaScriptOn[@JavaScriptOn@][@line@]" wait
+
+    //**************************
+    //* Look for display lines
+    //**************************
+    scan:/@line/:/System.out.println/
+    if (found)
++      scan:'@left':'//'
++      if (!found)
++         TotalDisplays = TotalDisplays + 1
++   endif
+
+    //**************************
+    //* Look for comments
+    //**************************
+    if (FileType = "h") split:/@line/;1 if (left = "#") TotalComments ++ goto !f200_next
+    scan:'@line':'//'
+    if (found) 
++      scan:/@line/:"://"
++      if (!found)
++         TotalComments = TotalComments + 1
++      goto !f200_next
++   endif
+
+    //**************************
+    //* Look for /* display lines
+    //**************************
+    scan:/@line/:'/*'
+    if (found) 
++      call !f210_special_comment 
++      goto !f200_next
++   endif
+
+    //**************************
+    //* Look for <!-- display lines
+    //**************************
+    scan:/@line/:'<!--'
+    if (found) and (FileType = 'h') TotalComments ++
+    if (FileType = 'h') goto !f200_next //fgb 12/03/2004
+    if (found) and (!JavaScriptOn)
++      scan:/@line/:/'<!--/
++      if (!found) and (!JavaScriptOn) //print:"!JavaScriptOn <!-- Comment Error [@line@]" wait
++         ErrorLine = "Line @lineno@ <!--@right[1-30]@" call !z200_detail_report file SourceFile
++         call !f220_special_comment 
++         JSPCommentErrors ++
++         Errors = Errors + 1
++         goto !f200_next
++   endif
+
+!f200_next
+    f
+    if (!eof) goto !f200_loop
+    if (TotalCodeLines = 0) CommentPercent = 0 goto !f200_done
+    CommentCompute = TotalComments / TotalCodeLines
+    CommentCompute = CommentCompute * 100
+    CommentPercent = CommentCompute
+!f200_done
+    b
+    if (FileType = 'Tibco') goto !f200_html
+    ReportLine = "   Lines:@TotalLines@"
+    size ReportLine,15
+    ReportLine = "@ReportLine@Code:@TotalCodeLines@"
+    size ReportLine,30
+    ReportLine = "@ReportLine@Comments:@TotalComments@"
+    size ReportLine,45
+    ReportLine = "@ReportLine@Comment%:@CommentPercent@"
+    size ReportLine,70
+    if (FileType = "html") or (FileType = 'js')
+    if (FileType = "h") if (CommentPercent > 0.00) goto !f200_html
+    if (CommentPercent < 2) 
++      ReportLine = "@ReportLine@ ***Error   (Comments @CommentPercent@%)" Errors = Errors + 1 CommentErrors ++
++   else
++      if (CommentPercent < 5) 
++         ReportLine = "@ReportLine@ ***Warning (Comments @CommentPercent@%)" Warnings = Warnings + 1 CommentWarnings ++
++   endif
+!f200_html
+    call !z100_report_line_print
+    //*********************************
+    //* Display Lines
+    //*********************************
+    if (TotalDisplays > 0)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "@ReportLine@ ***Error (system.Out.Println's @TotalDisplays@)"
++      Errors = Errors + 1 DisplayWarnings ++
++      call !z100_report_line_print
++   endif
+
+    //*********************************
+    //* Code Lines
+    //*********************************
+    if (TotalCodeLines > 3500)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "@ReportLine@ ***Error   (Code Lines)"
++      call !z100_report_line_print
++      Errors = Errors + 1
++      CodeLineErrors ++
++      goto !f200_check_length
++   endif       
+    if (TotalCodeLines > 2500)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "@ReportLine@ ***Warning (Code Lines)"
++      Warnings = Warnings + 1
++      CodeLineWarnings ++
++      call !z100_report_line_print
++   endif       
+
+!f200_check_length
+    //*********************************
+    //* Code Line Length
+    //*********************************
+    if (LineLengthErrorCount > 0)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "@ReportLine@ ***Error   (Length @LineLengthErrorCount@ Lines)"
++      call !z100_report_line_print
++      goto !f200_check_java_html
++   endif       
+    if (LineLengthWarningCount > 0)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "@ReportLine@ ***Warning (Length @LineLengthWarningCount@ Lines)"
++      call !z100_report_line_print
++   endif       
+
+!f200_check_java_html
+    //*********************************
+    //* Presentation in Java rather than JSP
+    //*********************************
+    if (JavaHTMLWarningFlag)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "@ReportLine@ ***Warning Presentation in Java (S/b JSP)"
++      call !z100_report_line_print
++   endif       
+
+    //*********************************
+    //* <!-- --> Comment Line Error
+    //*********************************
+    if (JSPCommentErrorCount)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "@ReportLine@ ***Error   (<!-- Cmt @JSPCommentErrorCount@ Lines)"
++      call !z100_report_line_print
++   endif       
+
+    //*********************************
+    //* SRC/URL Line Error
+    //*********************************
+    if (TotalSRCLinesinFile > 20)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "@ReportLine@ ***Error   (SRC/URL on @TotalSRCLinesinFile@ Lines)"
++      Errors ++
++      SRCLineErrors ++
++      call !z100_report_line_print
++   else
++      if (TotalSRCLinesinFile > 15)
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Warning (SRC/URL on @TotalSRCLinesinFile@ Lines)"
++          call !z100_report_line_print
++          SRCLineWarnings ++
++          Warnings ++
++   endif
+
+    //*********************************
+    //* Function Error
+    //*********************************
+    if (TotalFunctionsinFile > 40)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "@ReportLine@ ***Error   (@TotalFunctionsinFile@ JS Functions)"
++      Errors ++
++      FunctionErrors ++
++      call !z100_report_line_print
++   else
++      if (TotalFunctionsinFile > 20)
++          ReportLine = null
++          size ReportLine,70
++          ReportLine = "@ReportLine@ ***Warning (@TotalFunctionsinFile@ JS Functions)"
++          call !z100_report_line_print
++          FunctionWarnings ++
++          Warnings ++
++   endif
+
+
+    //*********************************
+    //* Function Size Error
+    //*********************************
+    if (FunctionSizeErrorFlag)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "@ReportLine@ ***Error   (Function Size Too Large)"
++      call !z100_report_line_print
++   else
++      if (FunctionSizeWarningFlag)
++         ReportLine = null
++         size ReportLine,70
++         ReportLine = "@ReportLine@ ***Warning (Function Size Too Large)"
++         call !z100_report_line_print
++   endif
+
+    file SourceFile
+    return
+
+//************************************************************************
+//* SQL Comments
+//************************************************************************
+!f201_sql_comments
+    b
+!f201_loop
+    fs:/--/
+    if (eof) b return
+    TotalComments ++
+    f
+    if (eof) b return
+    goto !f201_loop
+    
+
+//************************************************************************
+//* Handle /* comments
+//************************************************************************
+!f210_special_comment
+    do
+        TotalComments = TotalComments + 1
+        scan:/@line/:'*/'
+        if (!found) f
+    until (eof) or (found)
+    return
+
+//************************************************************************
+//* Handle <!-- comments
+//************************************************************************
+!f220_special_comment
+    do
+        TotalComments = TotalComments + 1
+        JSPCommentErrorCount ++
+        scan:/@line/:'-->'
+        if (!found) f
+    until (eof) or (found)
+    return
+
+//************************************************************************
+//* Check JSP for SQL
+//************************************************************************
+!f300_check_sql
+    b
+    fs:/executeQuery/
+    if (!eof)
++      ReportLine = null
++      size ReportLine,70
++      ReportLine = "***Error   Imbeded SQL Line @lineno@"
++      call !z100_report_line_print
++      Errors = Errors + 1
++   endif
+    file SourceFile
+    return
+
+//************************************************************************
+//* Check JSP too much business code
+//************************************************************************
+!f400_check_jsp_code_size
+    JSPJavaCode = 0
+    b
+!f400_loop1
+    fs:/<%/
+    if (eof) goto !f400_done
+!f400_loop2
+//    print:"JSPJavaCode[@line@]" wait
+    JSPJavaCode = JSPJavaCode + 1
+    scan:/@line/:/%>/
+//    print:"Looking for %> [@line@][@found@]" wait
+    if (found) goto !f400_found_end
+    f
+    if (eof) goto !f400_done
+!f400_found_end
+    f
+    goto !f400_loop1
+!f400_done
+    ReportLine = null
+    size ReportLine,15
+    ReportLine = "@ReportLine@JSP Java:@JSPJavaCode@"
+    size ReportLine,70
+
+    if (TotalCodeLines = 0) CommentPercent = 0 goto !f400_check
+    CommentCompute = JSPJavaCode / TotalCodeLines
+    CommentCompute = CommentCompute * 100
+    JSPJavaPercent = CommentCompute
+
+!f400_check
+    if (JSPJavaPercent > 90)
++      ReportLine = "@ReportLine@ ***Error   (JSP Java @JSPJavaPercent@%)"
++      Errors = Errors + 1 JSPJavaPercentErrors ++
++      goto !f400_check_done
++   endif
+    if (JSPJavaPercent > 80)
++      ReportLine = "@ReportLine@ ***Warning (JSP Java @JSPJavaPercent@%)"
++      Warnings = Warnings + 1 JSPJavaPercentWarnings ++
++      goto !f400_check_done
++   endif
+    if (JSPJavaCode > 3000)
++      ReportLine = "@ReportLine@ ***Error   (JSP Java Lines)"
++      Errors = Errors + 1 JSPJavaCodeErrors ++
++      goto !f400_check_done
++   endif
+    if (JSPJavaCode > 2000)
++      ReportLine = "@ReportLine@ ***Warning (JSP Java Lines)"
++      Warnings = Warnings + 1 JSPJavaCodeWarnings ++
++      goto !f400_check_done
++   endif
+!f400_check_done
+    call !z100_report_line_print
+    file SourceFile
+    return
+
+//************************************************************************
+//* Check for any URL hardcoding
+//************************************************************************
+!f500_check_hardcoded_url
+    ReportLine = null
+    size ReportLine,70
+    b
+    fs:/www./
+    if (eof) return
+    scan:'@line':'//' if (found) scan:'@right':'www.' if (found) goto !f500_done
+    scan:'@line':'/*' if (found) scan:'@right':'www.' if (found) goto !f500_done
+    ErrorLine = "Hardcoded URL : @line@"
+    scan:/@line/:/www./
+    split:/@right/;20
+    ReportLine = "@ReportLine@ ***Warning URL:www.@left@"
+    call !z100_report_line_print
+    Warnings ++
+    HardcodedUrlWarnings ++
+    call !z200_detail_report
+!f500_done
+    file SourceFile
+    return
+
+//************************************************************************
+//* Check for any URL or IP hardcoding
+//************************************************************************
+!f600_check_file_usage
+    ReportLine = null
+    size ReportLine,70
+    b
+    fs:/FileInputStream/
+    if (eof) goto !f600_check_ip
+    scan:'@line':'//' if (found) scan:'@right':'FileInputStream' if (found) goto !f600_done
+    scan:'@line':'/*' if (found) scan:'@right':'FileInputStream' if (found) goto !f600_done
+    ErrorLine = "FileInputStream : @line@"
+    ReportLine = null
+    size ReportLine,70
+    ReportLine = "@ReportLine@ ***Warning FileInputStream"
+    Warnings = Warnings + 1
+    FileWarnings ++
+    call !z100_report_line_print
+    call !z200_detail_report
+    file SourceFile
+
+!f600_check_ip
+    ReportLine = null
+    size ReportLine,70
+    file SourceFile
+!f600_check_ip_loop
+    //print:"!f600_check_ip_loop" b p;* wait
+    b
+    fs:/3.55/-/3.61/
+    if (eof) pattern on b fs:/#.##/-/##.##/ pattern off
+    if (eof) pattern on b fs:/###.##/ pattern off
+    if (eof) goto !f600_done
+    //print:"Checking for IP [@line@]" wait
+    scan:'@line':'//' if (found) scan:'@right':'3.55' if (found) HardcodedIPWarnings ++ Warnings ++ goto !f600_ip_report_warnings
+    scan:'@line':'//' if (found) scan:'@right':'3.61' if (found) HardcodedIPWarnings ++ Warnings ++ goto !f600_ip_report_warnings
+    scan:'@line':'/*' if (found) scan:'@right':'3.55' if (found) HardcodedIPWarnings ++ Warnings ++ goto !f600_ip_report_warnings
+    scan:'@line':'/*' if (found) scan:'@right':'3.61' if (found) HardcodedIPWarnings ++ Warnings ++ goto !f600_ip_report_warnings
+    IPDotCount = 1
+
+    scan:/@line/:/3.55/
+    if (!found) scan:/@line/:/3.61/
+    if (!found) pattern on scan:/@line/:/#.##/ pattern off
+    if (!found) pattern on scan:/@line/:/##.##/ pattern off
+    if (!found) pattern on scan:/@line/:/###.##/ pattern off
+    IPUsed = null
+    left = mid
+
+!f600_ip_loop
+    IPUsed = "@IPUsed@@left@"
+    //print:/left[@left@] right[@right@] IPUsed[@IPUsed@]/ wait
+    if (@right = null) goto !f600_ip_loop_done
+    split:/@right/;1
+    if (left = '.') IPDotCount ++ goto !f600_ip_loop
+    if (left = '0') or (left = '1') or (left = '2') or (left = '3') or (left = '4') or (left = '5') or (left = '6') or (left = '7') or (left = '8') or (left = '9') goto !f600_ip_loop
+
+!f600_ip_loop_done
+    //print:"!f600_ip_loop_done IPDotCount[@IPDotCount@]" wait
+    if (IPDotCount != 3) goto !f600_next_ip_check
+    scan:/@line/:"//" if (found) goto !f600_next_ip_check
+//    scan:/@line/:/./ scan:/@right/:/./ scan:/@right/:/./ if (!found) goto !f600_done
+    Newline = "Line @lineno@"
+//    scan:/@line/:/3.55/ if (found) split:/@right/;10 Newline = '3.55@left@' goto !f600_ip_report
+//    scan:/@line/:/3.61/ if (found) split:/@right/;10 Newline = '3.61@left@' goto !f600_ip_report
+//    goto !f600_done
+!f600_ip_report
+    ReportLine = null
+    size ReportLine,70
+    Newline = "Line @lineno@"
+    ErrorLine = "Hardcoded IP : @line@"
+    ReportLine = "@ReportLine@ ***Error   IP @IPUsed@:(@Newline@)"
+    Errors = Errors + 1
+    HardcodedIPErrors ++
+    call !z100_report_line_print
+    call !z200_detail_report
+    goto !f600_next_ip_check
+!f600_ip_report_warnings
+    ReportLine = null
+    size ReportLine,70
+    Newline = "Line @lineno@"
+    ErrorLine = "Hardcoded IP : @line@"
+    ReportLine = "@ReportLine@ ***Warning IP:(@Newline@)"
+    call !z100_report_line_print
+    call !z200_detail_report
+!f600_next_ip_check
+    file SourceFile
+    r:/FGB Replaced IP Line/
+    //p wait
+    goto !f600_check_ip_loop
+
+!f600_done
+    file SourceFile
+    return
+
+//************************************************************************
+//* Check SQL in Files
+//************************************************************************
+!f700_check_sql
+    b
+!f700_substr_loop
+    fs:/ WHERE SUBSTR/
+    if (eof) goto !f700_check_trunc
+    SQLWarnings ++
+    Warnings ++
+    ErrorLine = "WHERE SUBSTR used : @line@"
+    ReportLine = null
+    size ReportLine,70
+    ReportLine = "@ReportLine@ ***Warning SQL WHERE SUBSTR:(@lineno@)"
+    call !z100_report_line_print
+    call !z200_detail_report
+    file SourceFile
+    f
+    if (!eof) goto !f700_substr_loop
+
+!f700_check_trunc
+    b
+!f700_trunc_loop
+    fs:/ WHERE TRUNC/
+    if (eof) goto !f700_check_null
+    SQLWarnings ++
+    Warnings ++
+    ErrorLine = "WHERE TRUNC used : @line@"
+    ReportLine = null
+    size ReportLine,70
+    ReportLine = "@ReportLine@ ***Warning SQL WHERE TRUNC:(@lineno@)"
+    call !z100_report_line_print
+    call !z200_detail_report
+    file SourceFile
+    f
+    if (!eof) goto !f700_trunc_loop
+
+!f700_check_null
+    b
+!f700_null_loop
+    fs:/ IS NOT NULL/-/ IS NULL/
+    if (eof) goto !f700_check_distinct
+    SQLWarnings ++
+    Warnings ++
+    ErrorLine = "WHERE NULL used : @line@"
+    ReportLine = null
+    size ReportLine,70
+    ReportLine = "@ReportLine@ ***Warning SQL WHERE NULL:(@lineno@)"
+    call !z100_report_line_print
+    call !z200_detail_report
+    file SourceFile
+    f
+    if (!eof) goto !f700_null_loop
+
+!f700_check_distinct
+    b
+!f700_distinct_loop
+    fs:/ DISTINCT /-/ NOT IN/
+    if (eof) goto !f700_check_having
+    SQLWarnings ++
+    Warnings ++
+    ErrorLine = "DISTINCT or NOT IN used : @line@"
+    ReportLine = null
+    size ReportLine,70
+    ReportLine = "@ReportLine@ ***Warning SQL DISTINCT or NOT IN:(@lineno@)"
+    call !z100_report_line_print
+    call !z200_detail_report
+    file SourceFile
+    f
+    if (!eof) goto !f700_distinct_loop
+
+!f700_check_having
+    b
+!f700_having_loop
+    fs:/ HAVING /-/ LIKE /
+    if (eof) goto !f700_check_exists
+    SQLWarnings ++
+    Warnings ++
+    ErrorLine = "HAVING or LIKE Used : @line@"
+    ReportLine = "@ReportLine@ ***Warning SQL HAVING or LIKE:(@lineno@)"
+    call !z100_report_line_print
+    call !z200_detail_report
+    file SourceFile
+    f
+    if (!eof) goto !f700_having_loop
+
+!f700_check_exists
+    b
+!f700_exists_loop
+    fs:/ EXISTS /
+    if (eof) goto !f700_check_trim
+    SQLWarnings ++
+    Warnings ++
+    ErrorLine = "EXISTS Used : @line@"
+    ReportLine = null
+    size ReportLine,70
+    ReportLine = "@ReportLine@ ***Warning SQL EXISTS:(@lineno@)"
+    call !z100_report_line_print
+    call !z200_detail_report
+    file SourceFile
+    f
+    if (!eof) goto !f700_exists_loop
+
+!f700_check_trim
+    b
+    if (CheckSystem = "Stored Procedures") goto !f700_check_done
+!f700_trim_loop
+    fs:/LTRIM(/-/RTRIM(/
+    if (eof) goto !f700_check_done
+    SQLWarnings ++
+    Warnings ++
+    ErrorLine = "SQL TRIM Used : @line@"
+    ReportLine = null
+    size ReportLine,70
+    ReportLine = "@ReportLine@ ***Warning SQL TRIM:(@lineno@)"
+    call !z100_report_line_print
+    call !z200_detail_report
+
+    //************************************************
+    //* Update Critical Warning File
+    //************************************************
+    open CriticalWarnings critwarn.txt
+    f;*
+    Newline = "@Filename@"    
+    i:/@Newline@/
+    Newline = "    @ErrorLine@"
+    i:/@Newline@/
+    CriticalWarningCount ++   
+    write CriticalWarnings critwarn.txt
+    close CriticalWarnings    
+
+    file SourceFile
+    f
+    if (!eof) goto !f700_trim_loop
+
+!f700_check_done
+    return
+
+//************************************************************************
+//* Copy all SQL Lines
+//************************************************************************
+!g100_capture_sql
+    print:"Capturing SQL"
+    case off 
+    clear 
+    pass = 1
+    b
+    copycount = 0
+!g100_loop
+    if (pass = 1) fs:/"select /-/from /
+    if (pass = 2) fs:/"insert /-/"delete /
+    if (pass = 3) fs:/"update /-/insert into/
+    if (pass = 4) fs:/update /
+    if (eof) goto !g100_done
+    //print:"g100 found [@line@]" wait
+    rightparen = 0
+    leftparen = 0
+    Continued = 'n'
+    if (Informatica) Continued = 'y'
+!g100_check_continue
+    SQLLine = line
+    pack SQLLine
+    splitr:/@SQLLine/;1
+    //print:"Informatica[@Informatica@] right[@right@] Continued[@Continued@]" wait
+    if (Informatica) and (right = ',')
++      Continued = 'y'
++      copy //print:"Informatica Copied"
++      f
++      if (!eof) 
++         goto !g100_check_continue
++   endif
+    if (Informatica) and (Continued = 'y')
++      Continued = 'n'
++      copy //print:"Informatica Copied"
++      f
++      if (!eof) 
++         goto !g100_check_continue
++   endif
+    if (right = '+')
++      copy
++      f
++      if (!eof) 
++         goto !g100_check_continue
++   endif
+    if (right = ';') and (Continued = 'y')
++      copy
++      goto !g100_next
++   endif
+    if (eof) goto !g100_done
+!g100_found
+    //*** Find Left Paren Count
+    scan:/@line/:/(/ if (!found) goto !g100_right
+    leftparen ++
+    do
+        scan:/@right/:/(/
+        if (found)  leftparen ++      
+    until (!found)
+!g100_right
+    //*** Find right Paren Count
+    scan:/@line/:/)/
+    if (!found) goto !g100_calc
+    rightparen ++
+    do
+        scan:/@right/:/)/
+        if (found)  rightparen ++      
+    until (!found)
+!g100_calc
+    //print:"left:@leftparen@ right:@rightparen@ [@line@]" wait
+    if (leftparen = 0) and (rightparen = 0)
++      copycount = 0
++      scan:/@line/:/"/ 
++      if (!found) 
++         f goto !g100_loop
++   endif
+    if (leftparen = rightparen)
++      copycount = 0
++      copy print:"********************* COPY **************************"
++      goto !g100_next
++   endif
+    if (leftparen > rightparen)
++      copy print:"********************* COPY **************************"
++      f
++      copycount ++
++      if (!eof) and (copycount < 20)
++         goto !g100_found    
++   endif
+
+!g100_next
+    f
+    if (!eof) goto !g100_loop      
+!g100_done 
+    copycount = 0
+    pass ++
+    if (pass < 5) and (Informatica) b goto !g100_loop
+    if (pass < 4) b goto !g100_loop
+    file SQLFile 
+    i:/**************************************/ 
+    i:/@Filename@/ 
+    paste 
+    case on 
+    file SourceFile 
+    b
+    return
+
+//************************************************************************
+//* Backup all data for restart if necessary
+//************************************************************************
+!v100_backup
+    BackupCount ++
+    if (BackupCount < BACKUP_SIZE) goto !v100_done
+    //print:"Back Up Files" wait
+    //files wait
+    BackupCount = 0
+    system:"md backrest"
+    system:"cls" cls
+    file ReportFile i:/FGB-RESTORE-123/ write ReportFile backrest\RptFile.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    file ProcFile i:/FGB-RESTORE-123/ write ProcFile backrest\ProcFile.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    file FileSizeFile i:/FGB-RESTORE-123/ write FileSizeFile backrest\SizeFile.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    file FunctionList i:/FGB-RESTORE-123/ write FunctionList backrest\FctFile.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    file DtlReport i:/FGB-RESTORE-123/ write DtlReport backrest\DtlRpt.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    file CodeSearch i:/FGB-RESTORE-123/ write CodeSearch backrest\CodeSrch.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    file SQLFile i:/FGB-RESTORE-123/ write SQLFile backrest\SQLFile.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    file DirectoryFile i:/FGB-RESTORE-123/ write DirectoryFile backrest\DirFile.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    file CurrFile i:/FGB-RESTORE-123/ write CurrFile backrest\CurrFile.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    file FileList i:/FGB-RESTORE-123/ write FileList backrest\FileList.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    file StoredProcedureNames write StoredProcedureNames backrest\STPROCNA.CSV
+
+    //////////file SourceFile i:/FGB-RESTORE-123/ write SourceFile backrest\SrcFile.txt b fs:/FGB-RESTORE-123/ d b;1 error
+
+    open BackupFile null
+    BackupLine = "Newline:@Newline@" i:/@BackupLine/
+    BackupLine = "CurrDir:@CurrDir@" i:/@BackupLine/
+    BackupLine = "Sysline:@Sysline@" i:/@BackupLine/
+    BackupLine = "CurrentDirectory:@CurrentDirectory@" i:/@BackupLine/
+    BackupLine = "Newdir:@Newdir@" i:/@BackupLine/
+    BackupLine = "Filename:@Filename@" i:/@BackupLine/
+    BackupLine = "Testline:@Testline@" i:/@BackupLine/
+    BackupLine = "ReportLine:@ReportLine@" i:/@BackupLine/
+    BackupLine = "CheckSystem:@CheckSystem@" i:/@BackupLine/
+    BackupLine = "CheckDir:@CheckDir@" i:/@BackupLine/
+    BackupLine = "FileType:@FileType@" i:/@BackupLine/
+    BackupLine = "JavaScriptOn:@JavaScriptOn@" i:/@BackupLine/
+    BackupLine = "ErrorLine:@ErrorLine@" i:/@BackupLine/
+    BackupLine = "GrandTotalCodeLines:@GrandTotalCodeLines@" i:/@BackupLine/
+    BackupLine = "TotalLines:@TotalLines@" i:/@BackupLine/
+    BackupLine = "TotalCodeLines:@TotalCodeLines@" i:/@BackupLine/
+    BackupLine = "TotalComments:@TotalComments@" i:/@BackupLine/
+    BackupLine = "CommentPercent:@CommentPercent@" i:/@BackupLine/
+    BackupLine = "CommentCompute:@CommentCompute@" i:/@BackupLine/
+    BackupLine = "Errors:@Errors@" i:/@BackupLine/
+    BackupLine = "Warnings:@Warnings@" i:/@BackupLine/
+    BackupLine = "JSPJavaCode:@JSPJavaCode@" i:/@BackupLine/
+    BackupLine = "JSPJavaPercent:@JSPJavaPercent@" i:/@BackupLine/
+    BackupLine = "TotalDisplays:@TotalDisplays@" i:/@BackupLine/
+    BackupLine = "TotalSRCLines:@TotalSRCLines@" i:/@BackupLine/
+    BackupLine = "TotalSRCLinesinFile:@TotalSRCLinesinFile@" i:/@BackupLine/
+    BackupLine = "TotalFunctions:@TotalFunctions@" i:/@BackupLine/
+    BackupLine = "TotalFunctionsinFile:@TotalFunctionsinFile@" i:/@BackupLine/
+    BackupLine = "JavaHTMLWarningFlag:@JavaHTMLWarningFlag@" i:/@BackupLine/
+    BackupLine = "TotalJavaFiles:@TotalJavaFiles@" i:/@BackupLine/
+    BackupLine = "TotalJspFiles:@TotalJspFiles@" i:/@BackupLine/
+    BackupLine = "TotalHTMLFiles:@TotalHTMLFiles@" i:/@BackupLine/
+    BackupLine = "TotalJSFiles:@TotalJSFiles@" i:/@BackupLine/
+    BackupLine = "TotalCPPFiles:@TotalCPPFiles@" i:/@BackupLine/
+    BackupLine = "TotalHFiles:@TotalHFiles@" i:/@BackupLine/
+    BackupLine = "TotalRCFiles:@TotalRCFiles@" i:/@BackupLine/
+    BackupLine = "TotalGIFFiles:@TotalGIFFiles@" i:/@BackupLine/
+    BackupLine = "TotalJPGFiles:@TotalJPGFiles@" i:/@BackupLine/
+    BackupLine = "TotalSQLFiles:@TotalSQLFiles@" i:/@BackupLine/
+    BackupLine = "CommentWarnings:@CommentWarnings@" i:/@BackupLine/
+    BackupLine = "CommentErrors:@CommentErrors@" i:/@BackupLine/
+    BackupLine = "CodeLineWarnings:@CodeLineWarnings@" i:/@BackupLine/
+    BackupLine = "CodeLineErrors:@CodeLineErrors@" i:/@BackupLine/
+    BackupLine = "JSPJavaPercentWarnings:@JSPJavaPercentWarnings@" i:/@BackupLine/
+    BackupLine = "JSPJavaPercentErrors:@JSPJavaPercentErrors@" i:/@BackupLine/
+    BackupLine = "JSPJavaCodeWarnings:@JSPJavaCodeWarnings@" i:/@BackupLine/
+    BackupLine = "JSPJavaCodeErrors:@JSPJavaCodeErrors@" i:/@BackupLine/
+    BackupLine = "HardcodedUrlWarnings:@HardcodedUrlWarnings@" i:/@BackupLine/
+    BackupLine = "HardcodedIPErrors:@HardcodedIPErrors@" i:/@BackupLine/
+    BackupLine = "HardcodedIPWarnings:@HardcodedIPWarnings@" i:/@BackupLine/
+    BackupLine = "FileWarnings:@FileWarnings@" i:/@BackupLine/
+    BackupLine = "DisplayWarnings:@DisplayWarnings@" i:/@BackupLine/
+    BackupLine = "LineLengthWarnings:@LineLengthWarnings@" i:/@BackupLine/
+    BackupLine = "LineLengthErrors:@LineLengthErrors@" i:/@BackupLine/
+    BackupLine = "LineLengthWarningCount:@LineLengthWarningCount@" i:/@BackupLine/
+    BackupLine = "LineLengthErrorCount:@LineLengthErrorCount@" i:/@BackupLine/
+    BackupLine = "JavaHTMLWarnings:@JavaHTMLWarnings@" i:/@BackupLine/
+    BackupLine = "JSPCommentErrors:@JSPCommentErrors@" i:/@BackupLine/
+    BackupLine = "JSPCommentErrorCount:@JSPCommentErrorCount@" i:/@BackupLine/
+    BackupLine = "FileSizeWarnings:@FileSizeWarnings@" i:/@BackupLine/
+    BackupLine = "FileSizeErrors:@FileSizeErrors@" i:/@BackupLine/
+    BackupLine = "SRCLineWarnings:@SRCLineWarnings@" i:/@BackupLine/
+    BackupLine = "SRCLineErrors:@SRCLineErrors@" i:/@BackupLine/
+    BackupLine = "FunctionWarnings:@FunctionWarnings@" i:/@BackupLine/
+    BackupLine = "FunctionErrors:@FunctionErrors@" i:/@BackupLine/
+    BackupLine = "FunctionSizeWarnings:@FunctionSizeWarnings@" i:/@BackupLine/
+    BackupLine = "FunctionSizeErrors:@FunctionSizeErrors@" i:/@BackupLine/
+    BackupLine = "SQLWarnings:@SQLWarnings@" i:/@BackupLine/
+    BackupLine = "SQLErrors:@SQLErrors@" i:/@BackupLine/
+    BackupLine = "MiscErrors:@MiscErrors@" i:/@BackupLine/
+    BackupLine = "SpecialSearchStringTotal:@SpecialSearchStringTotal@" i:/@BackupLine/
+    BackupLine = "SpecialSearchStringIndex:@SpecialSearchStringIndex@" i:/@BackupLine/
+    BackupLine = "SpecialSearchStringPtr:@SpecialSearchStringPtr@" i:/@BackupLine/
+    BackupLine = "SpecialSearchPatternPtr:@SpecialSearchPatternPtr@" i:/@BackupLine/
+    BackupLine = "SpecialSearchStringName:@SpecialSearchStringName@" i:/@BackupLine/
+    BackupLine = "SpecialSearchString:@SpecialSearchString@" i:/@BackupLine/
+    BackupLine = "SpecialSearchPattern:@SpecialSearchPattern@" i:/@BackupLine/
+    BackupLine = "SpecialSearchStringFound:@SpecialSearchStringFound@" i:/@BackupLine/
+    BackupLine = "FileSize:@FileSize@" i:/@BackupLine/
+    BackupLine = "FunctionLines:@FunctionLines@" i:/@BackupLine/
+    BackupLine = "FunctionSizeWarningFlag:@FunctionSizeWarningFlag@" i:/@BackupLine/
+    BackupLine = "FunctionSizeErrorFlag:@FunctionSizeErrorFlag@" i:/@BackupLine/
+    BackupLine = "FunctionCount:@FunctionCount@" i:/@BackupLine/
+    BackupLine = "FunctionName:@FunctionName@" i:/@BackupLine/
+    BackupLine = "FunctionOutputLine:@FunctionOutputLine@" i:/@BackupLine/
+    BackupLine = "FunctionStartLine:@FunctionStartLine@" i:/@BackupLine/
+    BackupLine = "LastFunctionFile:@LastFunctionFile@" i:/@BackupLine/
+    BackupLine = "FunctionTestDone:@FunctionTestDone@" i:/@BackupLine/
+    BackupLine = "rightparen:@rightparen@" i:/@BackupLine/
+    BackupLine = "leftparen:@leftparen@" i:/@BackupLine/
+    BackupLine = "pass:@pass@" i:/@BackupLine/
+    BackupLine = "copycount:@copycount@" i:/@BackupLine/
+    BackupLine = "CICSSearch:@CICSSearch@" i:/@BackupLine/
+    BackupLine = "TestFile:@TestFile@" i:/@BackupLine/
+    BackupLine = "FDefects:@FDefects@" i:/@BackupLine/
+    BackupLine = "FLines:@FLines@" i:/@BackupLine/
+    BackupLine = "FOpportunities:@FOpportunities@" i:/@BackupLine/
+    BackupLine = "FMillion:@FMillion@" i:/@BackupLine/
+    BackupLine = "DPMO:@DPMO@" i:/@BackupLine/
+    BackupLine = "DPMOPrint:@DPMOPrint@" i:/@BackupLine/
+    BackupLine = "Sigma:@Sigma@" i:/@BackupLine/
+    BackupLine = "FTest:@FTest@" i:/@BackupLine/
+    BackupLine = "FZero:@FZero@" i:/@BackupLine/
+    BackupLine = "StartDate:@StartDate@" i:/@BackupLine/
+    BackupLine = "StartTime:@StartTime@" i:/@BackupLine/
+    write BackupFile backrest\Backup.txt
+    close BackupFile
+    //print:"Backup Complete" wait
+
+!v100_done
+    return
+
+//************************************************************************
+//* Restart all Files and Variables
+//************************************************************************
+!v200_restore
+    open ReportFile backrest\RptFile.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open ProcFile backrest\ProcFile.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open FileSizeFile backrest\SizeFile.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open FunctionList backrest\FctFile.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open DtlReport backrest\DtlRpt.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open CodeSearch backrest\CodeSrch.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open SQLFile backrest\SQLFile.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open DirectoryFile backrest\DirFile.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open CurrFile backrest\CurrFile.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open FileList backrest\FileList.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open StoredProcedureNames backrest\STPROCNA.CSV error open StoredProcedureNames null i:/Procedure Name,File Name/
+
+    ////////////////open SourceFile backrest\SrcFile.txt b fs:/FGB-RESTORE-123/ d b;1
+
+    open BackupFile backrest\Backup.txt
+    b
+!v200_variable_loop
+    if (eof) goto !v200_done
+    scan:/@line/:/:/
+    @left = @right
+    f
+    goto !v200_variable_loop
+!v200_done       
+    return
+
+//************************************************************************
+//* Write Report File (Display is optional)
+//************************************************************************
+!z100_report_line_print
+    print:"@ReportLine@"
+!z100_report_line
+    file ReportFile
+    i:/@ReportLine@/
+    return
+
+//************************************************************************
+//* Write Detail Report Lines
+//************************************************************************
+!z200_detail_report
+    file DtlReport
+    Newline = null
+    size Newline,25
+    Newline = "@Newline@@ErrorLine@"
+    i:/@Newline/
+    return
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                   DEPLOYMENT DESCRIPTOR PROCESSING
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//***********************************************
+//* Deployment Descriptor Processing
+//***********************************************
+!aD100_main_process
+    call !bD100_init
+    call !bD200_proc
+    call !bD300_wrap
+    return
+
+//***********************************************
+//* Initialize
+//***********************************************
+!bD100_init
+    Deploy_System_Line         = ""
+    Deploy_Line                = ""
+
+    Deploy_Application_Name    = CheckSystem
+
+    Deploy_xml_level1          = ""
+    Deploy_xml_level2          = ""
+    Deploy_xml_ident           = ""
+    Deploy_xml_data            = ""
+
+    Deploy_CurrentFile         = ""
+    Deploy_Finished            = 'n'
+
+    Deploy_Servlet_Name        = ""
+    Deploy_Servlet_Class       = ""
+    Deploy_FirstServlet        = 'y'
+    Deploy_URL_Pattern         = ""
+
+    Deploy_Extension           = ""
+    Deploy_Mime_Type           = ""
+    Deploy_FirstMime           = 'y'
+
+    Deploy_Taglib_URI          = ""
+    Deploy_Taglib_Location     = ""
+    Deploy_FirstTaglib         = 'y'
+
+    Deploy_Param_Name          = ""
+    Deploy_Param_Value         = ""
+    Deploy_FirstParam          = 'y'
+    Deploy_Param_Type          = ""
+
+    Deploy_First_EJB           = 'y'
+    Deploy_EJB_Name            = ""
+    Deploy_First               = ""
+
+    Deploy_EJB_Section         = ""
+    IncludeEJB                 = ""
+
+    Deploy_Newline             = ""
+
+
+    open DeployCount Deploy.cnt error open DeployCount null Deploy_Count = 0
+    b
+    Deploy_Count = line
+    Deploy_Count ++
+    d;*
+    i:/@Deploy_Count@/
+    write DeployCount Deploy.cnt
+
+    print:"***************************************************************************"
+    print:"* Check Deployemnt Descriptors"
+    print:"***************************************************************************"
+    close Deploy.dat error
+    open Deploy.dat Deploy.dat error open Deploy.dat null
+
+    //*********************************************
+    //* Remove all Deploy data for current system
+    //*********************************************
+    DeployDelete = "@CheckSystem@$*$"
+    b
+!bD100_loop
+    fs:/@DeployDelete@/ if (!eof) d goto !bD100_loop
+    b    
+
+    open Deploy.doc null
+    Deploy_Newline = /Document : Deployment for @Deploy_Application_Name@/
+    i:/@Deploy_Newline@/
+    Deploy_Newline = /Date     : @date@/
+    i:/@Deploy_Newline@/
+    Deploy_Newline = /Time     : @time@/
+    i:/@Deploy_Newline@/
+    i:/=========================================================================================================================/
+    goto !bD100_exit
+
+!bD100_bad_web
+    print:"Unable to open file web.xml" //wait exit
+
+!bD100_bad_weblogic
+    print:"Unable to open file weblogic.xml" //wait exit
+
+!bD100_exit
+    return
+
+//***********************************************
+//* Main Process
+//***********************************************
+!bD200_proc
+    //print:"Deploy_EJBJarXMLName[@Deploy_EJBJarXMLName@] Deploy_EJB_File[@Deploy_EJB_File@]" wait
+
+    if (Deploy_Web_XML_File != "")       call !cD100_process_webxml
+    if (Deploy_Weblogic_XML_File != "")  call !cD200_process_weblogicxml
+    if (Deploy_EJBJarXMLName != "")      call !cD300_process_ejbjarxml
+    if (Deploy_EJB_File != "")           call !cD400_process_weblogicejbjarxml
+    return
+
+//***********************************************
+//* Wrapup
+//***********************************************
+!bD300_wrap
+    call !xD100_cleanup
+    close web.xml error
+    close weblogic.xml error
+    close ejbjar.xml error
+
+    Deploy_Output_File = "Deploy@Deploy_Count@.txt"
+
+    if (Deploy_Web_XML_File != "") or (Deploy_Weblogic_XML_File != "") or (Deploy_EJBJarXMLName != "") or (Deploy_EJB_File != "") write Deploy.doc @Deploy_Output_File
+    close Deploy.doc
+    write Deploy.dat Deploy.dat
+    close Deploy.dat
+
+    //print:" "
+    //print:"The output documentation file is located at c:\BEdit\Deploy.doc"
+    //print:"Processing Complete"
+    //print:" "
+    //wait
+    return
+
+//***********************************************
+//* Process the web.xml deployment descriptor
+//***********************************************
+!cD100_process_webxml
+    //print:"[@Deploy_Web_XML_File@]"
+    open web.xml @Deploy_Web_XML_File
+    Deploy_CurrentFile = 'web.xml'
+    Deploy_Finished = 'n'
+    file web.xml
+    b
+!cD100_loop
+    call !hD100_parse_xml
+    if (!Deploy_Finished) goto !cD100_loop
+    return
+
+//***********************************************
+//* Process the weblogic.xml deployment descriptor
+//***********************************************
+!cD200_process_weblogicxml
+    open weblogic.xml @Deploy_Weblogic_XML_File
+    Deploy_CurrentFile = 'weblogic.xml'
+    Deploy_Finished = 'n'
+    file weblogic.xml
+    b
+!cD200_loop
+    call !hD100_parse_xml
+    if (!Deploy_Finished) goto !cD200_loop
+    return
+
+//***********************************************
+//* Process the ejb-jar.xml deployment descriptor
+//***********************************************
+!cD300_process_ejbjarxml
+//    Deploy_EJB_File = 'ejb-jar.xml'
+//    printx:"Does this deployment include EJBs(y-n)?"
+//    input IncludeEJB
+//    if (IncludeEJB) 
+//+      Deploy_EJBJarXMLName = '@Deploy_XML_Directory@\ejb-jar.xml' 
+//+   else 
+//+      Deploy_EJBJarXMLName = null
+//+   endif
+
+    //printx:"Please enter the ejb-jar.xml filename (8 char max):"
+    //input Deploy_EJBJarXMLName
+
+    if (Deploy_EJBJarXMLName = null) goto !cD300_done
+    open ejbjar.xml @Deploy_EJBJarXMLName@ error goto !cD300_error
+    Deploy_CurrentFile = 'ejbjar.xml'
+    Deploy_Finished = 'n'
+    file ejbjar.xml
+    b
+!cD300_loop
+    call !hD100_parse_xml
+    if (!Deploy_Finished) goto !cD300_loop
+    close ejbjar.xml
+!cD300_done
+    return
+
+!cD300_error
+    print:"Unable to open @Deploy_EJBJarXMLName@"
+    //wait
+    return
+
+//***********************************************
+//* Process the weblogic-ejb-jar.xml deployment descriptor
+//***********************************************
+!cD400_process_weblogicejbjarxml
+//    Deploy_EJB_File = 'weblogic-ejb-jar.xml'
+//    if (IncludeEJB) 
+//+      Deploy_System_Line = "copy @Deploy_XML_Directory@\weblogic-ejb-jar.xml wlejbjar.xml"
+//+      system:"@Deploy_System_Line@"
+//+      Deploy_EJBJarXMLName = 'wlejbjar.xml' 
+//+   else 
+//+      Deploy_EJBJarXMLName = null
+//+   endif
+    //printx:"Please enter the weblogic-ejb-jar.xml filename (8 char max):"
+    //input Deploy_EJBJarXMLName
+
+    if (Deploy_EJBJarXMLName = null) goto !cD400_done
+    Deploy_System_Line = "copy @Deploy_EJB_File@ wlejbjar.xml"
+    //print:"@Deploy_System_Line@" wait
+    system:"@Deploy_System_Line@"
+    system:"cls" cls
+    open ejbjar.xml wlejbjar.xml error goto !cD400_error
+    Deploy_CurrentFile = 'ejbjar.xml'
+    Deploy_Finished = 'n'
+    file ejbjar.xml
+    b
+//    p;10 b wait
+!cD400_loop
+    call !hD100_parse_xml
+    if (!Deploy_Finished) goto !cD400_loop
+    close ejbjar.xml
+!cD400_done
+    return
+
+!cD400_error
+    print:"Unable to open @Deploy_EJBJarXMLName@"
+    //wait
+    return
+
+//***********************************************
+//* Parse the current xml
+//***********************************************
+!hD100_parse_xml
+    call !kD100_parse_xml_line
+    //print:"!hD100_parse_xml : Deploy_xml_ident = |@Deploy_xml_ident@|" wait
+//    if (Deploy_EJB_File = 'weblogic-ejb-jar.xml')
+//+      print:"hD100 Deploy_xml_ident:@Deploy_xml_ident@     Deploy_xml_data:@Deploy_xml_data@  Deploy_CurrentFile:@Deploy_CurrentFile@" wait
+
+    if (Deploy_EJB_Section = "weblogic-ejb-jar) goto !hD100_done
+    if (Deploy_xml_ident = 'display-name') call !jD100_display_name goto !hD100_done
+    if (Deploy_xml_ident = 'servlet') call !jD110_servlet goto !hD100_done
+    if (Deploy_xml_ident = 'servlet-mapping') call !jD120_servlet_mapping goto !hD100_done
+    if (Deploy_xml_ident = 'mime-mapping') call !jD130_mime_mapping goto !hD100_done
+    if (Deploy_xml_ident = 'taglib') call !jD140_taglib goto !hD100_done
+    if (Deploy_xml_ident = 'session-param') Deploy_Param_Type = "Session" call !jD150_param goto !hD100_done
+    if (Deploy_xml_ident = 'jsp-param') Deploy_Param_Type = "JSP    " call !jD150_param goto !hD100_done
+    if (Deploy_xml_ident = 'ejb-name') call !jD170_ejb goto !hD100_done
+    if (Deploy_xml_ident = 'session-timeout') call !jD160_session_timeout goto !hD100_done
+    if (Deploy_xml_ident = 'initial-beans-in-free-pool') call !jD180_ejb_extra goto !hD100_done
+    if (Deploy_xml_ident = 'max-beans-in-free-pool') call !jD180_ejb_extra goto !hD100_done
+    if (Deploy_xml_ident = 'res-ref-name') call !jD180_ejb_extra goto !hD100_done
+    if (Deploy_xml_ident = 'res-type') call !jD180_ejb_extra goto !hD100_done
+    if (Deploy_xml_ident = 'res-auth') call !jD180_ejb_extra goto !hD100_done
+    if (Deploy_xml_ident = 'jndi-name') call !jD180_ejb_extra goto !hD100_done
+
+    if (Deploy_xml_ident = 'enterprise-beans') Deploy_EJB_Section = Deploy_xml_ident
+    if (Deploy_xml_ident = 'assembly-descriptor') Deploy_EJB_Section = Deploy_xml_ident
+//    if (Deploy_xml_ident = 'weblogic-ejb-jar') Deploy_EJB_Section = Deploy_xml_ident
+
+!hD100_done
+    call !kD200_set_file
+    return  
+
+
+//***********************************************
+//* Handle Display Name
+//***********************************************
+!jD100_display_name
+    file Deploy.doc
+    Deploy_Newline = "Display Name    : @Deploy_xml_data@"
+    i:/@Deploy_Newline/
+    // print:"Create Display Name Line : @Deploy_Newline@" wait
+    i:/ /
+    return
+
+//***********************************************
+//* Handle Servlet
+//***********************************************
+!jD110_servlet
+    file Deploy.doc
+    f;*
+    if (Deploy_FirstServlet) i:/     Servlet                       Class                                           URL Pattern/
+    if (Deploy_FirstServlet) i:/     ----------------------------  ---------------------------------------------   ---------------------------------/
+    if (Deploy_FirstServlet) Deploy_FirstServlet = 'n'
+
+    call !kD200_set_file
+    call !kD110_parse_xml_line_drill
+    if (Deploy_xml_ident = 'servlet-name') Deploy_Servlet_Name = Deploy_xml_data else goto !jD110_return
+
+    file Deploy.dat
+    b
+    Deploy_Line = "@CheckSystem@$*$Servlet$*$@Deploy_Servlet_Name@"
+    fs:/@Deploy_Line@/
+    if (eof) i:/@Deploy_Line@/
+    file Deploy.doc
+
+    call !kD200_set_file
+    call !kD110_parse_xml_line_drill
+    if (Deploy_xml_ident != 'servlet-class') goto !jD110_return
+    Deploy_Servlet_Class = Deploy_xml_data
+    Deploy_Newline = "     @Deploy_Servlet_Name@"
+    size Deploy_Newline,35
+    Deploy_Newline = "@Deploy_Newline@@Deploy_Servlet_Class@)
+    file Deploy.doc
+    f;*
+    i:/@Deploy_Newline/
+    //print:"Create Servlet Line : @Deploy_Newline@" wait
+
+!jD110_return
+    return
+
+//***********************************************
+//* Handle Servlet Mapping
+//***********************************************
+!jD120_servlet_mapping
+    //print:"!jD120_servlet_mapping" wait
+    call !kD110_parse_xml_line_drill
+    if (Deploy_xml_ident = 'servlet-name') Deploy_Servlet_Name = Deploy_xml_data else goto !jD120_return
+    call !kD200_set_file
+    call !kD110_parse_xml_line_drill
+    if (Deploy_xml_ident != "url-pattern") goto !jD120_return
+    Deploy_URL_Pattern = Deploy_xml_data
+    //print:"Ready to update @Deploy_Servlet_Name@ with @Deploy_URL_Pattern@" wait
+    file Deploy.doc
+    b
+    fs:/@Deploy_Servlet_Name@/
+    if (eof) goto !jD120_return
+    Deploy_Newline = line
+    size Deploy_Newline,83
+    Deploy_Newline = "@Deploy_Newline@@Deploy_URL_Pattern@)
+    r:/@Deploy_Newline/
+    //print:"Update Servlet Line : @Deploy_Newline@" wait
+!jD120_return
+    return
+
+//***********************************************
+//* Handle Mime Mapping
+//***********************************************
+!jD130_mime_mapping
+    //print:"j130_mime_mapping"
+    file Deploy.doc
+    f;*
+    if (Deploy_FirstMime) i:/ /
+    if (Deploy_FirstMime) i:/     Mime Deploy_Extension      Type            /
+    if (Deploy_FirstMime) i:/     --------------      ----------------/
+    if (Deploy_FirstMime) Deploy_FirstMime = 'n'
+    call !kD200_set_file
+    call !kD110_parse_xml_line_drill
+    if (Deploy_xml_ident = 'Deploy_Extension') Deploy_Extension = Deploy_xml_data else goto !jD130_return
+    call !kD200_set_file
+    call !kD110_parse_xml_line_drill
+    if (Deploy_xml_ident != 'mime-type') goto !jD130_return
+    Deploy_Mime_Type = Deploy_xml_data
+    Deploy_Newline = "     @Deploy_Extension@"
+    size Deploy_Newline,25
+    Deploy_Newline = "@Deploy_Newline@@Deploy_Mime_Type@)
+    file Deploy.doc
+    f;*
+    i:/@Deploy_Newline/
+    //print:"Create Mime Type Line : @Deploy_Newline@" wait
+
+!jD130_return
+    return
+
+//***********************************************
+//* Handle taglib
+//***********************************************
+!jD140_taglib
+    //print:"j140_taglib" wait
+    file Deploy.doc
+    f;*
+    if (Deploy_FirstTaglib) i:/ /
+    if (Deploy_FirstTaglib) i:/     Taglib URI          Location/
+    if (Deploy_FirstTaglib) i:/     --------------      ------------------------------------/
+    if (Deploy_FirstTaglib) Deploy_FirstTaglib = 'n'
+    call !kD200_set_file
+    call !kD110_parse_xml_line_drill
+    //print:"j140 A Deploy_xml_ident = |@Deploy_xml_ident@| Deploy_xml_data = |@Deploy_xml_data@|" wait
+    if (Deploy_xml_ident = 'taglib-uri') Deploy_Taglib_URI = Deploy_xml_data else goto !jD140_return
+
+    file Deploy.dat
+    b
+    Deploy_Line = "@CheckSystem@$*$Taglib$*$@Deploy_Taglib_URI@"
+    fs:/@Deploy_Line@/
+    if (eof) i:/@Deploy_Line@/
+    file Deploy.doc
+
+    call !kD200_set_file
+    fs:/taglib-location/ if (eof) Deploy_Finished = 'y' goto !jD140_return
+    call !kD110_parse_xml_line_drill
+    //print:"j140 B Deploy_xml_ident = |@Deploy_xml_ident@| Deploy_xml_data = |@Deploy_xml_data@|" wait
+    if (Deploy_xml_ident != 'taglib-location') goto !jD140_return
+    Deploy_Taglib_Location = Deploy_xml_data
+    Deploy_Newline = "     @Deploy_Taglib_URI@"
+    size Deploy_Newline,25
+    Deploy_Newline = "@Deploy_Newline@@Deploy_Taglib_Location@)
+    file Deploy.doc
+    f;*
+    i:/@Deploy_Newline/
+    //print:"Create Taglib Line : @Deploy_Newline@" wait
+
+!jD140_return
+    return
+
+//***********************************************
+//* Handle Parameters
+//***********************************************
+!jD150_param
+    //print:"j150_param"
+    file Deploy.doc
+    b
+    fs:/Servlet/
+    b;2
+    if (Deploy_FirstParam) i:/ /
+    if (Deploy_FirstParam) i:/     Parameter/
+    if (Deploy_FirstParam) i:/     Type      Name                      Value/
+    if (Deploy_FirstParam) i:/     -------   ------------------------  ------------------------------------/
+    if (Deploy_FirstParam) Deploy_FirstParam = 'n'
+    call !kD200_set_file
+    call !kD110_parse_xml_line_drill
+    //print:"j150 A Deploy_xml_ident = |@Deploy_xml_ident@| Deploy_xml_data = |@Deploy_xml_data@|" wait
+    if (Deploy_xml_ident = 'param-name') Deploy_Param_Name = Deploy_xml_data else goto !jD150_return
+    call !kD200_set_file
+    fs:/param-value/ if (eof) Deploy_Finished = 'y' goto !jD150_return
+    call !kD110_parse_xml_line_drill
+    //print:"j150 B Deploy_xml_ident = |@Deploy_xml_ident@| Deploy_xml_data = |@Deploy_xml_data@|" wait
+    if (Deploy_xml_ident != 'param-value') goto !jD150_return
+    Deploy_Param_Value = Deploy_xml_data
+    Deploy_Newline = "     @Deploy_Param_Type@   @Deploy_Param_Name@"
+    size Deploy_Newline,41
+    Deploy_Newline = "@Deploy_Newline@@Deploy_Param_Value@)
+    file Deploy.doc
+    i:/@Deploy_Newline/
+    //print:"Create Session Param Line : @Deploy_Newline@ - Deploy_Param_Type[@Deploy_Param_Type@]" wait
+//    if (Deploy_Param_Type[1-3] = 'JSP')
+//+      file Deploy.dat
+//+      b
+//+      fs:/@Deploy_Param_Name@/
+//+      if (eof) i:/@Deploy_Param_Name@/
+//+   endif
+//+   call !kD200_set_file
+
+!jD150_return
+    return
+
+//***********************************************
+//* Handle Session Timeout
+//***********************************************
+!jD160_session_timeout
+    file Deploy.doc
+    b
+    fs:/=======/
+    f
+//    Deploy_Newline = "@line@                    Session Timeout : @Deploy_xml_data@"
+    Deploy_Newline = "Session Timeout : @Deploy_xml_data@"
+    i:/@Deploy_Newline/
+    // print:"Session Timeout : @Deploy_Newline@" wait
+    return
+
+//***********************************************
+//* Handle EJB's
+//***********************************************
+!jD170_ejb
+    //print:"j170_ejb"
+    file Deploy.doc
+    b
+    fs:/Servlet/
+    b;2
+    if (Deploy_First_EJB) i:/ /
+    if (Deploy_First_EJB) i:/     EJB Name                  Detail                           Value/
+    if (Deploy_First_EJB) i:/     ------------------------  ------------------------------   ----------------------------------------------------/
+    if (Deploy_First_EJB) Deploy_First_EJB = 'n'
+    Deploy_EJB_Name = Deploy_xml_data
+
+    file Deploy.dat
+    b
+    Deploy_Line = "@CheckSystem@$*$EJB$*$@Deploy_EJB_Name@"
+    fs:/@Deploy_Line@/
+    if (eof) i:/@Deploy_Line@/
+    file Deploy.doc
+
+    if (Deploy_EJB_Section = 'assembly-descriptor') b fs:/@Deploy_EJB_Name@/
+    if (Deploy_EJB_Section = 'assembly-descriptor') if (!eof) goto !jD170_find_last
+    Deploy_Newline = /     @Deploy_EJB_Name@/
+    i:/@Deploy_Newline@/
+    Deploy_First = 'y'
+    goto !jD170_next
+!jD170_find_last
+    f
+    if (eof) goto !jD170_next
+    Deploy_Newline = line
+    pack Deploy_Newline
+    if (Deploy_Newline = null) goto !jD170_next
+    goto !jD170_find_last
+
+!jD170_next
+//    if (Deploy_EJB_File = 'weblogic-ejb-jar.xml')
+//+      print:"j170" wait    
+    call !kD200_set_file
+    call !kD110_parse_xml_line_drill
+    //print:"j150 A Deploy_xml_ident = |@Deploy_xml_ident@| Deploy_xml_data = |@Deploy_xml_data@|" wait
+    split:/@Deploy_xml_ident@/;1
+    if (left = '/') goto !jD170_done
+    if (Deploy_Finished) goto !jD170_done
+
+    if (Deploy_xml_ident = 'home') goto !jD170_insert
+    if (Deploy_xml_ident = 'remote') goto !jD170_insert
+    if (Deploy_xml_ident = 'ejb-class') goto !jD170_insert
+    if (Deploy_xml_ident = 'session-type') goto !jD170_insert
+    if (Deploy_xml_ident = 'transaction-type') goto !jD170_insert
+    if (Deploy_xml_ident = 'res-ref-name') goto !jD170_insert
+    if (Deploy_xml_ident = 'res-type') goto !jD170_insert
+    if (Deploy_xml_ident = 'res-auth') goto !jD170_insert
+    if (Deploy_xml_ident = 'method-intf') goto !jD170_insert
+    if (Deploy_xml_ident = 'method-name') goto !jD170_insert
+    if (Deploy_xml_ident = 'initial-beans-in-free-pool') goto !jD170_insert
+    if (Deploy_xml_ident = 'max-beans-in-free-pool') goto !jD170_insert
+
+    goto !jD170_next
+
+!jD170_insert
+    file Deploy.doc
+    Deploy_Newline = null
+    if (Deploy_First) Deploy_Newline = line
+    size Deploy_Newline,31
+    Deploy_Newline = "@Deploy_Newline@@Deploy_xml_ident@"
+    size Deploy_Newline,64
+    Deploy_Newline = "@Deploy_Newline@@Deploy_xml_data@)
+    if (Deploy_First) Deploy_First = 'n' r:/@Deploy_Newline@/ else i:/@Deploy_Newline@/
+    //print:"EJB Line : @Deploy_Newline@" wait
+    goto !jD170_next
+!jD170_done
+    file Deploy.doc
+    i:/ /
+    return
+
+//***********************************************
+//* Handle Extra EJB Data
+//***********************************************
+!jD180_ejb_extra
+
+    file Deploy.doc
+
+    if (Deploy_xml_ident = 'jndi-name') 
++      if (Deploy_EJB_File = 'weblogic-ejb-jar.xml') 
++         goto !jD180_ejb_jndi
++   endif
+
+    b
+    fs:/@Deploy_EJB_Name@/
+
+    if (Deploy_xml_ident = 'res-ref-name') 
++      if (Deploy_EJB_File = 'weblogic-ejb-jar.xml')
++         fs:/@Deploy_xml_data@/ goto !jD180_return
++   endif
+
+!jD180_ejb_extra_next
+    f
+    if (eof) goto !jD180_ejb_extra_ok
+    Deploy_Newline = line
+    pack Deploy_Newline
+    if (Deploy_Newline = null) goto !jD180_ejb_extra_ok
+    goto !jD180_ejb_extra_next
+!jD180_ejb_extra_ok
+    b;1
+    Deploy_Newline = null
+    size Deploy_Newline,31
+    Deploy_Newline = "@Deploy_Newline@@Deploy_xml_ident@"
+    size Deploy_Newline,64
+    Deploy_Newline = "@Deploy_Newline@@Deploy_xml_data@)
+    i:/@Deploy_Newline@/
+    //print:"EJB Extra Line : @Deploy_Newline@" wait
+    i:/ /
+    goto !jD180_return
+
+!jD180_ejb_jndi
+//    print:"j180_ejb_jndi @line@" wait
+
+    scan:/@line/:/jndi/
+    if (found) b fs:/@Deploy_EJB_Name@/ goto !jD180_ejb_extra_next
+
+    Deploy_Newline = "@line@ (jndi:@Deploy_xml_data@)"
+    r:/@Deploy_Newline@/
+//    print:"EJB Update jndi Line : @Deploy_Newline@" wait
+    goto !jD180_return
+
+!jD180_return
+    return
+
+//***********************************************
+//* Parse the current xml line
+//***********************************************
+!kD100_parse_xml_line
+    scan:/@line/:/</
+    scan:/@right/:/>/
+    Deploy_xml_ident = left
+    scan:/@right/:/</
+    Deploy_xml_data = left
+
+
+    if (Deploy_xml_ident = 'res-ref-name')
++      if (Deploy_xml_data = null) goto !kD110_parse_xml_line_drill
+    if (Deploy_xml_ident = 'jndi-name')
++      if (Deploy_xml_data = null) goto !kD110_parse_xml_line_drill
+
+    f
+    if (eof) Deploy_Finished = 'y'
+
+    //print:"@Deploy_xml_ident@     @Deploy_xml_data@" wait
+    return    
+
+//***********************************************
+//* Parse the current xml line
+//***********************************************
+!kD110_parse_xml_line_drill
+//    if (Deploy_EJB_File = 'weblogic-ejb-jar.xml')
+//+      print:"!kD110_parse_xml_line_drill line:|@line@|"
+    scan:/@line/:/</
+    scan:/@right/:/>/
+    Deploy_xml_ident = left 
+    //split:/@Deploy_xml_ident@/;1
+    //if (left = '/') Deploy_xml_data = null goto !kD110_return
+    if (Deploy_xml_ident = 'resource-ref') Deploy_xml_data = null goto !kD110_return
+    if (Deploy_xml_ident = 'caching-descriptor') Deploy_xml_data = null goto !kD110_return
+
+    if (right = null) goto !kD110_next_line
+    scan:/@right/:/</ if (!found) goto !kD110_next_line
+    goto !kD110_done
+
+!kD110_next_line
+//    if (Deploy_EJB_File = 'weblogic-ejb-jar.xml')
+//+      print:"k110_next_line line = |@line@| right=|@right@|" wait
+    f
+    scan:/@line/:word
+    split:/@left/;1
+//    if (Deploy_EJB_File = 'weblogic-ejb-jar.xml')
+//+      print:"k110_next_line line = |@line@| right=|@right@| left=|@left@|" wait
+    if (left = '<') b;1 Deploy_xml_data = null goto !kD110_return
+    scan:/@line/:word
+
+!kD110_done
+    Deploy_xml_data = left
+!kD110_return
+    f
+    if (eof) Deploy_Finished = 'y'
+//    if (Deploy_EJB_File = 'weblogic-ejb-jar.xml')
+//+      print:"k110 Deploy_xml_ident:@Deploy_xml_ident@     Deploy_xml_data:@Deploy_xml_data@  Deploy_CurrentFile:@Deploy_CurrentFile@" wait
+    return    
+
+//***********************************************
+//* Set the current file
+//***********************************************
+!kD200_set_file
+    if (Deploy_CurrentFile = 'web.xml') file web.xml
+    if (Deploy_CurrentFile = 'weblogic.xml') file weblogic.xml
+    if (Deploy_CurrentFile = 'ejbjar.xml') file ejbjar.xml
+    return
+
+//***********************************************
+//* Cleanup the output file
+//***********************************************
+!xD100_cleanup
+    file Deploy.doc
+    b
+!xD100_loop
+    Deploy_Newline = line
+    pack Deploy_Newline
+    if (Deploy_Newline != null) goto !xD100_next
+    f
+!xD100_check
+    if (eof) goto !xD100_next
+    Deploy_Newline = line
+    pack Deploy_Newline
+    if (Deploy_Newline != null) goto !xD100_next  
+    d
+    goto !xD100_check
+!xD100_next
+    f
+    if (!eof) goto !xD100_loop    
+    return
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  END DEPLOYMENT DESCRIPTOR PROCESSING
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//************************************************************************
+//* End of Program CHECKCD.BED
+//************************************************************************

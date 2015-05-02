@@ -1,0 +1,136 @@
+******* Processing c:\bedit\scabba\xsite\vehicleInformation.jsp *********************
+    Added: <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+    Added: <%@ taglib prefix="esapi" uri="/WEB-INF/esapi.tld" %>
+    Changed: 								<td width="245"><span class="style2"><c:out
+         to: 								<td width="245"><span class="style2">
+    Changed: 									value="${assetDetails.year}" />-<c:out
+         to: 									<esapi:encodeForHTML>${assetDetails.year}</esapi:encodeForHTML>-<c:out
+    Changed: 									<esapi:encodeForHTML>${assetDetails.year}</esapi:encodeForHTML>-<c:out
+         to: 									<esapi:encodeForHTML>${assetDetails.year}</esapi:encodeForHTML>-
+    Changed: 									value="${assetDetails.make}" />-<c:out
+         to: 									<esapi:encodeForHTML>${assetDetails.make}</esapi:encodeForHTML>-<c:out
+    Changed: 									<esapi:encodeForHTML>${assetDetails.make}</esapi:encodeForHTML>-<c:out
+         to: 									<esapi:encodeForHTML>${assetDetails.make}</esapi:encodeForHTML>-
+    Changed: 									value="${assetDetails.model}" /></span></td>
+         to: 									<esapi:encodeForHTML>${assetDetails.model}</esapi:encodeForHTML></span></td>
+    Changed: 								<td><span class="style2"><c:out
+         to: 								<td><span class="style2">
+    Changed: 									value="${assetDetails.VIN}" /></span></td>
+         to: 									<esapi:encodeForHTML>${assetDetails.VIN}</esapi:encodeForHTML></span></td>
+    Changed: 								<td><span class="style2"><c:out
+         to: 								<td><span class="style2">
+    Changed: 									value="${assetDetails.licensePlate}" /></span></td>
+         to: 									<esapi:encodeForHTML>${assetDetails.licensePlate}</esapi:encodeForHTML></span></td>
+    Changed: 								<td align="left" nowrap="true"><span class="style2"><c:out
+         to: 								<td align="left" nowrap="true"><span class="style2">
+    Changed: 									value="${assetDetails.licenseState}" /></span></td>
+         to: 									<esapi:encodeForHTML>${assetDetails.licenseState}</esapi:encodeForHTML></span></td>
+    Changed: 								<td><span class="style2"><c:out
+         to: 								<td><span class="style2">
+    Changed: 									value="${assetDetails.fleetNumber}" /></span></td>
+         to: 									<esapi:encodeForHTML>${assetDetails.fleetNumber}</esapi:encodeForHTML></span></td>
+    Changed: 								<td><span class="style2"><c:out
+         to: 								<td><span class="style2">
+    Changed: 									value="${assetDetails.unitNumber}" /></span></td>
+         to: 									<esapi:encodeForHTML>${assetDetails.unitNumber}</esapi:encodeForHTML></span></td>
+******* Processing c:\bedit\scabba\xsite\vehicleSelection.jsp *********************
+    Added: <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+    Added: <%@ taglib prefix="esapi" uri="/WEB-INF/esapi.tld" %>
+    Changed: 		         previousAAID = '<c:out value="${vehicleList.fltCrossVehIdentifier}" />' ;
+         to: 		         previousAAID = '<esapi:encodeForHTML>${vehicleList.fltCrossVehIdentifier}</esapi:encodeForHTML>' ;
+    Changed:                      parentWindow.displayService('<c:out value="${lineitemNumber}" />','<c:out value="${rowId}" />');
+         to:                      parentWindow.displayService('<esapi:encodeForHTML>${lineitemNumber}</esapi:encodeForHTML>','<c:out value="${rowId}" />');
+    Changed:                      parentWindow.displayService('<esapi:encodeForHTML>${lineitemNumber}</esapi:encodeForHTML>','<c:out value="${rowId}" />');
+         to:                      parentWindow.displayService('<esapi:encodeForHTML>${lineitemNumber}</esapi:encodeForHTML>','<esapi:encodeForHTML>${rowId}</esapi:encodeForHTML>');
+    Changed: var waId = '<c:out value="${wa.WAId}" />';
+         to: var waId = '<esapi:encodeForHTML>${wa.WAId}</esapi:encodeForHTML>';
+    Changed: var aaid = '<c:out value="${wa.aaIaId}" />';
+         to: var aaid = '<esapi:encodeForHTML>${wa.aaIaId}</esapi:encodeForHTML>';
+    Changed: 	         previousAAID = '<c:out value="${vehicleList.fltCrossVehIdentifier}" />' ;
+         to: 	         previousAAID = '<esapi:encodeForHTML>${vehicleList.fltCrossVehIdentifier}</esapi:encodeForHTML>' ;
+    Changed: 								<option value='<c:out value='${years.name}'/>'  selected>
+         to: 								<option value='
+    *** Error - No c:out value on next line [								<c:out value='${years.name}'/>]
+    Changed: 								<option value='<c:out value='${years.name}'/>'  >
+         to: 								<option value='
+    *** Error - No c:out value on next line [								<c:out value='${years.name}'/>]
+    Changed: 						<option value='<c:out value='${years.name}'/>'  selected>
+         to: 						<option value='
+    *** Error - No c:out value on next line [						<c:out value='${years.name}'/>]
+    Changed: 						<option value='<c:out value='${years.name}'/>'  >
+         to: 						<option value='
+    *** Error - No c:out value on next line [						<c:out value='${years.name}'/>]
+    Changed: 					<option value='<c:out value='${makes.name}'/>'  selected>
+         to: 					<option value='
+    *** Error - No c:out value on next line [					<c:out value='${makes.name}'/>]
+    Changed: 					<option value='<c:out value='${makes.name}'/>'  >
+         to: 					<option value='
+    *** Error - No c:out value on next line [					<c:out value='${makes.name}'/>]
+    Changed: 					<option value='<c:out value='${makes.name}'/>'  selected>
+         to: 					<option value='
+    *** Error - No c:out value on next line [					<c:out value='${makes.name}'/>]
+    Changed: 					<option value='<c:out value='${makes.name}'/>'  >
+         to: 					<option value='
+    *** Error - No c:out value on next line [					<c:out value='${makes.name}'/>]
+    Changed: 									<option value='<c:out value='${models.name}'/>'  selected>
+         to: 									<option value='
+    *** Error - No c:out value on next line [									<c:out value='${models.name}'/>]
+    Changed: 									<option value='<c:out value='${models.name}'/>'  >
+         to: 									<option value='
+    *** Error - No c:out value on next line [									<c:out value='${models.name}'/>]
+    Changed: 									<option value='<c:out value='${models.name}'/>'  selected>
+         to: 									<option value='
+    *** Error - No c:out value on next line [									<c:out value='${models.name}'/>]
+    Changed: 									<option value='<c:out value='${models.name}'/>'  >
+         to: 									<option value='
+    *** Error - No c:out value on next line [									<c:out value='${models.name}'/>]
+    Changed: 					    <input type='radio' name='vehicle' value='<c:out value="${aaid}" />' onclick="javascript:showContinue()" checked>
+         to: 					    <input type='radio' name='vehicle' value='<esapi:encodeForHTML>${aaid}</esapi:encodeForHTML>' onclick="javascript:showContinue()" checked>
+    Changed: 					    <input type='radio' name='vehicle' value='<c:out value="${aaid}" />' onclick="javascript:showContinue()">
+         to: 					    <input type='radio' name='vehicle' value='<esapi:encodeForHTML>${aaid}</esapi:encodeForHTML>' onclick="javascript:showContinue()">
+    Changed: 						<td width="12%" align="center">&nbsp;<c:out value="${year}" /></td>
+         to: 						<td width="12%" align="center">&nbsp;<esapi:encodeForHTML>${year}</esapi:encodeForHTML></td>
+    Changed: 						<td width="12%" align="center">&nbsp;<c:out value="${aaiavehicle.make}" /></td>
+         to: 						<td width="12%" align="center">&nbsp;<esapi:encodeForHTML>${aaiavehicle.make}</esapi:encodeForHTML></td>
+    Changed: 						<td width="12%" align="center">&nbsp;<c:out value="${aaiavehicle.model}" /></td>
+         to: 						<td width="12%" align="center">&nbsp;<esapi:encodeForHTML>${aaiavehicle.model}</esapi:encodeForHTML></td>
+    Changed: 						<td width="12%" align="center">&nbsp;<c:out value="${aaiavehicle.submodel}" /></td>
+         to: 						<td width="12%" align="center">&nbsp;<esapi:encodeForHTML>${aaiavehicle.submodel}</esapi:encodeForHTML></td>
+    Changed: 						<td width="12%" align="center">&nbsp;<c:out value="${aaiavehicle.engine}" /></td>
+         to: 						<td width="12%" align="center">&nbsp;<esapi:encodeForHTML>${aaiavehicle.engine}</esapi:encodeForHTML></td>
+    Changed: 						<td width="12%" align="center">&nbsp;<c:out value="${aaiavehicle.engvin}" /></td>
+         to: 						<td width="12%" align="center">&nbsp;<esapi:encodeForHTML>${aaiavehicle.engvin}</esapi:encodeForHTML></td>
+    Changed: 						<td width="12%" align="center">&nbsp;<c:out value="${aaiavehicle.fuelType}" /></td>
+         to: 						<td width="12%" align="center">&nbsp;<esapi:encodeForHTML>${aaiavehicle.fuelType}</esapi:encodeForHTML></td>
+    Changed: 					  <b><c:out value='${waComments.formattedCreatedDateTime}'/> - <c:out value='${waComments.createdUserId}'/> - <c:out value='${waComments.commentType.commentTypeDesc}'/><fmt:message key="Maintenance.Requistion.Link.Comments"/></b></b>
+         to: 					  <b><esapi:encodeForHTML>Maintenance.Requistion.Link.Comments</esapi:encodeForHTML></b></b>
+    Changed: 						style="overflow:auto ; height: 60px; width: 460px; overflow-x: hidden; border: 1;  background: transparent;"><c:out value='${waComments.commentText}'/></textarea>
+         to: 						style="overflow:auto ; height: 60px; width: 460px; overflow-x: hidden; border: 1;  background: transparent;">
+    *** Error - No c:out value on next line [					  </c:when>]
+    Changed: 					  		    <b><c:out value='${waDetailComments.formattedCreatedDateTime}' /> - <c:out value='${waDetailComments.createdUserId}'/>- <c:out value='${waDetailComments.commentType.commentTypeDesc}'/><fmt:message key="Maintenance.Requistion.Link.Comments"/></b></b>
+         to: 					  		    <b><esapi:encodeForHTML>Maintenance.Requistion.Link.Comments</esapi:encodeForHTML></b></b>
+    Changed: 										style="overflow:auto ; height: 60px; width: 460px; overflow-x: hidden; border: 1;  background: transparent;"><c:out value='${waDetailComments.commentText}'/></textarea>
+         to: 										style="overflow:auto ; height: 60px; width: 460px; overflow-x: hidden; border: 1;  background: transparent;">
+    *** Error - No c:out value on next line [					  				</c:when>]
+******* Processing c:\bedit\scabba\xsite\welcomeafter.jsp *********************
+******* Processing c:\bedit\scabba\xsite\welcomebefore.jsp *********************
+    Added: <%@ taglib prefix="esapi" uri="/WEB-INF/esapi.tld" %>
+    Changed: 		var url1 = "<c:out value="${url}"/>";
+         to: 		var url1 = "<esapi:encodeForHTML>${url}</esapi:encodeForHTML>";
+    Changed: 			&nbsp;<c:out value="${userFName}"/>&nbsp;<c:out value="${userLName}"/>&nbsp;<b>|</b>&nbsp;<c:out value="${supplier.legalName}"/>
+         to: 			&nbsp;<esapi:encodeForHTML>${userFName}</esapi:encodeForHTML>&nbsp;<c:out value="${userLName}"/>&nbsp;<b>|</b>&nbsp;<c:out value="${supplier.legalName}"/>
+    Changed: 			&nbsp;<esapi:encodeForHTML>${userFName}</esapi:encodeForHTML>&nbsp;<c:out value="${userLName}"/>&nbsp;<b>|</b>&nbsp;<c:out value="${supplier.legalName}"/>
+         to: 			&nbsp;<esapi:encodeForHTML>${userFName}</esapi:encodeForHTML>&nbsp;<esapi:encodeForHTML>${userLName}</esapi:encodeForHTML>&nbsp;<b>|</b>&nbsp;<c:out value="${supplier.legalName}"/>
+    Changed: 			&nbsp;<esapi:encodeForHTML>${userFName}</esapi:encodeForHTML>&nbsp;<esapi:encodeForHTML>${userLName}</esapi:encodeForHTML>&nbsp;<b>|</b>&nbsp;<c:out value="${supplier.legalName}"/>
+         to: 			&nbsp;<esapi:encodeForHTML>${userFName}</esapi:encodeForHTML>&nbsp;<esapi:encodeForHTML>${userLName}</esapi:encodeForHTML>&nbsp;<b>|</b>&nbsp;<esapi:encodeForHTML>${supplier.legalName}</esapi:encodeForHTML>
+    Changed: 			&nbsp;<b>-</b>&nbsp; <c:out value="${contractStatus}"/> &nbsp;<b>|</b>&nbsp;<c:if test="${inNetwork eq true}" >
+         to: 			&nbsp;<b>-</b>&nbsp; <esapi:encodeForHTML>${contractStatus}</esapi:encodeForHTML> &nbsp;<b>|</b>&nbsp;<c:if test="${inNetwork eq true}" >
+    Changed: 		<input type="hidden" value= "<c:out vaue="${value}">"/>
+         to: 		<input type="hidden" value= "<esapi:encodeForHTML>${value}</esapi:encodeForHTML>"/>
+=================================================
+JSP Files         = 4
+JSP Files Changed = 3
+JSP Lines Changed = 31
+JSP Lines Added   = 5
+ 
+End of program XSiteScript.BED

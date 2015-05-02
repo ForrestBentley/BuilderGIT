@@ -1,0 +1,86 @@
+020700*-----------------------------                                    
+020800 2000-MAIN-PROCESSING SECTION.                                    
+020900*-----------------------------                                    
+021000                                                                  
+021100**   main processing                                              
+021200                                                                  
+021300     PERFORM 2100-PRELIMINARY-EDITS.                              
+021400                                                                  
+021500     IF WK290-MESG-CODE > ZEROES                                  
+021600        GO TO 2000-EXIT.                                          
+021700                                                                  
+021800     PERFORM 2200-SIX-DIGIT-EDITS.                                
+021900                                                                  
+      ****************************************************************  
+      * 08/07/00 MAMATA - PCS     TASK ID - CP0015                   *  
+      * ADDED AN ADDITIONAL CONDITION TO CHECK FOR CORP CODE '01'    *  
+      * FOR FLEETS IN RANGE 500000 TO 599999.                        *  
+      ****************************************************************  
+022000     IF WK290-CORP-ID-CODE = '98'     OR                          
+022100       (WK290-CUST-ID = '006402' OR '007947' OR '007994' OR       
+                  '001350' OR '001379' OR '001573' OR '001859' OR       
+                  '001806' OR '007867' OR '002692' OR '003325' OR       
+                  '030078' OR '001833' OR '001042' OR '005082' OR       
+                  '008037' OR '008262' OR '008263' OR '008264' OR       
+                  '008265' OR '008291' OR '008455' OR '002994' OR       
+                  '002695' OR '003011' OR '002271' OR '003425' OR       
+                  '002062' OR '001801' OR '002088' OR '003369' OR       
+                  '003496' OR '001771' OR '003678' OR '005538' OR       
+                  '005377' or '003704' or '030009' or '030247') OR      
+022100       ((WK290-CUST-ID >= '500000' AND <= '599999') AND           
+               WK290-CORP-ID-CODE = '01')                               
+022300          NEXT SENTENCE                                           
+022400     ELSE                                                         
+022500        MOVE WK290-WK-UNIT  TO  W01-WORK-FIELD-8                  
+022600        MOVE 1       TO WK290-SUB                                 
+022700        MOVE ZEROES  TO WK290-ST-POS                              
+022800        PERFORM UNTIL WK290-SUB > 8                               
+022900               IF W01-WORK-CHAR-8(WK290-SUB) NOT = ('0')          
+023000                  MOVE WK290-SUB TO WK290-ST-POS                  
+023100                  MOVE 9 TO WK290-SUB                             
+023200               ELSE                                               
+023300                  ADD  1 TO WK290-SUB                             
+023400               END-IF                                             
+023500        END-PERFORM                                               
+023600                                                                  
+023700        IF WK290-ST-POS = ZEROES                                  
+023800           MOVE SPACES TO WK290-WK-UNIT                           
+023900        END-IF                                                    
+024000                                                                  
+024100        IF WK290-ST-POS > 1                                       
+024200           SUBTRACT 1 FROM WK290-ST-POS                           
+024300           MOVE     1   TO WK290-SUB                              
+024400           PERFORM UNTIL WK290-SUB > WK290-ST-POS                 
+024500                   IF W01-WORK-CHAR-8(WK290-SUB) = ZEROES         
+024600                      MOVE SPACES TO W01-WORK-CHAR-8(WK290-SUB)   
+024700                      ADD 1 TO WK290-SUB                          
+024800                   END-IF                                         
+024900           END-PERFORM                                            
+025000           MOVE W01-WORK-FIELD-8 TO WK290-WK-UNIT.                
+025100                                                                  
+025200     IF WK290-WK-UNIT = SPACES                                    
+025300        MOVE 927432  TO WK290-MESG-CODE.                          
+025400                                                                  
+025500     IF WK290-MESG-CODE > ZEROES                                  
+025600        GO TO 2000-EXIT.                                          
+025700                                                                  
+025800********************************************************          
+025900** No editing for NYNEX (009900) or TIP fleets (038XXX)           
+026000** Just strip zeroes and left-justify                             
+026100********************************************************          
+026200     IF WK290-CORP-ID-CODE = '01' AND                             
+026300        (WK290-CUST-ID      = '009900'   OR                       
+026400        (WK290-CUST-ID      > '037999' AND                        
+026500         WK290-CUST-ID      < '039000'))                          
+026600        PERFORM 2450-CHECK-TRANSFER                               
+026700        GO TO 2000-EXIT                                           
+026800     END-IF.                                                      
+026900                                                                  
+027000     PERFORM 2300-DTERMINE-UNTNO-CONTNTS.                         
+027100                                                                  
+027200     PERFORM 2400-OTHER-EDITS.                                    
+027300                                                                  
+027400                                                                  
+027500 2000-EXIT.                                                       
+027600     EXIT.                                                        
+027700                                                                  

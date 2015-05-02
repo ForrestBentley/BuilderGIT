@@ -1,0 +1,648 @@
+//********************************************************************************
+//* Program : Rainbow.bed
+//* Author  : Forrest Bentley
+//* Date    : 01/29/2014
+//* Desc    : This program will read HTML and create a list of all of the 
+//*           tags on the page with a unique identifier.
+//*
+//********************************************************************************
+//* External Filename          Internal Filename Desc
+//* -------------------------- ----------------- ---------------------------------
+//* Params.dat               : ParamsFile        Input File created by Rainbow containing:
+//*                                              Package=PackageName,App=SystemName,Page<"PageName","InputFileName">
+//*
+//* SystemName_PageName.java : HTML_File         Output File used in Rainbow
+//*
+//* SystemName_PageName.csv  : Report            Output Report
+//*
+//********************************************************************************
+//* Processing : The system will 1) Copy the InputFileName to HTMLFix.HTML
+//*                              2) Run HTMLFix.exe to normalize the HTML file for processing
+//*                              3) Look for all Tags and identify the appropriate Type
+//*                              4) Write the Output File to be used by Rainbow
+//*
+//********************************************************************************
+//*              M A I N T E N A N C E       L O G
+//*
+//* Date       Author           Description
+//* ---------- ---------------- --------------------------------------------------
+//* 01/29/2014 Forrest Bentley  Created
+//* 01/30/2014 Forrest Bentley  Added logic for ID, NAME, CLASS, TAG, LINK, PLINK
+//*                             Open output Report file for processing
+//*                             Added Duplicate Counts
+//* 02/11/2014 Forrest Bentley  Added CSS Button, Input
+//*
+//********************************************************************************
+
+    string  PackageName          // Package name input in Param.dat
+    string  SystemName           // System name input in Param.dat file
+    string  PageName             // Page name input in Param.dat file
+    string  InputFileName        // File name input in Param.dat file
+    string  OutputFileName       // Output filename = SystemName_PageName.java
+
+    int     TagsCount            // Count of all Tags in the input HTML file
+    int     TagsProcessed        // Count output Tags processed
+    int     TagsCountID          // Count of ID tags
+    int     TagsCountName        // Count of NAME tags
+    int     TagsCountClass       // Count of CLASS tags
+    int     TagsCountTag         // Count of TAG tags
+    int     TagsCountLink        // Count of LINK tags
+    int     TagsCountPlink       // Count of PLINK tags
+    int     TagsCountCss         // Count of CSS tags
+    int     TagsCountXpath       // Count of XPATH tags
+    int     TagsCountText        // Count of TEXT tags
+
+    int     DupId                // Count of duplicate IDs
+    int     DupName              // Count of duplicate Names
+    int     DupClass             // Count of duplicate Class'
+    int     DupTag               // Count of duplicate Tags
+    int     DupLink              // Count of duplicate Links
+    int     DupPlink             // Count of duplicate Plinks
+    int     DupCss               // Count of duplicate Csss
+    int     DupXpath             // Count of duplicate Xpaths
+    int     DupText              // Count of duplicate Texts
+
+    string  Processed            // Boolean flag indicating if the Tag was handled
+
+    string  MacroCommand         // Any command requiring a $ macro execution
+    string  Newline              // Work field to construct a new line for output
+    string  TagData              // Data identifying Tag
+    string  TagType              // Type of Tag (ID,NAME,CLASS,CSS,LINK,PLINK,TAG,XPATH)
+    string  TagNumber            // 5 Digit Tag Number for the Tag Name
+
+    string  ReportLine           // Output Report CSV line
+    string  CSSTag               // CSS Tag Work Field
+
+//****************************************************
+//* Main Procesing
+//****************************************************
+!a100_main
+    call !b100_init
+    call !b200_proc
+    call !b300_wrap
+    exit
+
+//****************************************************
+//* Initialization
+//****************************************************
+!b100_init
+    system:"cls"
+    print:"******************************************************"
+    print:"*                    Rainbow.bed"
+    print:"* This program will read an HTML file and create a"
+    print:"* file containing a list of all tags on the page, and"
+    print:"* an associated unique ID."
+    print:"******************************************************"
+    if (exists Params.dat)
++      call !b110_params_file
++   else
++      call !b120_input_params 
++   endif
+    open RainbowBat null
+    if (exists htmlfix.html)
++      i:/del htmlfix.html/
++   endif
+    MacroCommand = |i:/copy @InputFileName@ htmlfix.html/| $MacroCommand
+    if (exists htmlfix.dat)
++      i:/del htmlfix.dat/
++   endif
+    i:/echo DONE > BEDITexec.sem/
+    write RainbowBat Rainbow.bat
+    close RainbowBat
+    system:"Rainbow.bat"
+    system:"HTMLFix.exe"
+    
+    open HTML_File htmlfix.dat error goto !b100_bad_file
+    b
+    //******************************************
+    //* Remove non-tag lines
+    //******************************************
+    print:"removing non-tags"
+    do
+        pack line
+        if-null (line = null)
++           d;1
++       else-null
++           split:/@line/;1
++           if-1  (left != '<')
++               d;1
++           else-1
++               split:/@right/;1
++               if-2  (left = '/')
++                   d;1
++               else-2
++                   f;1
++       endif
+    until (eof)
+    print:"non-tags removed"
+    b
+
+    //*************************
+    //* Open output files
+    //*************************
+    open TagData null
+    open Report null
+    return
+
+!b100_bad_file
+    print:"Unable to open @InputFileName@"
+    exit
+
+//****************************************************
+//* Process the Params file
+//****************************************************
+!b110_params_file
+    open ParamsFile Params.dat
+    scan:/@line/:/=/
+    scan:/@right/:/,/
+    PackageName = left
+    scan:/@right/:/=/
+    scan:/@right/:/,/
+    SystemName = left
+    scan:/@right/:/</
+    scan:/@right/:/,/
+    PageName = left
+    scan:/@right/:/>/
+    InputFileName = left
+
+    crush SystemName
+    crush PageName
+    scan:/@PageName@/:/"/ if (found) PageName = "@left@@right@"
+    scan:/@PageName@/:/"/ if (found) PageName = "@left@@right@" 
+    crush InputFileName
+    scan:/@InputFileName@/:/"/ if (found) InputFileName = "@left@@right@"
+    scan:/@InputFileName@/:/"/ if (found) InputFileName = "@left@@right@" 
+    close ParamsFile
+    return
+
+//****************************************************
+//* User Input of Params
+//****************************************************
+!b120_input_params
+    printx:"Package name:"
+    input PackageName
+    if (PackageName = null) exit
+
+    printx:"System name:"
+    input SystemName
+    if (SystemName = null) exit
+    
+    printx:"Page name:"
+    input PageName
+    if (PageName = null) exit
+
+    printx:"File name:"
+    input InputFileName
+    if (InputFileName = null) exit
+
+    return
+
+//****************************************************
+//* Process
+//****************************************************
+!b200_proc
+    //***************************
+    //* Process the HTML file
+    //***************************
+    file HTML_File
+    b
+    do
+        if (!eof)
++          pack line
++          if (line != null)
++             call !b210_process_line
++       endif
+        file HTML_File
+        f;1
+    until (eof) 
+
+    //***************************
+    //* Change LINK to PLINK
+    //***************************
+    print:"Converting LINK to PLINK"
+    call !x100_plink
+
+    //***************************
+    //* Fix the Output Java File
+    //***************************
+    file TagData
+    f;*
+    rs:/,/:/;/
+    b
+    Newline = |package @PackageName@;| ib:/@Newline@/
+    i:||
+    Newline = |public enum @SystemName@_@PageName@  {| i:/@Newline@/
+    i:||
+    f;*
+    i:||
+    i:|    private final String enumValue;|
+    i:||
+    Newline = |    private @SystemName@_@PageName@(String s) {| i:/@Newline@/
+    i:|        enumValue = s;|
+    i:|    }|
+    i:||
+    i:|    public String getValue () {|
+    i:|        return enumValue;|
+    i:|    }|
+    i:||
+    i:|    public String toString() {|
+    i:|        return getValue();|
+    i:|    }|
+    i:|}|       
+    return
+
+//****************************************************
+//* Process 1 HTML Line
+//****************************************************
+!b210_process_line
+    //*****************************
+    //* Process Tag lines
+    //*****************************
+    TagsCount ++
+
+    //*****************************
+    //* ID
+    //*****************************
+    scan:/@line/:/id=/
+    if (found)
++      call !b220_id
++      if (Processed)
++         return
++   endif
+
+    //*****************************
+    //* NAME
+    //*****************************
+    scan:/@line/:/name=/
+    if (found)
++      call !b225_name
++      if (Processed)
++         return
++   endif
+
+    //*****************************
+    //* CLASS
+    //*****************************
+    scan:/@line/:/class=/
+    if (found)
++      call !b230_class
++      if (Processed)
++         return
++   endif
+
+    //*****************************
+    //* TAG
+    //*****************************
+    split:/@line/;1
+    call !b235_tag
+    if (Processed)
++      return
++   endif
+
+    //*****************************
+    //* LINK
+    //*****************************
+    scan:/@line/:/href=/
+//    if (!found)
+//+        scan:/@line/:/src=/
+//+   endif
+    if (found)
++      call !b240_link
++      if (Processed)
++         return
++   endif
+
+    //*****************************
+    //* CSS button
+    //*****************************
+    scan:/@line/:/<button/
+    if (found)
++      call !b250_CSS_button
++      if (Processed)
++         return
++   endif
+    //*****************************
+    //* CSS input
+    //*****************************
+    scan:/@line/:/<input/
+    if (found)
++      call !b255_CSS_input
++      if (Processed)
++         return
++   endif
+
+    return
+
+//****************************************************
+//* Process ID
+//****************************************************
+!b220_id
+    Processed = 'n'
+    scan:/@right/:word
+    TagData = left
+    scan:/@TagData@/:/>/
+    if (found) TagData = left
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    ib:/$*$FGB/
+    b
+    fs:/@TagData@/;*
+    if (pcount = 1)
++      Processed = 'y'
++      TagType = 'ID'
++      TagsCountID ++
++      call !b290_keep_tag
++   else
++      DupId ++
++   endif
+    file HTML_File
+    b
+    fs:/$*$FGB/
+    d
+    return
+
+//****************************************************
+//* Process NAME
+//****************************************************
+!b225_name
+    Processed = 'n'
+    scan:/@right/:word
+    TagData = left
+    scan:/@TagData@/:/>/
+    if (found) TagData = left
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    ib:/$*$FGB/
+    b
+    fs:/@TagData@/;*
+    if (pcount = 1)
++      Processed = 'y'
++      TagType = 'NAME'
++      TagsCountName ++
++      call !b290_keep_tag
++   else
++      DupName ++
++   endif
+    file HTML_File
+    b
+    fs:/$*$FGB/
+    d
+    return
+
+//****************************************************
+//* Process CLASS
+//****************************************************
+!b230_class
+    Processed = 'n'
+    scan:/@right/:word
+    TagData = left
+    scan:/@TagData@/:/>/
+    if (found) TagData = left
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    ib:/$*$FGB/
+    b
+    fs:/@TagData@/;*
+    if (pcount = 1)
++      Processed = 'y'
++      TagType = 'CLASS'
++      TagsCountClass ++
++      call !b290_keep_tag
++   else
++      DupClass ++
++   endif
+    file HTML_File
+    b
+    fs:/$*$FGB/
+    d
+    return
+
+//****************************************************
+//* Process TAG
+//****************************************************
+!b235_tag
+    Processed = 'n'
+    scan:/@right/:word
+    TagData = left
+    scan:/@TagData@/:/>/ if (found) TagData = left
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    if (found) TagData = left
+    ib:/$*$FGB/
+    b
+    fs:/@TagData@/;*
+    if (pcount = 1)
++      Processed = 'y'
++      TagType = 'TAG'
++      TagsCountTag ++
++      call !b290_keep_tag
++   else
++      DupTag ++
++   endif
+    file HTML_File
+    b
+    fs:/$*$FGB/
+    d
+    return
+
+//****************************************************
+//* Process LINK
+//****************************************************
+!b240_link
+    Processed = 'n'
+    scan:/@right/:word
+    TagData = left
+    scan:/@TagData@/:/>/
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    if (found) TagData = left
+    ib:/$*$FGB/
+    b
+    fs:/@TagData@/;*
+    if (pcount = 1)
++      Processed = 'y'
++      TagType = 'LINK'
++      TagsCountLink ++
++      call !b290_keep_tag
++   else
++      DupLink ++
++   endif
+    file HTML_File
+    b
+    fs:/$*$FGB/
+    d
+    return
+
+//****************************************************
+//* Process a CSS Button
+//****************************************************
+!b250_CSS_button
+    Processed = 'n'
+    scan:/@right/:/"/ if (!found) return
+    scan:/@right/:/"/ if (!found) return
+    TagData = "button[value='@left@']"
+    CSSTag = left
+    ib:/$*$FGB/
+    b
+    fs:/@CSSTag@/;*
+    if (pcount = 1)
++      Processed = 'y'
++      TagType = 'CSS'
++      TagsCountCss ++
++      call !b290_keep_tag
++   else
++      DupCss ++
++   endif
+    file HTML_File
+    b
+    fs:/$*$FGB/
+    d
+    return
+
+//****************************************************
+//* Process a CSS Input
+//****************************************************
+!b255_CSS_input
+    Processed = 'n'
+    scan:/@right/:/ name=/ if (!found) return
+    scan:/@right/:/"/ if (!found) return
+    scan:/@right/:/"/ if (!found) return
+    TagData = |"input#@left@"|
+    CSSTag = |name="@left@"|
+    ib:/$*$FGB/
+    b
+    fs:/@CSSTag@/;*
+    if (pcount = 1)
++      Processed = 'y'
++      TagType = 'CSS'
++      TagsCountCss ++
++      call !b290_keep_tag
++   else
++      DupCss ++
++   endif
+    file HTML_File
+    b
+    fs:/$*$FGB/
+    d
+    return
+
+//****************************************************
+//* Keep the current Tag Data
+//****************************************************
+!b290_keep_tag
+    //**********************************************
+    //* Ensure TagData has one set of double quotes
+    //**********************************************
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@"
+    scan:/@TagData@/:/"/ if (found) TagData = "@left@@right@" 
+    TagData = /"@TagData@"/
+    TagsProcessed ++
+    TagNumber = "00000@TagsProcessed@" splitr:/@TagNumber@/;5 TagNumber = right
+    Newline = '    @SystemName@_@PageName@_@TagNumber@_@TagType@ (@TagData@),'
+    file TagData
+    i:/@Newline@/
+    p
+    return
+
+//****************************************************
+//* Wrapup
+//****************************************************
+!b300_wrap
+    system:"cls"
+    OutputFileName = "@SystemName@_@PageName@.java"
+    write TagData @OutputFileName
+    print:"*************************************"
+    print:"* Rainbow Processing Complete"
+    print:"*************************************"
+    print:"Package          : @PackageName@"
+    print:"System           : @SystemName@"
+    print:"Page             : @PageName@"
+    print:"Input File       : @InputFileName@"
+    print:"Output File      : @OutputFileName@"
+    print:"Total Tags       : @TagsCount@"
+    print:"--------------------------------"
+    print:"ID Count         : @TagsCountID@"
+    print:"NAME Count       : @TagsCountName@"
+    print:"CLASS Count      : @TagsCountClass@"
+    print:"TAG Count        : @TagsCountTag@"
+    print:"LINK Count       : @TagsCountLink@"
+    print:"PLINK Count      : @TagsCountPlink@"
+    print:"CSS Count        : @TagsCountCss@"
+    print:"XPATH Count      : @TagsCountXpath@"
+    print:"TEXT Count       : @TagsCountText@"
+    print:"--------------------------------"
+    print:"Processed Tags   : @TagsProcessed@"
+    print:"--------------------------------"
+    print:"Duplicate ID     : @DupId@"
+    print:"Duplicate Name   : @DupName@"
+    print:"Duplicate Class  : @DupClass@"
+    print:"Duplicate Tag    : @DupTag@"
+    print:"Duplicate Link   : @DupLink@"
+    print:"Duplicate Plink  : @DupPlink@"
+    print:"Duplicate Css    : @DupCss@"
+    print:"Duplicate Xpath  : @DupXpath@"
+    print:"Duplicate Text   : @DupText@"
+    print:"--------------------------------"
+
+    return
+
+//****************************************************
+//* Convert LINK to PLINK if possible
+//****************************************************
+!x100_plink
+    string  LinkData             // Used to convert LINK to PLINK
+
+    file TagData
+    b
+    do
+        fs:/_LINK (/
+        if  (!eof)
++           call !x110_check_plink
++       endif
+        f;1
+    until (eof)
+    return
+
+//****************************************************
+//* Check the LINK for uniqueness
+//****************************************************
+!x110_check_plink
+    //print:"x110 I[@line@]" 
+    scanr:/@line/:|/|
+    if (!found) return
+    LinkData = right
+    scan:/@LinkData/:/"/
+    if (found) LinkData = left
+    ib:/$*$FGB/
+    b
+    fs:/@LinkData@/;*
+    if (pcount > 1)
++      //*****************************
++      //* Not Unique - Leave as LINK
++      //*****************************
++      b
++      fs:/$*$FGB/
++      d
++   else
++      //*****************************
++      //* Unique - Change to PLINK
++      //*****************************
++      b
++      fs:/$*$FGB/
++      d
++      if (LinkData != '')
++         scan:/@line/:/(/
++         Newline = '@left@('
++         scan:/@right/:/)/
++         Newline = /@Newline@"@LinkData@"),/
++         r:/@Newline@/
++         rvs:/_LINK (/:/_PLINK (/
++         TagsCountLink --
++         TagsCountPlink ++
++   endif
+    //print:"x110 O[@line@]" 
+    return
+
+//****************************************************
+//* End of program Rainbow.bed
+//***************************************************

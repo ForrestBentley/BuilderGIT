@@ -1,0 +1,22 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Test One
+MENU,~Test
+ITEM,T1_Win1_MSOBJ,T1_Win1_WIN
+ITEM,T1_Win3_MSOBJ,T1_Win3_WIN
+ITEM,T1_Win4_MSOBJ,T1_Win4_WIN
+ITEM,T1_Win5_MSOBJ,T1_Win5_WIN
+--------------------
+ITEM,T1_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,T1_Main_Banneron_MSOBJ,Banner O~n
+ITEM,T1_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,T1_Main_About_MSOBJ,~About T1 System

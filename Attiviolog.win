@@ -1,0 +1,48 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Attiviolog_Vehicleperson_WIN,48,50,700,165,Vehicle Person Log Selection
+PBOBJ1,Attiviolog_Vehicleperson_Directory_PBOBJ,35,25,114,24,&Directory
+EFOBJL,Attiviolog_Vehicleperson_Directory_EFOBJ,175,25,414,24,
+PBOBJ1,Attiviolog_Vehicleperson_Ok_PBOBJ,35,69,114,24,&OK
+PBOBJ1,Attiviolog_Vehicleperson_Cancel_PBOBJ,217,69,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Attiviolog_Connectors_WIN,51,58,700,165,Connector Log Analysis
+PBOBJ1,Attiviolog_Connectors_Directory_PBOBJ,35,25,114,24,&Directory
+EFOBJL,Attiviolog_Connectors_Directory_EFOBJ,175,25,414,24,
+PBOBJ1,Attiviolog_Connectors_Ok_PBOBJ,35,69,114,24,&OK
+PBOBJ1,Attiviolog_Connectors_Cancel_PBOBJ,217,61,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Attiviolog_Browse_WIN,10,100,650,335,Browse
+STTXT1,Attiviolog_Browse_Directory_STTXT,41,25,65,24,Directory
+PBOBJ1,Attiviolog_Browse_Back_PBOBJ,112,25,44,24,<<
+EFOBJL,Attiviolog_Browse_Directory_EFOBJ,164,25,444,24,
+PBOBJ1,Attiviolog_Browse_Newdir_PBOBJ,156,57,114,24,&New Directory
+STTXT1,Attiviolog_Browse_Extension_STTXT,366,57,69,24,Extension
+EFOBJL,Attiviolog_Browse_Extension_EFOBJ,445,57,44,24,
+PBOBJ1,Attiviolog_Browse_Refresh_PBOBJ,500,57,64,24,&Refresh
+STTXT1,Attiviolog_Browse_Subdir_STTXT,41,57,104,24,Sub-Directories
+LBOBJ1,Attiviolog_Browse_Subdir_LBOBJ,42,86,250,160,
+STTXT1,Attiviolog_Browse_Files_STTXT,307,57,34,24,Files
+LBOBJ1,Attiviolog_Browse_Files_LBOBJ,305,86,260,161,
+PBOBJ1,Attiviolog_Browse_Ok_PBOBJ,45,255,114,24,&OK
+PBOBJ1,Attiviolog_Browse_Cancel_PBOBJ,174,255,114,24,&Cancel
+PBOBJ1,Attiviolog_Browse_Open_PBOBJ,375,255,114,24,&Open
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Attiviolog_Newdir_WIN,80,80,360,135,New Directory
+STTXT1,Attiviolog_Newdir_Name_STTXT,11,17,44,24,Name
+EFOBJL,Attiviolog_Newdir_Name_EFOBJ,64,17,264,24,
+PBOBJ1,Attiviolog_Newdir_Ok_PBOBJ,64,52,114,24,&OK
+PBOBJ1,Attiviolog_Newdir_Cancel_PBOBJ,189,52,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Attiviolog_Progress_WIN,110,90,600,100,Progress
+STTXTF,Attiviolog_Progress_Progressframe_STTXT,10,20,550,20,
+PBOBJ1,Attiviolog_Progress_Ok_PBOBJ,2000,2000,10,10,&OK

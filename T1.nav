@@ -1,0 +1,13 @@
+T1_Win1_Ok_PBOBJ,Win2,open
+T1_Win1_Cancel_PBOBJ,Win1,close
+T1_Win2_Ok_PBOBJ,Win2,close
+T1_Win2_Cancel_PBOBJ,Win2,close
+T1_Win1_B1.1_Ellipse,Win1,close
+T1_Win1_B1.3_Ellipse,c:\3090\ASM\Q2C40001.cob,start
+T1_Win1_Forrest_PBOBJ,Win1,close
+T1_Win3_Ok_PBOBJ,Win3,close
+T1_Win3_Cancel_PBOBJ,Win3,close
+T1_Win4_Ok_PBOBJ,Win4,close
+T1_Win4_Cancel_PBOBJ,Win4,close
+T1_Win5_Ok_PBOBJ,Win2,open
+T1_Win5_Cancel_PBOBJ,Win5,close

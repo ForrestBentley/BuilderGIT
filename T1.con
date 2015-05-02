@@ -1,0 +1,5 @@
+T1_Win1_B1_Ellipse,T1_Win1_B1.1_Ellipse,Straight3
+T1_Win1_B1.1_Ellipse,T1_Win1_B1.3_Ellipse,Straight3
+T1_Win1_B1.3_Ellipse,T1_Win1_B1.2_Ellipse,Straight3
+T1_Win1_B1.2_Ellipse,T1_Win1_B1_Ellipse,Straight3
+T1_Win1_B1.2_Ellipse,T1_Win1_B1.1_Ellipse,Straight3

@@ -1,0 +1,31 @@
+#hoverdiv {
+	display: none;
+	position: absolute;
+	font-size: 20px;
+	background-color: gray;
+	color: white;
+	border: 1px solid black;
+	pading: 7px;
+}
+
+div {font-family:arial;
+	color:blue;
+	font-size:14px;
+	font-style:italic;
+	font-weight:bold;
+}
+
+.textin {font-family:arial;
+	color:gray;
+	font-size:12px;
+	font-style:italic;
+	background-color:Linen;
+}
+
+.back {font-family:arial;
+	color:black;
+	font-size:12px;
+	font-style:italic;
+	background-color:LightYellow;
+}
+

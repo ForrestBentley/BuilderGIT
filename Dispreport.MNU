@@ -1,0 +1,19 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Display Report
+MENU,~Display Report Criteria
+ITEM,Dispreport_Createcsv_MSOBJ,Create CSV
+--------------------
+ITEM,Dispreport_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Dispreport_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Dispreport_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Dispreport_Main_About_MSOBJ,~About Dispreport System

@@ -1,0 +1,1834 @@
+//**************************************************************
+//* Program : Pacman.bed
+//* Author  : Forrest Bentley
+//* Date    : 10/28/2013
+//* Desc    : This is the B-Edit version of the classic
+//*           arcade game Pacman. Use the cursor control
+//*           keys to move the '*' around the screen to eat
+//*           '.'s and avoid the H,V,D,R monsters.
+//*
+//* Input   : Board.dat
+//*           This file will contain all of the data needed to
+//*           setup the board. Below is a sample Board.dat file:
+//*
+//*           ²²²²²²²²²²²²²²²²²²²²²²²²²²²
+//*           ²rrrrrdlllrrd²dllrrrdllrrd²
+//*           ²U²²²²d²²²²²d²d²²²²²d²²²²U²
+//*           ²d²²²²d²²²²²d²d²²²²²d²²²²d²
+//*           ²rrrrrrrdllllrrrrrdlllllll²
+//*           ²d²²²²d²d²²²²²²²²²d²d²²²²d²
+//*           ²rrrrrd²rrrrd²dllll²dlllll²
+//*           ²²²²²²d²²²²²3²3²²²²²d²²²²²²
+//*                ²d²22222344444²d²     
+//*           ²²²²²²d²1²²²²5²²²²1²d²²²²²²
+//*           RRRRRRr21²DVhhhHX²14lLLLLLL
+//*           ²²²²²²u²1²²²²²²²²²1²u²²²²²²
+//*                ²u²14444222221²u²     
+//*           ²²²²²²u²1²²²²²²²²²1²u²²²²²²
+//*           ²rrrrrurullll²rrrrululllll²
+//*           ²u²²²²u²²²²²u²u²²²²²u²²²²u²
+//*           ²Ulll²ullrrru*ullrrru²rrrU²
+//*           ²²²²d²u²u²²²²²²²²²u²u²u²²²²
+//*           ²rrrrru²ullll²rrrru²ululll²
+//*           ²u²²²²²²²²²²u²u²²²²²²²²²²l²
+//*           ²ulllllrrrrrurulllllrrrrru²
+//*           ²²²²²²²²²²²²²²²²²²²²²²²²²²²
+//*
+//*           When the game starts Board.dat is read into 
+//*           an internal file called Homefile which is 
+//*           used to show the monsters how to get back to 
+//*           their starting positions. The Board.dat file
+//*           is also read into the internal file named
+//*           Board. This is where all processing and movement
+//*           occurs. All moves are made, then the file is
+//*           printed on the screen.
+//*
+//*           The data in the Board.dat file is as follows:
+//*           * is the Pacman
+//*           V, H, R, X are characters for Monsters
+//*           1 and u = up
+//*           2 and r = right
+//*           3 and d = down
+//*           4 and l = left
+//*           5 designates the Monster gate
+//*           L is a special left that will slow down Monsters
+//*           R is a special right that will slow down Monsters
+//*           U designates where an Energy point is that turns
+//*             Monsters into Ghosts.
+//*           h is a homing location for Ghosts
+//*           Before processing all characters listed above are
+//*           converted to '.'s, and 1-4 are converted to spaces
+//*           5 is converted to the gate '_'.
+//*
+//*           At startup the program identifies the starting
+//*           positions of the Pacman and Monsters. The Monster
+//*           data is stored in an internal Monsters file.
+//*
+//**************************************************************
+
+int     RowPos
+int     ColPos
+int     HoldRow
+int     HoldCol
+int     CheckRow
+int     CheckCol
+int     MonsterRow
+int     MonsterCol
+int     MCurrRow
+int     MCurrCol
+int     PacRow
+int     PacCol
+int     PacNewRow
+int     PacNewCol
+string  Player
+int     PlayerRow
+int     PlayerCol
+string  MonsterPlayer
+string  MonsterRowCol
+int     TestCol
+string  MonsterLine
+int     Pause
+string  Direction
+string  OldDirection
+string  PacDirection
+string  PacDirectionInput
+string  PrevPacDirection
+string  Home
+int     HomeRow
+int     HomeCol
+int     Ghost
+float   Score = 0
+int     LifePoints
+int     Level = 1
+int     Lives = 3
+string  sScore
+int     LenScore
+string  sPrintScore
+string  NewLoc
+string  PrevLoc
+string  HoldLeft
+string  HoldRight
+string  Newline
+int     PacHomeRow
+int     PacHomeCol
+int     DirectionContinue
+int     RandomDir
+int     CanMove
+int     Collission
+
+int     PacDelay
+int     MonsterDelay
+int     MaxSize
+int     SleepTime = 50           note:/* Initial Speed of Game             */
+int     MonsterInterval = 60     note:/* Interval between Monsters waking  */
+int     MonsterPause = 30        note:/* Pause for 1st Monster             */
+int     Delay = 4                note:/* How many loops for each player    */
+int     GhostDelay = 7           note:/* Slow Down Ghosts                  */
+int     DotPoints = 10           note:/* Points for each Dot               */
+int     EnergyPoints = 50        note:/* Points for Each Energy            */
+int     LevelPoints = 500        note:/* Points for finishing a Level      */
+int     GhostPoints = 50         note:/* Points for eating first Ghost     */
+int     NewLifePoints = 10000    note:/* Points needed for new life        */
+int     GhostCount = 20          note:/* How long Ghosts last              */
+string  GhostChar = 'M'          note:/* Character for Ghost               */
+string  ResurectChar = 'W'       note:/* Character for Ghost running home  */
+string  FruitChar = '%'          note:/* Character for Fruit               */
+string  Gate = '_'               note:/* Character for Ghost Pen Gate      */
+int     Bottom                   note:/* Show data at Bottom               */
+int     MonsterPauseTotal
+int     SleepTimeSpeed = SleepTime
+int     GhostPointsValue
+int     iWork
+string  Block
+string  Edge
+string  AtGate
+string  ErrorMsg
+int     MLoopCount
+int     GateRow
+int     GateCol
+string  InPen
+int     Fruit
+int     FruitNum
+int     FruitRand
+int     FruitCount
+int     FruitRow
+int     FruitCol
+int     FruitPoints
+string  FruitSetup
+float   HighScore
+string  Name
+int     GetReadyRow
+int     GetReadyCol
+string  Response
+char    Restart = 'n'
+int     EnergyCountTotal
+int     EnergyCount
+int     EnergyDelay
+int     EnergyColorCount
+int     FruitCountTotal
+int     FruitCnt
+int     FruitDelay
+int     FruitColorCount
+
+//*****************************
+//* Setup Color Macro Fields
+//*****************************
+string  SetColor
+string  PacmanColor = /SetColor = 'yellow' color SetColor/
+string  VColor = /SetColor = 'green' color SetColor/
+string  HColor = /SetColor = 'cyan' color SetColor/
+string  XColor = /SetColor = 'magenta' color SetColor/
+string  DColor = /SetColor = 'red' color SetColor/
+string  GhostColor1 = /SetColor = 'red' color SetColor/
+string  GhostColor2 = /SetColor = 'darkred' color SetColor/
+string  ResurectColor = /SetColor = 'yellow' color SetColor/
+string  BoardColor = /SetColor = 'blue' color SetColor/
+string  EnergyColor1 = /SetColor = 'cyan' color SetColor/
+string  EnergyColor2 = /SetColor = 'yellow' color SetColor/
+string  EnergyColor3 = /SetColor = 'white' color SetColor/
+string  FruitColor1 = /SetColor = 'cyan' color SetColor/
+string  FruitColor2 = /SetColor = 'yellow' color SetColor/
+string  FruitColor3 = /SetColor = 'white' color SetColor/
+string  DefaultColor = /color 7/
+
+//*****************************
+//* Monster Line
+//*****************************
+string  MPlayer 
+string  MRowPos 
+string  MColPos 
+string  MDirection  
+string  MDirectionContinue 
+string  MPause 
+string  MDelay
+string  MPrevLoc 
+string  MGhost 
+string  MHome 
+string  MHomeRow 
+string  MHomeCol
+
+//**************************************************************
+//* Process the Pacman Game
+//**************************************************************
+!a100_pacman
+    call !b100_init
+    call !b200_proc
+    call !b300_wrap
+    exit
+
+//**************************************************************
+//* Initialization
+//**************************************************************
+!b100_init
+    system:"cls"
+    if (Restart) 
++      close Homefile
++      close Board
++   endif
+
+    if (Level = 1) or (Level = 2)
++      open Homefile Board1.dat 
++      goto !b100_file_opened
++   endif
+    if (Level = 3) or (Level = 4) 
++      open Homefile Board2.dat
++      goto !b100_file_opened
++   endif
+    if (Level = 5) or (Level = 5) 
++      open Homefile Board3.dat
++      goto !b100_file_opened
++   endif
+    open Homefile Board1.dat
+
+!b100_file_opened
+    b
+    copy;*
+    Bottom = pcount + 2
+    open OrigBoard null error
+    b d;*
+    paste
+    open Board null error
+    b d;*
+    paste
+    b
+    fs:/444422222/
+    if (eof) ErrorMsg = /Bad Board, need spot for "Get Ready"/ call !z100_fatal_error
+    GetReadyRow = lineno + 1
+    scan:/@line/:/444422222/
+    GetReadyCol = lleft + 1
+    b rs:/u/:/./;*
+    b rs:/d/:/./;*
+    b rs:/r/:/./;*
+    b rs:/l/:/./;*
+    b rs:/1/:/ /;*
+    b rs:/2/:/ /;*
+    b rs:/3/:/ /;*
+    b rs:/4/:/ /;*
+    b rs:/h/:/ /;*
+    b rs:/L/:/ /;*
+    b rs:/R/:/ /;*
+    b rs:/5/:/@Gate@/
+    b fs:/@Gate@/
+    GateRow = lineno - 1
+    scan:/@line/:/@Gate@/
+    GateCol = lleft
+    b rs:/U/:/o/;*
+    b
+
+    file Homefile
+    b rs:/U/:/u/;*
+    b rs:/D/:/h/;*
+    b rs:/V/:/h/;*
+    b rs:/H/:/h/;*
+    b rs:/X/:/h/;*
+    b rs:/*/:/r/;*
+    b rs:/1/:/u/;*
+    b rs:/2/:/r/;*
+    b rs:/3/:/d/;*
+    b rs:/4/:/l/;*
+    b rs:/5/:/d/;*
+    b
+   
+    file Board
+    MaxSize = lline
+    split:/@line/;1 Block = left
+    system:"cls"
+    print:"    B-Edit Pacman V1.0"
+    b p;*
+    b
+    if  (!Restart)
++       open Monsters null error
++       b d;*
++   endif
+    Ghost = 0
+    DirectionContinue = 5
+    PrevLoc = ' '
+    Home = 'n'
+    MonsterDelay = Delay
+
+    if (Level > 3) 
++      MonsterPause = MonsterInterval / Level
++   else
++      MonsterPause = MonsterInterval
++   endif
+
+    if  (Restart)
++       call !b150_restart
++   endif
+
+    MonsterPauseTotal = MonsterPause
+    Player = 'V' call !f100_find_player Pause = MonsterPauseTotal Direction = 'right' HomeRow = PlayerRow HomeCol = PlayerCol call !m200_monster_line
+    MonsterPauseTotal = MonsterPauseTotal + MonsterPause
+    Player = 'H' call !f100_find_player Pause = MonsterPauseTotal Direction = 'left' HomeRow = PlayerRow HomeCol = PlayerCol call !m200_monster_line
+    MonsterPauseTotal = MonsterPauseTotal + MonsterPause
+    Player = 'X' call !f100_find_player Pause = MonsterPauseTotal Direction = 'left' HomeRow = PlayerRow HomeCol = PlayerCol call !m200_monster_line
+    MonsterPauseTotal = MonsterPauseTotal + MonsterPause
+    Player = 'D' call !f100_find_player Pause = MonsterPauseTotal Direction = 'right' HomeRow = PlayerRow HomeCol = PlayerCol call !m200_monster_line
+    Player = '*' call !f100_find_player PacRow = PlayerRow PacCol = PlayerCol
+    PacHomeRow = PlayerRow
+    PacHomeCol = PlayerCol
+
+    Collission = 0
+    call !s100_print_board
+    cursor @GetReadyRow,@GetReadyCol
+    print:"GET READY"
+    cursor @Bottom,1
+    FruitSetup = 'n'
+    cleankeys
+!b100_wait
+    if  (!key) goto !b100_wait
+    return
+
+//**************************************************************
+//* Setup Fruit
+//**************************************************************
+!b110_fruit_setup
+    Fruit = 0
+    file OrigBoard
+    b
+    do-fruitlevel
+        do-fruitnum
+            random FruitNum,1,4
+        until-fruitlevel (FruitNum != 3)
+        fs:/@FruitNum/;*
+        FruitRand = pcount
+        b
+        random FruitRand,1,@FruitRand
+        fs:/@FruitNum/;@FruitRand
+        if  (lineno < 2)
++           ErrorMsg = "Unable to put Fruit on board"
++           call !z100_fatal_error
++       endif
+        FruitRow = lineno - 1
+        scan:/@line/:/@FruitNum/ 
+        FruitCount ++
+        do-rand
+            scan:/@right/:/@FruitNum/
+            if (found) FruitCount ++
+        until-rand (!found)
+        if  (FruitCount = 1)
++           FruitRand = 1
++       else
++           random FruitRand,1,@FruitCount
++       endif
+        FruitCount = FruitRand
+        scan:/@line/:/@FruitNum/
+        HoldLeft = "@left@@FruitNum@" 
+        FruitCount --
+        if  (FruitCount)
++           do-fruitcol
++               scan:/@right/:/@FruitNum/
++               HoldLeft = "@HoldLeft@@left@@FruitNum@"
++               FruitCount --
++           until-fruitcol (!FruitCount)
++       endif
+        split:/@HoldLeft/;100
+        FruitCol = lleft - 1
+        file Board
+        b
+        f;@FruitRow
+        split:/@line/;@FruitCol
+        HoldLeft = left
+        split:/@right/;1
+        Newline = "@HoldLeft@@FruitChar@@right@"
+        r:/@Newline/
+        file OrigBoard
+        b
+        Fruit ++
+    until-fruitlevel (Fruit = Level)
+    FruitPoints = Level * 100
+    return
+
+//**************************************************************
+//* Resetup the Board
+//**************************************************************
+!b150_restart
+    cursor @Bottom,1
+    file LastBoard
+    b
+    copy;*
+    file Board
+    b
+    d;*
+    paste
+    file Monsters
+    b
+!b150_monsters_loop
+    if (eof) goto !b150_monsters_done  
+    call !n100_unpack_monster_line
+    //cursor @Bottom,1 print:"Resart Player[@Player@] Row[@RowPos@] Col[@ColPos@]" wait //fgb
+    file Board
+    b
+    RowPos --
+    ColPos --
+    f;@RowPos
+    split:/@line/;@ColPos
+    HoldLeft = left
+    split:/@right/;1
+    Newline = '@HoldLeft@ @right@'
+    r:/@Newline/
+    b
+    RowPos = HomeRow - 1
+    ColPos = HomeCol - 1
+    f;@RowPos
+    split:/@line/;@ColPos
+    HoldLeft = left
+    split:/@right/;1
+    Newline = '@HoldLeft@@Player@@right@'
+    r:/@Newline/
+    file Monsters
+    f   
+    goto !b150_monsters_loop
+!b150_monsters_done
+    file Board
+    b
+    RowPos = PacHomeRow - 1
+    ColPos = PacHomeCol - 1
+    f;@RowPos
+    split:/@line/;@ColPos
+    HoldLeft = left
+    split:/@right/;1
+    Newline = '@HoldLeft@*@right@'
+    r:/@Newline/
+    Restart = 'n'
+    return
+
+//**************************************************************
+//* Main Processing
+//**************************************************************
+!b200_proc
+    //*******************************
+    //* Move Pacman
+    //*******************************
+    call !p100_move_pacman
+    if (PacDirection = 'B') 
++      cursor @Bottom,1
++      return
++   endif
+
+    //*******************************
+    //* Move Monsters
+    //*******************************
+    if (!Collission) 
++      call !m100_move_monsters
++   endif
+    call !m900_reprint_monsters
+    if  (Collission) 
++       bell bell bell
++       Lives --
++       file Board
++       b copy;*
++       open LastBoard null error
++       b d;*
++       paste
++       b
++       Restart = 'y'
++       if  (Lives < 1)
++           call !b210_game_over
++           return
++   endif
+    if  (Collission)
++       call !b300_wrap
++       call !b100_init
++       goto !b200_proc
++   endif
+    if  (LifePoints > NewLifePoints)
++       Lives ++
++       LifePoints = 0
++   endif
+
+    call !s100_print_board
+    sleep @SleepTimeSpeed
+    file Board
+    b
+    fs:/./;*
+    if  (pcount > 0) 
++       goto !b200_proc
++   endif
+    Score = Score + LevelPoints
+    LifePoints = LifePoints + LevelPoints
+    Level ++
+    iWork = 5 * Level
+    SleepTimeSpeed = SleepTime - iWork
+    if (SleepTime < 0) SleepTime = 0
+    call !b300_wrap
+    call !b100_init
+    goto !b200_proc
+    return
+
+//**************************************************************
+//* Wrapup
+//**************************************************************
+!b210_game_over
+    call !s100_print_board
+    cursor @GetReadyRow,@GetReadyCol
+    print:"GAME OVER"
+    cursor @Bottom,1
+    open HighScoreFile HighScore.dat error open HighScoreFile null
+    b
+    iWork = 1
+!b210_loop
+    if (eof) goto !b210_insert
+    scan:/@line/:/:/
+    HighScore = left
+    if  (Score < HighScore)
++       f;1
++       iWork ++
++       goto !b210_loop
++   endif
+    b;1
+
+!b210_insert
+    if (iWork < 10) else goto !b210_print_highscores
+    cleankeys
+    cursor @Bottom,1
+    printx:"Enter your name into highest scores:"
+    input Name
+    crush Name
+    if (Name = null) goto !b210_insert
+    Newline = "@Score@   @date@   @time@   @Name@"
+    if  (iWork = 1)
++       ib:/@Newline@/
++   else
++       i:/@Newline@/
++   endif
+    b
+    f;10
+    if (!eof) d;*
+    write HighScoreFile HighScore.dat
+!b210_print_highscores
+    cursor @Bottom,1
+    print:" "
+    print:"            Top 10 High Scores "
+    print:" "
+    print:"   Score      Date       Time     Name"
+    print:"----------  --------   --------   ----------------------"
+    b
+!b210_print_loop
+    if (eof) goto !b210_print_done
+    scan:/@line/:word
+    Score = left
+    HoldRight = right
+    sScore = Score
+    scan:/@sScore/:/./
+    sScore = left
+    sPrintScore = null
+
+!b210_comma_loop
+    LenScore = len(sScore)
+    if  (LenScore < 4) 
++       sPrintScore = "@sScore@@sPrintScore@"
++       goto !b210_print_score
++   endif
+    splitr:/@sScore/;3
+    sPrintScore = /,@right@/
+    sScore = left
+    goto !b210_comma_loop
+!b210_print_score
+    size sPrintScore,10
+    rightjust sPrintScore
+    Newline = '@sPrintScore@@HoldRight@'
+    print:"@Newline@"
+    f;1
+    goto !b210_print_loop    
+!b210_print_done
+    close HighScoreFile   
+    Restart = 'n' 
+    return
+
+//**************************************************************
+//* Wrapup
+//**************************************************************
+!b300_wrap
+    if (!Restart)
++      close Board
++      close OrigBoard
++      close Homefile
++      close Monsters
++   endif
+    return
+
+//**************************************************************
+//* Find location of player
+//**************************************************************
+!f100_find_player
+    file Board
+    b
+    fs:/@Player@/
+    if (eof) print:"Error finding player" dump exit
+    PlayerRow = lineno
+    scan:/@line/:/@Player@/
+    PlayerCol = lleft + 1
+    return
+
+//**************************************************************
+//* Process the Monsters
+//**************************************************************
+!m100_move_monsters
+    file Monsters
+    b
+    //MLoopCount = 0
+    //fs:/V/ cursor 28,1 print:"                                 " cursor 28,1 p b 
+!m100_loop
+    if (eof) goto !m100_done
+    InPen = 'n'
+    call !n100_unpack_monster_line
+    MonsterPlayer = Player
+    MCurrRow = RowPos
+    MCurrCol = ColPos
+    HomeCol = right
+    if  (Home) MonsterDelay = 0
+    if  (MonsterDelay)
++       MonsterDelay --
++       if  (MonsterDelay)
++           call !m200_monster_line
++           goto !m100_next  
++   endif
+    MonsterDelay = Delay
+    if  (Ghost) and (!Home) 
++       Ghost --
++       MonsterDelay = GhostDelay
++       if  (Ghost = 0)
++           Direction = null OldDirection = null
++   endif
+    call !m110_monster_delay
+    if  (Home) MonsterDelay = 0
+    PlayerRow = RowPos
+    PlayerCol = ColPos
+    if  (Pause)
++       Pause --
++       call !m200_monster_line
++       goto !m100_next
++   endif
+
+    //print:"Monster[@Player@] Row[@PlayerRow@] Col[@PlayerCol@]" 
+
+    OldDirection = Direction
+
+    if  (Player = 'V') goto !m100_v 
+    if  (Player = 'H') goto !m100_h
+    if  (Player = 'D') goto !m100_d
+    if  (Player = 'X') goto !m100_x
+
+    ErrorMsg = "Bad Monster Find - Player[@Player@]"
+    call !z100_fatal_error
+    exit
+
+!m100_run_away
+    //*********************
+    //* Ghost Run Away
+    //*********************
+    RowPos = MCurrRow
+    ColPos = MCurrCol
+    if  (PacRow > RowPos) and (OldDirection != "down")
++       Direction = "up" 
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+    if  (PacRow < RowPos) and (OldDirection != "up")
++       Direction = "down"
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+
+    if  (PacCol > ColPos) and (OldDirection != 'right')
++       Direction = 'left'
++   else
++       if  (OldDirection != 'left')
++           Direction = 'right'
++   endif
+    call !m105_check_move
+    if  (CanMove)
++       goto !m100_move
++   endif
+    goto !m100_force_move
+
+!m100_run_home
+    //*********************
+    //* Ghost Run Home
+    //*********************
+    RowPos = MCurrRow
+    ColPos = MCurrCol
+    file Homefile
+    b
+    f;@PlayerRow
+    b;1
+    ColPos = PlayerCol - 1
+    split:/@line/;@ColPos
+    ColPos = PlayerCol
+    split:/@right/;1
+    file Board
+    if  (left = 'u')
++       Direction = 'up'
++       goto !m100_move
++   endif
+    if  (left = 'd')
++       Direction = 'down'
++       goto !m100_move
++   endif
+    if  (left = 'r') or (left = 'R')
++       Direction = 'right'
++       goto !m100_move
++   endif
+    if  (left = 'l') or (left = 'L')
++       Direction = 'left'
++       goto !m100_move
++   endif
+
+    //*****************************
+    //* In Pen (Char 'h') in Homefile
+    //*****************************
+    InPen = 'y'
+    if  (Player = 'V') Direction = 'left' goto !m100_v_move
+    if  (Player = 'H') Direction = 'right' goto !m100_h_move
+    if  (Player = 'D') Direction = 'left' goto !m100_d_move
+    if  (Player = 'X') Direction = 'right' goto !m100_x_move
+
+    ErrorMsg = "Bad Home data Row[@PlayerRow@] Col[@PlayerCol@] Pos[@left@] Home[@line@]" 
+    call !z100_fatal_error
+    exit
+
+!m100_force_move
+    if  (Player = 'V') and (InPen) OldDirection = ' ' Direction = 'left'
+    if  (Player = 'H') and (InPen) OldDirection = ' ' Direction = 'right'
+    if  (Player = 'D') and (InPen) OldDirection = ' ' Direction = 'left'
+    if  (Player = 'X') and (InPen) OldDirection = ' ' Direction = 'right'
+    //**********************
+    //* Force Move
+    //**********************
+    RowPos = MCurrRow
+    ColPos = MCurrCol
+    if  (OldDirection != 'down')
++        Direction = 'up'
++        call !m105_check_move
++        if  (CanMove)
++           goto !m100_move
++   endif
+    if  (OldDirection != 'up')
++       Direction = 'down'
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+    if  (OldDirection != 'right')
++       Direction = 'left'
++       call !m105_check_move
++       if  (CanMove)
++          goto !m100_move
++   endif
+    Direction = 'right'
+    call !m105_check_move
+    if  (CanMove)
++       goto !m100_move
++   endif
+
+    //***********************
+    //* Allow Backup
+    //***********************
+    Direction = 'up'
+    call !m105_check_move
+    if  (CanMove)
++           goto !m100_move
++   endif
+
+    Direction = 'down'
+    call !m105_check_move
+    if  (CanMove)
++           goto !m100_move
++   endif
+
+    Direction = 'left'
+    call !m105_check_move
+    if  (CanMove)
++          goto !m100_move
++   endif
+
+    Direction = 'right'
+    call !m105_check_move
+    if  (CanMove)
++          goto !m100_move
++   endif
+
+    ErrorMsg = "Unable to move Monster[@Player@] Row[@PlayerRow@] Col[@PlayerCol@]" 
+    call !z100_fatal_error
+    exit
+
+!m100_v
+    //******************
+    //* Handle V Monster
+    //******************
+    Direction = OldDirection
+    if  (Ghost) and (!Home) goto !m100_run_away
+    if  (Home) goto !m100_run_home
+!m100_v_move
+    if  (InPen)
++       Direction = 'left'
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+    if  (PacRow < RowPos) and (OldDirection != "down")
++       Direction = "up" 
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+    if  (PacRow > RowPos) and (OldDirection != "up")
++       Direction = "down"
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+
+    if  (PacCol > ColPos)
++       random RandomDir,40,100
++   else
++       random RandomDir,1,60
++   endif
+    if  (RandomDir < 50) and (OldDirection != 'right')
++       Direction = 'left'
++   else
++       if  (OldDirection != 'left')
++           Direction = 'right'
++   endif
+    call !m105_check_move
+    if  (CanMove)
++       goto !m100_move
++   endif
+    goto !m100_force_move
+
+!m100_h
+    //******************
+    //* Handle H Monster
+    //******************
+    Direction = OldDirection
+    if  (Ghost) and (!Home) goto !m100_run_away
+    if  (Home) goto !m100_run_home
+
+!m100_h_move
+    RowPos = MCurrRow
+    ColPos = MCurrCol
+    if  (InPen)
++       Direction = 'right'
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+    if  (PacCol < ColPos) and (OldDirection != "right")
++       Direction = "left" 
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+    if  (PacCol > ColPos) and (OldDirection != "left")
++       Direction = "right"
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+
+    if  (PacRow > RowPos)
++       random RandomDir,40,100
++   else
++       random RandomDir,1,60
++   endif
+    if  (RandomDir < 50) and (OldDirection != 'down')
++       Direction = 'up'
++   else
++       if  (OldDirection != 'up')
++           Direction = 'down'
++   endif
+    call !m105_check_move
+    if  (CanMove)
++       goto !m100_move
++   endif
+    goto !m100_force_move
+
+!m100_d
+    //******************
+    //* Handle D Monster
+    //******************
+    if  (!FruitSetup)
++       FruitSetup = 'y'
++       call !b110_fruit_setup
++   endif
+    Direction = OldDirection
+    if  (Ghost) and (!Home) goto !m100_run_away
+    if  (Home) goto !m100_run_home
+!m100_d_move
+    if  (InPen)
++       Direction = 'left'
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+    if  (PacRow < RowPos) and (OldDirection != "down")
++       Direction = "up" 
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+    if  (PacRow > RowPos) and (OldDirection != "up")
++       Direction = "down"
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+
+    if  (PacCol < ColPos) and (OldDirection != "right")
++       Direction = "left" 
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+    if  (PacCol > ColPos) and (OldDirection != "left")
++       Direction = "right"
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+
+    goto !m100_force_move
+
+!m100_x
+    //******************
+    //* Handle X Monster
+    //******************
+    Direction = OldDirection
+    if  (Ghost) and (!Home) goto !m100_run_away
+    if  (Home) goto !m100_run_home
+    random RandomDir,1,20
+    if  (RandomDir = 10) OldDirection = null Direction = null
+!m100_x_move
+    if  (InPen)
++       Direction = 'right'
++       call !m105_check_move
++       if  (CanMove)
++           goto !m100_move
++   endif
+
+    if  (PacCol > ColPos)
++       random RandomDir,40,100
++   else
++       random RandomDir,1,60
++   endif
+    if  (RandomDir < 50) and (OldDirection != 'right')
++       Direction = 'left'
++   else
++       if  (OldDirection != 'left')
++           Direction = 'right'
++   endif
+    call !m105_check_move
+    if  (CanMove)
++       goto !m100_move
++   endif
+
+    if  (PacRow > RowPos)
++       random RandomDir,40,100
++   else
++       random RandomDir,1,60
++   endif
+    if  (RandomDir < 50) and (OldDirection != 'down')
++       Direction = 'up'
++   else
++       if  (OldDirection != 'up')
++           Direction = 'down'
++   endif
+    call !m105_check_move
+    if  (CanMove)
++       goto !m100_move
++   endif
+
+    goto !m100_force_move
+
+!m100_move
+    //*****************
+    //* Move the Monster
+    //***************** 
+    if (Direction != OldDirection) and (!Home) 
++      DirectionContinue = 5
++   endif
+    call !x100_move_player
+    PlayerRow = MonsterRow
+    PlayerCol = MonsterCol
+    PrevLoc = NewLoc
+    if  (Ghost)
++       if  (PlayerRow = HomeRow) and (PlayerCol = HomeCol)
++           Ghost = 0
++           Home = 'n'
++   endif
+    call !m200_monster_line
+    goto !m100_next  
+
+!m100_next
+    file Monsters
+    b
+
+    //MLoopCount ++
+    //cursor @Bottom,1 p;* b print:"@MLoopCount@"
+
+    cols 1,1
+    fs:/@Player@/
+    noco
+    f;1
+    goto !m100_loop
+!m100_done    
+    return
+
+//**************************************************************
+//* Check to see if the Monster can move
+//**************************************************************
+!m105_check_move
+    Edge = 'n'
+    AtGate = 'n'
+    CanMove = 0
+    file Board
+    CheckRow = RowPos - 1
+    CheckCol = ColPos - 1
+
+    //********************
+    //* Up through Gate
+    //********************
+    if (CheckRow > 1)
++      HoldRow = CheckRow - 1
++      b  
++      f;@HoldRow
++      split:/@line/;@CheckCol
++      split:/@right/;1
++      if  (left = Gate) and (!Home)
++          Direction = 'up'
++          DirectionContinue = 5
++   endif
+    //********************
+    //* Down through Gate
+    //********************
+    if (Home) and (CheckRow > 1)
++      HoldRow = CheckRow + 1
++      b  
++      f;@HoldRow
++      split:/@line/;@CheckCol
++      split:/@right/;1
++      if  (left = Gate)
++          Direction = 'down'
++          CanMove = 1
++          return
++   endif
+
+    //********************
+    //* Find New Spot
+    //********************
+    if (Direction = 'up') CheckRow --
+    if (Direction = 'down') CheckRow ++
+    if (Direction = 'left') CheckCol --
+    if (Direction = 'right') CheckCol ++
+    b
+    if (CheckRow > 0) f;@CheckRow
+
+    //cursor 33,1 print:"                                                                 " cursor 33,1 p
+    //print:"                                                       " cursor 34,1
+    //print:"CheckRow[@CheckRow@] CheckCol[@CheckCol@] PacCol[@PacCol@] Direction[@Direction@]"
+
+    split:/@line/;@CheckCol
+    split:/@right/;1
+    //**************************
+    //* No move if Block
+    //**************************
+    if  (left = Block)
++       return
++   endif
+
+    //**************************
+    //* Check Move Scenarios
+    //**************************
+    if  (Player = '*')
++       if  (left = 'V') or (left = 'H') or (left = 'D') or (left = 'R')
++           Collission = 1
++           CanMove = 1
++           return
++   endif
+    if  (Player != '*') and (left = '*')
++       if  (!Ghost)
++           Collission = 1
++           CanMove = 1
++           return
++   endif
+    if  (Player != '*') and (Home)
++       CanMove = 1
++       return
++   endif
+    if  (left = 'M') or (left = 'W')
++       CanMove = 1
++       return
++   endif
+    if  (Player != '*')
++       if  (left = 'V') or (left = 'H') or (left = 'D') or (left = 'X')
++           //cursor 40,40 print:"Player[@Player@] moving over [@left@] Row[@CheckRow@] Col[@CheckCol@]" file Monsters b p;* file Board
++           CanMove = 1
++           return
++   endif
+    if  (left = ' ') or (left = '.') or (left = 'o') or (left = FruitChar)
++       CanMove = 1
++       return
++   endif
+    if  (left = Gate) and (Direction = 'up') and (!Home)
++       AtGate = 'y'
++       CanMove = 1
++       return
++   endif
+    if  (left = Gate) and (Direction = 'down') and (Home)
++       AtGate = 'y'
++       CanMove = 1
++       return
++   endif
+
+    //**********************
+    //* Jump
+    //**********************
+    if  (left = null)
++       CanMove = 1
++       Edge = 'y'
++       //cursor 50,50 print:"At the Edge" wait
++   endif
+
+    DirectionContinue = 5
+    return
+
+//**************************************************************
+//* Set the Monster Delay
+//**************************************************************
+!m110_monster_delay
+    file Homefile
+    b
+    f;@PlayerRow
+    b;1
+    ColPos = PlayerCol - 1
+    split:/@line/;@ColPos
+    ColPos = PlayerCol
+    split:/@right/;1
+    file Board
+    if  (left = 'L') or (left = 'R')
++       MonsterDelay = GhostDelay
++   endif
+    return
+
+//**************************************************************
+//* Update the Monster Data in the Monster File
+//**************************************************************
+!m200_monster_line
+    MonsterLine = '@Player@,@PlayerRow@,@PlayerCol@,@Direction@,@DirectionContinue@,@Pause@,@MonsterDelay@,@PrevLoc@,@Ghost@,@Home@,@HomeRow@,@HomeCol@'
+    file Monsters
+    b
+    cols 1,1
+    fs:/@Player@/
+    noco
+    if (eof)
++      i:/@MonsterLine@/
++   else
++      r:/@MonsterLine@/
++   endif 
+    return
+
+//**************************************************************
+//* Turn Monsters into Ghosts
+//**************************************************************
+!m300_set_monster_ghost
+    file Monsters
+    b
+!m300_loop
+    if (eof) goto !m300_done
+    scan:/@line/:/,/ MPlayer = left
+    scan:/@right/:/,/ MRowPos = left
+    scan:/@right/:/,/ MColPos = left
+    scan:/@right/:/,/ MDirection = left 
+    scan:/@right/:/,/ MDirectionContinue = left
+    scan:/@right/:/,/ MPause = left
+    scan:/@right/:/,/ MDelay = left
+    scan:/@right/:/,/ MPrevLoc = left
+    scan:/@right/:/,/ MGhost = left
+    scan:/@right/:/,/ MHome = left
+    scan:/@right/:/,/ MHomeRow = left
+    MDirection = ' '
+    MHomeCol = right
+    MGhost = GhostCount
+    MDelay = GhostDelay
+    MonsterLine = '@MPlayer@,@MRowPos@,@MColPos@,@MDirection@,@MDirectionContinue@,@MPause@,@MDelay@,@MPrevLoc@,@MGhost@,@MHome@,@MHomeRow@,@MHomeCol@'
+    r:/@MonsterLine@/
+    f;1
+    goto !m300_loop
+!m300_done
+    b
+    file Board
+    return
+
+//**************************************************************
+//* Eat Ghost
+//**************************************************************
+!m400_eat_ghost
+    file Monsters
+    b
+    MonsterRowCol = '@MonsterRow@,@MonsterCol@/
+    fs:/@MonsterRowCol@/
+    if (eof)
++      cursor @Bottom,1
++      ErrorMsg = "Bad Eat Ghost [@MonsterRowCol@]"
++      call !z100_fatal_error
++      exit
++   endif
+
+    scan:/@line/:/,/ MPlayer = left
+    scan:/@right/:/,/ MRowPos = left
+    scan:/@right/:/,/ MColPos = left
+    scan:/@right/:/,/ MDirection = left 
+    scan:/@right/:/,/ MDirectionContinue = left
+    scan:/@right/:/,/ MPause = left
+    scan:/@right/:/,/ MDelay = left
+    scan:/@right/:/,/ MPrevLoc = left
+    scan:/@right/:/,/ MGhost = left
+    scan:/@right/:/,/ MHome = left
+    scan:/@right/:/,/ MHomeRow = left
+    MHomeCol = right
+    MDelay = '0'
+    MHome = 'y'
+    MonsterLine = '@MPlayer@,@MRowPos@,@MColPos@,@MDirection@,@MDirectionContinue@,@MPause@,@MDelay@,@MPrevLoc@,@MGhost@,@MHome@,@MHomeRow@,@MHomeCol@'
+    r:/@MonsterLine@/
+    b
+    file Board
+    return
+
+//**************************************************************
+//* Reprint all Monsters to make sure they appear on the screen
+//**************************************************************
+!m900_reprint_monsters
+    file Monsters
+    b
+!m900_loop
+    if (eof) goto !m900_done
+    call !n100_unpack_monster_line   
+    RowPos --
+    ColPos --
+    file Board
+    b
+    if  (RowPos)    
++       f;@RowPos
++   endif
+    split:/@line/;@ColPos
+    HoldLeft = left
+    split:/@right/;1
+
+    if  (Home)
++       Newline = '@HoldLeft@@ResurectChar@@right@'
++       goto !m900_draw
++   endif
+    if  (Ghost = 1) or (Ghost = 3) or (Ghost = 5) or (Ghost = 7)
++       Newline = '@HoldLeft@@ResurectChar@@right@'
++       goto !m900_draw
++   endif
+    if  (Ghost)
++       Newline = '@HoldLeft@@GhostChar@@right@'
++       goto !m900_draw
++   endif
+    Newline = '@HoldLeft@@Player@@right@'
+
+!m900_draw
+    //cursor @Bottom,1 print:"Player[@Player@] Row[@RowPos@] Col[@ColPos@] [@Newline@]" wait
+    r:/@Newline@/
+    file Monsters
+    f;1
+    goto !m900_loop
+!m900_done
+    file Board
+    b
+    if  (GateRow) f;@GateRow
+    split:/@line/;@GateCol
+    HoldLeft = left
+    split:/@right/;1
+    Newline = '@HoldLeft@@Gate@@right@'
+    r:/@Newline@/
+    return
+
+//**************************************************************
+//* Unpack Monster Line
+//**************************************************************
+!n100_unpack_monster_line
+    scan:/@line/:/,/ Player = left
+    scan:/@right/:/,/ PlayerRow = left RowPos = left
+    scan:/@right/:/,/ PlayerCol = left ColPos = left
+    scan:/@right/:/,/ Direction = left OldDirection = left
+    scan:/@right/:/,/ DirectionContinue = left
+    scan:/@right/:/,/ Pause = left
+    scan:/@right/:/,/ MonsterDelay = left
+    scan:/@right/:/,/ PrevLoc = left
+    scan:/@right/:/,/ Ghost = left
+    scan:/@right/:/,/ Home = left
+    scan:/@right/:/,/ HomeRow = left
+    scan:/@right/:/,/ HomeCol = left
+    return
+
+//**************************************************************
+//* Move Pacman
+//**************************************************************
+!p100_move_pacman
+    if  (PacDelay)
++       if (!key)
++       else
++          inputc PacDirectionInput
++          call !p100_set_direction
++   endif
+    if  (PacDelay)
++       PacDelay --
++       if  (PacDelay)
++           return
++   endif
+    PacDelay = Delay
+
+    if (!key) goto !p100_move
+    inputc PacDirectionInput
+    call !p100_set_direction
+
+!p100_move
+    if  (PacDirectionInput = 'U') PacDirection = 'up'
+    if  (PacDirectionInput = 'R') PacDirection = 'right'
+    if  (PacDirectionInput = 'D') PacDirection = 'down'
+    if  (PacDirectionInput = 'L') PacDirection = 'left'
+    if  (PacDirectionInput = 'B') 
++       cursor @Bottom,1
++       printx:"Are you sure you want to end the game(y-n)?"
++       inputc Response
++       cursor @Bottom,1
++       print:"                                             "
++       PacDirectionInput = null
++       if  (Response)
++           PacDirection = 'B' 
++           return
++   endif
+    if  (PacDirectionInput = 'P') 
++       call !p110_pause 
++       PacDirectionInput = null
++   endif
+
+    if  (PacDirectionInput = 'H')
++       system:"CLS"
++       cursor 1,1
++       print:"                                   B-Edit Pacman V1.0"
++       print:" "
++       print:"B-Edit Language"
++       print:"    This game is used to demonstrate the capabilities of the B-Edit language. B-Edit is designed"
++       print:"    for file and string manipulation needs, but it can be used to create dynamic processing such"
++       print:"    as this game. Running in DOS allows limited presentation capability, but the processing is"
++       print:"    fairly sophisticated."
++       print:" "
++       print:"Game description-"
++       print:"    This game is patterened after the classic 1980 Pacman game. The movements and boards aren't"
++       print:"    exactly the same as the original game, but it's fairly similar."
++       print:"    Use the Arrow keys to manuver the Pacman (*) around the board eating the '.'s on the board."
++       print:"    When all '.'s have been eaten you'll move to the next level. After some time the Monsters"
++       print:"    will begin to emerge from their Pen and will try to catch the Pacman, and if they do you'll"
++       print:"    lose a life. If you eat the Energy spot (o) you'll turn the Monsters into Ghosts (M) that can"
++       print:"    be eaten. If you eat them they'll scurry (W) back to their Pen to regenerate. Be careful when"
++       print:"    they flash between Ghost and Scurry because they'll be back to a Monster soon. You'll receive"
++       print:"    more points for eating more Ghosts for each Energy point. When all Monsters have left the Pen"
++       print:"    fruit (%) will appear on the screen which can be eaten for additional points. For each 10,000"
++       print:"    points you get, you'll earn an additional life. There are openings on each side of the board"
++       print:"    that allow you to move to the other side, and if the Monsters follow you into these areas"
++       print:"    they'll slow down giving you more time to get away. The initial levels aren't too fast, but"
++       print:"    be careful after a few levels, the speed will increase and the Monsters will become more"
++       print:"    aggressive! If you do well enough you can enter your name into the top 10 scores."
++       print:" "
++       print:"Special Keys:"
++       print:"    B = Break to stop the game"
++       print:"    P = Pause"
++       print:" "
++       print:"Good Luck!"
++       wait
++       system:"CLS"
++       call !s100_print_board
++       PacDirectionInput = null
++       return
++   endif
+
+    Player = '*'
+    RowPos = PacRow - 1
+    ColPos = PacCol - 1
+    Direction = PacDirection
+    call !x100_move_player
+    PrevPacDirection = Direction
+    return
+
+!p100_set_direction
+    upper PacDirectionInput
+    if  (functionkey = 'UP') or (functionkey = 'PAGEUP') PacDirectionInput = 'U'
+    if  (functionkey = 'DOWN') or (functionkey = 'PAGEDOWN') PacDirectionInput = 'D'
+    if  (functionkey = 'RIGHT') PacDirectionInput = 'R'
+    if  (functionkey = 'LEFT') PacDirectionInput = 'L'
+    return
+
+//**************************************************************
+//* Pause
+//**************************************************************
+!p110_pause
+    cleankeys
+!p110_pause_loop
+    if (!key) goto !p110_pause_loop
+    return
+
+//**************************************************************
+//* Print the Board
+//**************************************************************
+!s100_print_board
+    file Board
+    cursor 1,1
+    $PacmanColor
+    print:"    B-Edit Pacman V1.0"
+    b
+    $BoardColor 
+!s100_board_loop
+    if (!eof) print:"@line@" f;1 goto !s100_board_loop
+    b
+    //**************************
+    //* Print the board in color
+    //**************************
+    call !s200_reprint_players
+    sScore = Score
+    
+    scan:/@sScore/:/./
+    sScore = left
+    sPrintScore = null
+
+!s100_comma_loop
+    LenScore = len(sScore)
+    if  (LenScore < 4) 
++       sPrintScore = "@sScore@@sPrintScore@"
++       goto !s100_print_score
++   endif
+    splitr:/@sScore/;3
+    sPrintScore = /,@right@/
+    sScore = left
+    goto !s100_comma_loop
+    
+!s100_print_score
+    $PacmanColor
+    cursor 5,30 print:"Score"
+    LenScore = len(sPrintScore)
+    cursor 6,30
+    if  (LenScore = 3) 
++       cursor 6,31 
++   else
++       if  (LenScore < 3)
++           cursor 6,32
++   endif
+    print:"@sPrintScore@"
+    cursor 8,30 print:"Level"
+    cursor 9,30 print:"  @Level@"
+    cursor 11,30 print:"Lives"
+    cursor 12,30 print:"  @Lives@"
+    cursor 15,30 print:"H=Help"
+
+    //cursor 8,30 print:"PacRow[@PacRow@]     "
+    //cursor 9,30 print:"PacCol[@PacCol@]     "
+    //cursor 10,30 print:"PacDirection[@PacDirection@]          "
+
+    cursor 25,1
+    return
+
+//**************************************************************
+//* Print the players in color
+//**************************************************************
+!s200_reprint_players
+   //******************************
+   //* Print Pacman
+   //******************************
+   $PacmanColor
+   RowPos = PacRow + 1
+   cursor @RowPos,@PacCol
+   printx:"*"
+
+   //******************************
+   //* Print Energy Points
+   //******************************
+   if (EnergyDelay > 0)
++     EnergyDelay --
++  endif
+   if  (!EnergyDelay)
++      EnergyDelay = 3
++      EnergyColorCount ++
++      if  (EnergyColorCount > 2)
++          EnergyColorCount = 0
++  endif
+
+   file Board
+   b
+   EnergyCountTotal = 0
+!s200_energy_count
+   fs:/o/
+   if (!eof)
++     EnergyCountTotal ++
++     rs:/o/:/@EnergyCountTotal@/
++     goto !s200_energy_count
++  endif
+   if  (EnergyCountTotal = 0) goto !s200_fruit  
+   if  (EnergyColorCount = 0) $EnergyColor1
+   if  (EnergyColorCount = 1) $EnergyColor2
+   if  (EnergyColorCount = 2) $EnergyColor3
+   EnergyCount = 0
+   do
+       EnergyCount ++
+       Player = '@EnergyCount@'
+       call !f100_find_player
+       PlayerRow ++
+       cursor @PlayerRow,@PlayerCol
+       printx:"o"
+       rs:/@EnergyCount@/:/o/
+   until (EnergyCount = EnergyCountTotal)
+
+   //******************************
+   //* Print Fruit
+   //******************************
+!s200_fruit
+   if (FruitDelay > 0)
++     FruitDelay --
++  endif
+   if  (!FruitDelay)
++      FruitDelay = 3
++      FruitColorCount ++
++      if  (FruitColorCount > 2)
++          FruitColorCount = 0
++  endif
+
+   file Board
+   b
+   FruitCountTotal = 0
+!s200_fruit_count
+   fs:/@FruitChar@/
+   if (!eof)
++     FruitCountTotal ++
++     rs:/@FruitChar@/:/@FruitCountTotal@/
++     goto !s200_fruit_count
++  endif
+   if  (FruitCountTotal = 0) goto !s200_monsters  
+   if  (FruitColorCount = 0) $FruitColor1
+   if  (FruitColorCount = 1) $FruitColor2
+   if  (FruitColorCount = 2) $FruitColor3
+   FruitCnt = 0
+   do
+       FruitCnt ++
+       Player = '@FruitCnt@'
+       call !f100_find_player
+       PlayerRow ++
+       cursor @PlayerRow,@PlayerCol
+       printx:"@FruitChar@"
+       rs:/@FruitCnt@/:/@FruitChar@/
+   until (FruitCnt = FruitCountTotal)
+
+   //******************************
+   //* Print Monsters
+   //******************************
+!s200_monsters
+    file Monsters
+    b
+!s200_loop
+    if (eof) goto !s200_done
+    call !n100_unpack_monster_line   
+    RowPos ++
+    cursor @RowPos,@ColPos
+    if  (Player = 'V') $VColor
+    if  (Player = 'H') $HColor
+    if  (Player = 'X') $XColor
+    if  (Player = 'D') $DColor
+    if  (Home)
++       $ResurectColor
++       printx:"@ResurectChar@"
++       goto !s200_next
++   endif
+    if  (Ghost)
++       if  (Ghost = 1) or (Ghost = 3) or (Ghost = 5) or (Ghost = 7)
++           $GhostColor2
++           printx:"@GhostChar@"
++           goto !s200_next
++   endif
+    if  (Ghost)
++       $GhostColor1
++       printx:"@GhostChar@"
++       goto !s200_next
++   endif
+    printx:"@Player@"
+!s200_next
+    $DefaultColor
+    f;1
+    goto !s200_loop
+!s200_done
+    cursor @Bottom,1
+    return
+
+//**************************************************************
+//* Move a Player
+//**************************************************************
+!x100_move_player
+    file Board
+    b
+    if  (Player != '*')
++       RowPos --
++       ColPos --
++   endif
+    HoldRow = RowPos
+    HoldCol = ColPos
+    if (Direction = 'up') RowPos --
+    if (Direction = 'down') RowPos ++
+    if (Direction = 'left') ColPos --
+    if (Direction = 'right') ColPos ++
+
+    //if  (Player = '*') cursor 35,1 print:"Pacman Row[@RowPos@] Col[@ColPos@] CanMove[@CanMove@]"
+
+    //*********************
+    //* Jump to other side
+    //*********************
+    if  (Player = '*')
++       if  (ColPos = MaxSize)
++           ColPos = 1
++   endif
+    if  (Player != '*')
++       if  (Edge)
++           ColPos = 1
++   endif
+    if  (ColPos = 0)
++       ColPos = MaxSize - 1
++   endif
+
+    //*********************
+    //* Find Position
+    //*********************
+    if (RowPos > 0) f;@RowPos
+    split:/@line/;@ColPos
+    MonsterRow = RowPos + 1
+    MonsterCol = ColPos + 1
+    HoldLeft = left
+    split:/@right/;1
+    NewLoc = left
+    HoldRight = right
+    if  (Player = '*') 
++       goto !x100_pacman
++   else
++       goto !x100_monster
++   endif
+
+!x100_pacman
+    //***********************************
+    //* Handle Pacman
+    //***********************************
+    if  (NewLoc = FruitChar)
++       Score = Score + FruitPoints
++       LifePoints = LifePoints + DotPoints
++       PrevLoc = ' '
++       PacRow = RowPos + 1
++       PacCol = ColPos + 1
++       goto !x100_draw
++   endif
+    if  (NewLoc = '.')
++       Score = Score + DotPoints
++       LifePoints = LifePoints + DotPoints
++       PrevLoc = ' '
++       PacRow = RowPos + 1
++       PacCol = ColPos + 1
++       goto !x100_draw
++   endif
+    if  (NewLoc = 'o')
++       call !m300_set_monster_ghost
++       GhostPointsValue = GhostPoints
++       Score = Score + EnergyPoints
++       LifePoints = LifePoints + EnergyPoints
++       PrevLoc = ' '
++       PacRow = RowPos + 1
++       PacCol = ColPos + 1
++       goto !x100_draw
+    if  (NewLoc = ' ')
++       PrevLoc = ' '
++       PacRow = RowPos + 1
++       PacCol = ColPos + 1
++       goto !x100_draw
++   endif
+    //***********************************
+    //* Hit a Monster
+    //***********************************
+    if  (NewLoc = 'V') or (NewLoc = 'H') or (NewLoc = 'D') or (NewLoc = 'R')
++       Collission = 1
++       goto !x100_draw
++    endif
+    //***********************************
+    //* Eat a Ghost
+    //***********************************
+    if  (NewLoc = GhostChar)
++       GhostPointsValue = GhostPointsValue * 2
++       Score = Score + GhostPointsValue
++       LifePoints = LifePoints + GhostPointsValue
++       call !m400_eat_ghost
++       goto !x100_draw
++    endif
+    //***********************************
+    //* Hit a Wall
+    //***********************************
+    if  (PacDirection != PrevPacDirection)
++       PacDirection = PrevPacDirection
++       Direction = PacDirection
++       RowPos = PacRow - 1
++       ColPos = PacCol - 1
++       goto !x100_move_player
++   endif
+    return
+
+!x100_monster
+    //***********************************
+    //* Handle Monster
+    //***********************************
+    goto !x100_draw
+    
+!x100_draw
+    //*********************
+    //* Pacman
+    //*********************
+    if  (Player = '*')
++       Newline = '@HoldLeft@@Player@@HoldRight@'
++   endif
+    //*********************
+    //* Ghost
+    //*********************
+    if  (Player != '*')
++       if  (Ghost) and (!Home)
++           Newline = '@HoldLeft@@GhostChar@@HoldRight@'
++   endif
+    //*********************
+    //* Resurect
+    //*********************
+    if  (Player != '*')
++       if  (Ghost) and (Home)
++           Newline = '@HoldLeft@@ResurectChar@@HoldRight@'
++   endif
+    //*********************
+    //* Monster
+    //*********************
+    if  (Player != '*')
++       Player = MonsterPlayer
++       if  (!Ghost)
++           Newline = '@HoldLeft@@Player@@HoldRight@'
++   endif
+    if  (Player != '*')
++       if  (AtGate)
++           Newline = '@HoldLeft@@Gate@@HoldRight@'
++   endif
+    r:/@Newline@/
+    if  (RowPos = HoldRow) and (ColPos = HoldCol) goto !x100_continue
+    b
+    if (HoldRow > 0) f;@HoldRow
+    split:/@line/;@HoldCol
+    HoldLeft = left
+    split:/@right/;1
+    HoldRight = right
+    if  (PrevLoc = 'M') or (PrevLoc = 'W') or (PrevLoc = 'V') or (PrevLoc = 'H') or (PrevLoc = 'D') or (PrevLoc = 'X')
++       PrevLoc = ' '
++   endif
+
+    //*********************************
+    //* Ensure no dots in Pen 
+    //*********************************
+    if  (Player != '*')
++       file Homefile
++       b
++       f;@HoldRow
++       split:/@line/;@HoldCol
++       split:/@right/;1
++       file Board
++       if  (left = 'h')
++           InPen = 'y'
++   endif
+    if  (InPen) and (PrevLoc = '.')
++       PrevLoc = ' '
++   endif
+    if  (InPen) and (PrevLoc = '_')
++       PrevLoc = ' '
++   endif
+
+    if  (PrevLoc = '*')
++       PrevLoc = ' '
++   endif
+    Newline = /@HoldLeft@@PrevLoc@@HoldRight@/
+    r:/@Newline/
+    goto !x100_continue
+
+!x100_continue
+    return
+
+//**************************************************************
+//* Fatal Error
+//**************************************************************
+!z100_fatal_error
+    cursor @Bottom,1 
+    print:"@ErrorMsg@"
+    file Monsters
+    b
+    p;*
+    exit
+
+//**************************************************************
+//* End of program Pacman.bed
+//**************************************************************
+

@@ -1,0 +1,8 @@
+futuretense.ini|Standard|cs.timeout
+futuretense.ini|Non-Standard|cs.csdtworkspace
+futuretense.ini|Non-Standard|cs.eventhost
+futuretense.ini|Non-Standard|cs.jsproot
+futuretense.ini|Non-Standard|cs.pgcachefolder
+futuretense.ini|Non-Standard|cs.pgexportfolder
+futuretense.ini|Non-Standard|cs.xmlfolder
+futuretense.ini|Non-Standard|ft.usedisksync

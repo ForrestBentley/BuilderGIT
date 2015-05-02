@@ -1,0 +1,12 @@
+Document : Deployment for MFO
+Date     : 01/12/14
+ 
+     Parameter
+     Type      Name                      Value
+     -------   ------------------------  ------------------------------------
+     Session   		                        		
+     Session   		                        		
+     JSP       pageCheckSeconds          -1
+     JSP       verbose                   true
+Time     : 18:28:18
+=========================================================================================================================

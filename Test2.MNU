@@ -1,0 +1,19 @@
+***********************************
+* M E N U
+***********************************
+TITLE,This Is A Test
+MENU,~Test
+ITEM,Test2_Win1_MSOBJ,Test2_Win1_WIN
+--------------------
+ITEM,Test2_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Test2_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Test2_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Test2_Main_About_MSOBJ,~About Test2 System

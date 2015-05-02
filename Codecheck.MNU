@@ -1,0 +1,13 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Code Check
+MENU,~Test
+ITEM,Codecheck_Codecheck_MSOBJ,Codecheck_Codecheck_WIN
+--------------------
+ITEM,Codecheck_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Codecheck_Main_About_MSOBJ,~About Codecheck System

@@ -1,0 +1,156 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Rpm_Login_WIN,5,15,343,187,Login
+STTXT1,Rpm_Login_Id_STTXT,35,25,114,24,ID
+EFOBJL,Rpm_Login_Id_EFOBJ,165,25,114,24,
+STTXT1,Rpm_Login_Password_STTXT,35,59,114,24,Password
+EFOBJL,Rpm_Login_Password_EFOBJ,165,59,114,24,
+PBOBJ1,Rpm_Login_Ok_PBOBJ,35,93,114,24,&OK
+PBOBJ1,Rpm_Login_Cancel_PBOBJ,169,93,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Rpm_Idmaintenance_WIN,14,60,438,384,ID Maintenance
+LBOBJ1,Rpm_Idmaintenance_Useridlist_LBOBJ,36,54,200,200,
+STTXT1,Rpm_Idmaintenance_Useridlist_STTXT,41,25,114,24,Userid
+STTXT1,Rpm_Idmaintenance_Userid_STTXT,36,256,54,24,Userid
+EFOBJL,Rpm_Idmaintenance_Userid_EFOBJ,110,256,114,24,
+PBOBJ1,Rpm_Idmaintenance_Delete_PBOBJ,264,111,114,24,Delete
+PBOBJ1,Rpm_Idmaintenance_Close_PBOBJ,35,290,114,24,Close
+PBOBJ1,Rpm_Idmaintenance_Add_PBOBJ,264,151,114,24,Add
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Rpm_Filemaint_WIN,7,59,603,420,Property File Maintenance
+STTXT1,Rpm_Filemaint_Proplist_STTXT,115,25,290,24,Property File List
+LBOBJ1,Rpm_Filemaint_Proplist_LBOBJ,113,52,290,200,
+STTXT1,Rpm_Filemaint_Propfile_STTXT,35,253,74,24,File Name
+EFOBJL,Rpm_Filemaint_Propfile_EFOBJ,113,253,290,24,
+STTXT1,Rpm_Filemaint_Location_STTXT,35,284,74,24,Location
+EFOBJL,Rpm_Filemaint_Location_EFOBJ,113,284,430,24,
+PBOBJ1,Rpm_Filemaint_Add_PBOBJ,440,165,84,24,Add
+PBOBJ1,Rpm_Filemaint_Modify_PBOBJ,440,75,84,24,Modify
+PBOBJ1,Rpm_Filemaint_Delete_PBOBJ,440,120,84,24,Delete
+PBOBJ1,Rpm_Filemaint_Filter_PBOBJ,441,252,84,24,Filter
+PBOBJ1,Rpm_Filemaint_Close_PBOBJ,36,326,84,24,Close
+PBOBJ1,Rpm_Filemaint_Properties_PBOBJ,440,210,84,24,&Properties
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Rpm_Propnamemaint_WIN,19,64,858,425,Property Fields Maintenance
+STTXT1,Rpm_Propnamemaint_File_STTXT,21,19,114,24,File
+STTXT1,Rpm_Propnamemaint_File_COOBJ,136,19,285,24,
+STTXT1,Rpm_Propnamemaint_Propertieslist_STTXT,21,50,400,24,Properties
+LBOBJ1,Rpm_Propnamemaint_Proplist_LBOBJ,20,77,400,200,
+STTXT1,Rpm_Propnamemaint_Property_STTXT,20,282,114,24,Property
+EFOBJL,Rpm_Propnamemaint_Property_EFOBJ,154,281,314,24,
+STTXT1,Rpm_Propnamemaint_Type_STTXT,20,309,114,24,Type
+COOBJL,Rpm_Propnamemaint_Type_COOBJ,154,310,200,200,
+PBOBJ1,Rpm_Propnamemaint_Modify_PBOBJ,435,102,64,24,Modify
+PBOBJ1,Rpm_Propnamemaint_Delete_PBOBJ,435,155,64,24,Delete
+PBOBJ1,Rpm_Propnamemaint_Add_PBOBJ,435,208,64,24,Add
+PBOBJ1,Rpm_Propnamemaint_Close_PBOBJ,21,347,94,24,Close
+COOBJD,Rpm_Propnamemaint_Server_COOBJ,521,20,315,200,
+PBOBJ1,Rpm_Propnamemaint_Retrieve_PBOBJ,435,20,64,24,Retrieve
+LBOBJ1,Rpm_Propnamemaint_Fileprops_LBOBJ,521,56,314,225,
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Rpm_Dnsmaint_WIN,21,91,550,390,Server Names Maintenance
+STTXT1,Rpm_Dnsmaint_Dns_STTXT,15,20,114,24,Server Names
+LBOBJ1,Rpm_Dnsmaint_Dns_LBOBJ,16,48,400,200,
+EFOBJL,Rpm_Dnsmaint_Dns_EFOBJ,17,250,399,24,
+STTXT1,Rpm_Dnsmaint_Userid_STTXT,20,280,54,24,Userid
+EFOBJL,Rpm_Dnsmaint_Userid_EFOBJ,80,280,114,24,
+STTXT1,Rpm_Dnsmaint_Password_STTXT,224,280,69,24,Password
+EFOBJL,Rpm_Dnsmaint_Password_EFOBJ,303,280,114,24,
+PBOBJ1,Rpm_Dnsmaint_Add_PBOBJ,437,179,74,24,Add
+PBOBJ1,Rpm_Dnsmaint_Change_PBOBJ,437,106,74,24,Change
+PBOBJ1,Rpm_Dnsmaint_Delete_PBOBJ,437,141,74,24,Delete
+PBOBJ1,Rpm_Dnsmaint_Filter_PBOBJ,437,250,74,24,Filter
+PBOBJ1,Rpm_Dnsmaint_Close_PBOBJ,19,313,114,24,Close
+PBOBJ1,Rpm_Dnsmaint_Test_PBOBJ,437,280,74,24,&Test
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Rpm_Compare_WIN,91,16,1080,600,Compare Property Files
+STTXT1,Rpm_Compare_File_STTXT,36,25,347,24,Files
+EFOBJL,Rpm_Compare_Filefilter_EFOBJ,390,25,184,24,
+PBOBJ1,Rpm_Compare_Filefilter_PBOBJ,580,25,104,24,Filter
+LBOBJ1,Rpm_Compare_File_LBOBJ,35,54,650,129,
+STTXT1,Rpm_Compare_Servers_STTXT,695,25,70,24,Servers
+EFOBJL,Rpm_Compare_Serversfilter_EFOBJ,768,25,164,24,
+PBOBJ1,Rpm_Compare_Serversfilter_PBOBJ,935,25,104,24,Filter
+LBOBJM,Rpm_Compare_Servers_LBOBJ,695,54,345,120,
+STTXT1,Rpm_Compare_CompareF_STTXT,36,178,700,24,Compare Files
+STTXT1,Rpm_Compare_CompareS_STTXT,349,178,287,24,Compare Servers
+LBOBJ1,Rpm_Compare_Compare_LBOBJ,36,205,700,160,
+PBOBJ1,Rpm_Compare_Up_PBOBJ,742,253,54,24,Up
+PBOBJ1,Rpm_Compare_Down_PBOBJ,742,283,54,24,Down
+CBOBJ1,Rpm_Compare_All_CBOBJ,744,208,77,24,All
+PBOBJ1,Rpm_Compare_Remove_PBOBJ,823,208,78,24,Remove
+PBOBJ1,Rpm_Compare_Download_PBOBJ,905,208,78,24,Download
+GBOBJ1,Rpm_Compare_Template_GBOBJ,804,238,214,114,Template
+EFOBJL,Rpm_Compare_Template_EFOBJ,810,264,198,24,
+PBOBJ1,Rpm_Compare_Templatefilter_PBOBJ,954,238,54,24,Filter
+COOBJL,Rpm_Compare_Template_COOBJ,810,286,200,200,
+PBOBJ1,Rpm_Compare_Save_PBOBJ,809,316,64,24,Save
+PBOBJ1,Rpm_Compare_Get_PBOBJ,875,316,64,24,Get
+PBOBJ1,Rpm_Compare_Delete_PBOBJ,941,316,64,24,Delete
+STTXT1,Rpm_Compare_Properties_STTXT,37,357,580,24,Properties
+PBOBJ1,Rpm_Compare_Retrieve_PBOBJ,622,357,114,24,Retrieve
+CBOBJ1,Rpm_Compare_Standard_CBOBJ,742,357,84,24,Standard
+LBOBJM,Rpm_Compare_Properties_LBOBJ,37,385,700,140,
+GBOBJ1,Rpm_Compare_Comparetype_GBOBJ,765,400,150,83,Compare Properties
+RBOBJ1,Rpm_Compare_All_RBOBJ,785,423,114,24,&All
+RBOBJ1,Rpm_Compare_Select_RBOBJ,785,451,114,24,&Select
+PBOBJ1,Rpm_Compare_Compare_PBOBJ,37,521,114,24,Co&mpare
+PBOBJ1,Rpm_Compare_Close_PBOBJ,164,521,114,24,&Close
+CBOBJ1,Rpm_Compare_Exact_CBOBJ,291,521,135,24,Exact File Match
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Rpm_Update_WIN,91,16,1080,630,Update Property Files
+STTXT1,Rpm_Update_File_STTXT,36,25,347,24,Files
+EFOBJL,Rpm_Update_Filefilter_EFOBJ,390,25,184,24,
+PBOBJ1,Rpm_Update_Filefilter_PBOBJ,580,25,104,24,Filter
+LBOBJ1,Rpm_Update_File_LBOBJ,35,54,650,129,
+STTXT1,Rpm_Update_Servers_STTXT,695,25,70,24,Servers
+EFOBJL,Rpm_Update_Serversfilter_EFOBJ,768,25,164,24,
+PBOBJ1,Rpm_Update_Serversfilter_PBOBJ,935,25,104,24,Filter
+LBOBJM,Rpm_Update_Servers_LBOBJ,695,54,345,120,
+STTXT1,Rpm_Update_UpdateF_STTXT,36,178,700,24,Update Files
+STTXT1,Rpm_Update_UpdateS_STTXT,349,178,287,24,Update Servers
+LBOBJ1,Rpm_Update_Update_LBOBJ,36,205,700,160,
+PBOBJ1,Rpm_Update_Up_PBOBJ,742,253,54,24,Up
+PBOBJ1,Rpm_Update_Down_PBOBJ,742,283,54,24,Down
+CBOBJ1,Rpm_Update_All_CBOBJ,744,208,77,24,All
+PBOBJ1,Rpm_Update_Remove_PBOBJ,823,208,78,24,Remove
+PBOBJ1,Rpm_Update_Download_PBOBJ,905,208,78,24,Download
+GBOBJ1,Rpm_Update_Template_GBOBJ,804,238,214,114,Template
+EFOBJL,Rpm_Update_Template_EFOBJ,810,264,198,24,
+PBOBJ1,Rpm_Update_Templatefilter_PBOBJ,954,238,54,24,Filter
+COOBJL,Rpm_Update_Template_COOBJ,810,286,200,200,
+PBOBJ1,Rpm_Update_Save_PBOBJ,809,316,64,24,Save
+PBOBJ1,Rpm_Update_Get_PBOBJ,875,316,64,24,Get
+PBOBJ1,Rpm_Update_Delete_PBOBJ,941,316,64,24,Delete
+STTXT1,Rpm_Update_Properties_STTXT,37,357,580,24,Properties
+PBOBJ1,Rpm_Update_Retrieve_PBOBJ,622,357,114,24,Retrieve
+CBOBJ1,Rpm_Update_Standard_CBOBJ,743,357,84,24,Standard
+LBOBJM,Rpm_Update_Properties_LBOBJ,37,385,700,140,
+GBOBJ1,Rpm_Update_Updatetype_GBOBJ,765,400,150,83,Update Properties
+RBOBJ1,Rpm_Update_All_RBOBJ,785,423,114,24,&All
+RBOBJ1,Rpm_Update_Select_RBOBJ,785,451,114,24,&Select
+EFOBJL,Rpm_Update_Propertyvalue_EFOBJ,37,520,474,24,
+PBOBJ1,Rpm_Update_Change_PBOBJ,517,520,64,24,Change
+PBOBJ1,Rpm_Update_Update_PBOBJ,37,555,114,24,&Update
+PBOBJ1,Rpm_Update_Compare_PBOBJ,167,555,114,24,Co&mpare
+PBOBJ1,Rpm_Update_Close_PBOBJ,297,555,114,24,&Close
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Rpm_Progress_WIN,50,30,455,77,Progress
+STTXTF,Rpm_Progress_Progressframe_STTXT,16,10,414,24,
+STTXTR,Rpm_Progress_Progress_STTXT,18,12,410,20,
+PBOBJ1,Rpm_Progress_Cancel_PBOBJ,155,563,114,24,&Cancel

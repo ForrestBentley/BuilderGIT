@@ -1,0 +1,39 @@
+//*****************************************************
+//* Fix all window opens to correct already open bug
+//*****************************************************
+!a100_run
+    string Newline
+    string HoldLeft
+    string Hold
+    string ReportLine
+
+    open Report null
+    open Builder Builder.bed
+    b
+    do
+        split:/@line/;1
+        scan:/@right/:word
+        if (left = 'window')
++          scan:/@right/:word
++          if (left = 'open')
++             ReportLine = "From @line@"
++             file Report
++             i:/@ReportLine@/
++             file Builder
++             scan:/@right/:word
++             subs ^
++             Newline = |window hwnd ^left^ status error window open|
++             subs @
++             rs:/window open/:/@Newline@/
++             ReportLine = "   ->@line@"
++             file Report
++             i:/@ReportLine@/
++             file Builder
++       endif
+        f;1
+    until (eof)
+
+    write Builder Builder2.bed
+    write Report Builder2.rpt
+    exit
+

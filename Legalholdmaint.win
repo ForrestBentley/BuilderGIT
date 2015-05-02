@@ -1,0 +1,22 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Legalholdmaint_Legalholdmaint_WIN,214,94,432,384,Legal Hold Maintenance
+COOBJL,Legalholdmaint_Legalholdmaint_Business_COOBJ,136,25,198,200,
+COOBJL,Legalholdmaint_Legalholdmaint_Corp_COOBJ,136,51,58,200,
+EFOBJL,Legalholdmaint_Legalholdmaint_Parent_EFOBJ,136,101,98,21,
+EFOBJL,Legalholdmaint_Legalholdmaint_Customer_EFOBJ,136,77,98,21,
+EFOBJL,Legalholdmaint_Legalholdmaint_Levelcodeacct_EFOBJ,136,125,274,21,
+EFOBJL,Legalholdmaint_Legalholdmaint_Asset_EFOBJ,136,149,98,21,
+EFOBJL,Legalholdmaint_Legalholdmaint_Assetuniqueid_EFOBJ,136,174,148,21,
+PBOBJ1,Legalholdmaint_Legalholdmaint_Search_PBOBJ,9,348,56,20,&Search
+PBOBJ1,Legalholdmaint_Legalholdmaint_Add_PBOBJ,87,348,56,20,&Add
+PBOBJ1,Legalholdmaint_Legalholdmaint_Modify_PBOBJ,165,348,56,20,&Modify
+PBOBJ1,Legalholdmaint_Legalholdmaint_Delete_PBOBJ,243,348,56,20,&Delete
+EFOBJL,Legalholdmaint_Legalholdmaint_Effectivestart_EFOBJ,136,223,122,21,
+EFOBJL,Legalholdmaint_Legalholdmaint_Effectiveend_EFOBJ,136,246,122,21,
+EFOBJL,Legalholdmaint_Legalholdmaint_Holduntil_EFOBJ,136,199,122,21,
+EFOBJL,Legalholdmaint_Legalholdmaint_Requestedby_EFOBJ,136,270,122,21,
+EFOBJL,Legalholdmaint_Legalholdmaint_Requestddate_EFOBJ,136,293,122,21,
+PBOBJ1,Legalholdmaint_Legalholdmaint_Cancel_PBOBJ,321,348,56,20,&Cancel
+EFOBJL,Legalholdmaint_Legalholdmaint_Requestddate.1_EFOBJ,136,316,122,21,

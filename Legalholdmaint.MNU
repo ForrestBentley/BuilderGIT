@@ -1,0 +1,19 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Legal Hold Maintenance
+MENU,~Test
+ITEM,Legalholdmaint_Legalholdmaint_MSOBJ,Legalholdmaint_Legalholdmaint_WIN
+--------------------
+ITEM,Legalholdmaint_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Legalholdmaint_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Legalholdmaint_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Legalholdmaint_Main_About_MSOBJ,~About Legalholdmaint System

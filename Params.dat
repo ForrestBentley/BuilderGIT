@@ -1,0 +1,4 @@
+Package=com.ge.capital.MFO2,App=MFO2,Pair<"MAIN_PAGE","MFO2_Main.html">
+Package=com.ge.capital.FutureTimel,App=CNN,Pair<"MAIN_PAGE","cnn.html">
+Package=com.ge.capital.FutureTimeline,App=FUTURE,Pair<"MAIN_PAGE","FutureTimeline.html">
+

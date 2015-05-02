@@ -1,0 +1,2412 @@
+//***********************************************************************************************
+//* Program : DCCONV.BED
+//* Author  : Forrest Bentley
+//* Date    : 8/25/2011
+//* Desc    : This program will convert a CICS COBOL
+//*           program to a DC-COBOL program.
+//*
+//* Input   : Prompt for CICS Program source located in the cics directory under the run dir
+//* Output  : dc-cobol\name where name=DC-COBOL program with char 4 changed to 'Z'
+//*           DCERR.rpt contains all of the potential conversion errors
+//*
+//***********************************************************************************************
+//*                              Change Log
+//*
+//* Date       Author             Description
+//* ---------- ------------------ --------------------------------------------------------
+//* 08/25/2011 Forrest Bentley    Original
+//*                               Added Program name conversion
+//*                               Added PROTOCOL MODE conversion
+//*                               Added Linkage Commenting for DC-COBOL
+//*                               Added MQ Init PERFORM
+//* 08/26/2011 Forrest Bentley    Cleaned up MQ Init PERFORM
+//*                               Added MOVE MQM-INPUT-DATA to LinkageName
+//*                               Added MOVE SendQueueName to MQTM-QNAME.
+//*                               Added logic to push Receive Queue data when exiting
+//*                               Added conversion comments at the top of the program
+//*                               Added move Comm area to MQM-OUTPUT-DATA before sending receive
+//*                               Added Snap statements to every paragraph (Optionally)
+//*                                     and optionally comment out the SNAPS added
+//* 08/30/2011 Forrest Bentley    Fixed locate linkage 01 for progs that put 2 spaces before 01
+//*                               Fixed paragraph snap statements to come after last comment after
+//*                                     paragraph name
+//*                               Fixed first paragraph comment separator when snaps added
+//*                               Added error display for DC-COBOL non-allowable verbs (e.g. STRING)
+//*                               Changed program name 'Z' character to the 4th position
+//* 08/31/2011 Forrest Bentley    Added logic to handle return length.
+//* 09/01/2011 Forrest Bentley    Changed output report to use the DC-COBOL program name with .rpt ext
+//*                               Added COLS 1,72 to avoid numbers at the right of the source
+//*                               Added Return Length Variable to output report
+//*                               Fixed conversion message (was changing cics name to dc-name in global change)
+//*                               Added logic to renumber line numbers by 100
+//*                               Added logic to renumber right side line numbers
+//*                               Added processing comments
+//*                               Added prompt for adding MQ
+//*                               Added logic to convert CICS EXEC LINK
+//* 09/02/2011 Forrest Bentley    Added logic to convert DISPLAY statements to SNAP
+//*                               Fixed adding MQ Working Storage for non-MQ programs (linked) to allow snaps
+//*                               Added logic to convert STRING commands
+//* 09/06/2011 Forrest Bentley    Cleaned up STRING logic to handle all situations
+//* 09/07/2011 Forrest Bentley    Enhanced STRING conversion to handle ' REC ' and (INDEX) situations
+//* 09/08/2011 Forrest Bentley    Enhanced STRING conversion to handle ''*'' FILLER
+//*                               Enhanced STRING conversion to handle VARIABLE (INDEX) moves
+//*                               Enhanced STRING conversion to handle all string variations
+//* 09/09/2011 Forrest Bentley    Added logic to automatically input parameters
+//*                               Added logic to handle Test Compile
+//*                               Changed Error Report -> Report
+//*                               Added Warnings/Errors
+//*                               Write Report to generic DCCONV.RPT to allow CONVERT.BAT to view via Notepad
+//*                               Added logic to handle STRING 'ON OVERFLOW'
+//* 09/12/2011 Forrest Bentley    Added logic to read CICSCOMP.dat for string variable sizes
+//*                               Added original CICS program name to EXEC-CICS LINK display message
+//*                               Added output CALLPROG.DAT list of all called programs
+//*                               Changed logic to supress program name change if the name is in a copy statement
+//*                               Enhanced STRING logic to handle ',' separators
+//*                               Add logic to flag UNSTRING as manual conversion required
+//* 09/13/2011 Forrest Bentley    Added instructions for using CICSCOMP to identify STRING variable lengths
+//*                               Added Master Conversion Report output MASTCONV.rpt
+//*                               Added Caller to CALLPROG.DAT
+//*                               Added Line counts (CICS, DC-COBOL, Added Lines)
+//*                               Added CICSLIST & Updates (converted, called programs)
+//* 09/14/2011 Forrest Bentley    Added logic to update Convert3.bat with called programs
+//* 09/26/2011 Forrest Bentley    Added logic to change PROCEDURE DIVISION to include USING the right linkage.
+//* 09/27/2011 Forrest Bentley    Fixed logic if PROCEDURE DIVISION is already using linkage
+//* 09/29/2011 Forrest Bentley    Fixed logic to not change program name in move type logic
+//*                               Added special logic for IDMS COPY QTPNV600
+//* 09/30/2011 Forrest Bentley    Fixed logic if PROCEDURE DIVISION 'USING' is on the next line.
+//* 10/04/2011 Forrest Bentley    Added INSPECT logic
+//* 10/05/2011 Forrest Bentley    Commented out updates to convert STRING and INSPECT since they'll work in DC
+//*                               Added finishing comment line after CICS EXEC RETURN
+//*                               Prevented adding MQ Copies if not necessary
+//* 10/06/2011 Forrest Bentley    Added logic to handle EIBDATE and EIBTIME
+//* 10/10/2011 Forrest Bentley    Added special logic for D3CZFM03 to properly handle missing Garaging Address'
+//* 10/12/2011 Forrest Bentley    Added logic to handle all files processed for an all run
+//* 10/13/2011 Forrest Bentley    Fixed Procedure Division Linkage - Linkage Section 01 commented
+//*                               Fixed Linkage Name to DFHCOMMAREA for DZCLBSCO
+//*                               Fixed endless loop in !c050_check_add_mq_copies looking for DISPLAY lines
+//*                               Fixed logic to not change WS-PROG-NAME for QFCO0040
+//*                               Fixed Procedure Division Linkage for QJC0009, QJC0012
+//*                               Fixed Procedure Division Linkage for QJC0200
+//* 10/14/2011 Forrest Bentley    Added logic for EXEC CICS ASKTIME for Random Numbers
+//* 10/17/2011 Forrest Bentley    Added logic for EXEC CICS FORMATTIME
+//*                               Added logic to handle DFHRESP(NORMAL)
+//*                               Fixed Linkage Section for D2CCS008
+//* 10/18/2011 Forrest Bentley    Fixed DV001 Linkage to Version 1 in D3COFM51 & D3COFM54
+//*                               Added logic to add GOBACK if required
+//*                               No RETURN ok in DZCLBC38 (already in copy)
+//*                               Allow and comment EXEC CICS SYNCPOINT
+//*                               Added logic to handle CICS ABEND
+//*                               Added logic to handle CICS ASSIGN
+//*                               Added logic to handle CICS HANDLE
+//*                               Allow Unable to locate PROCEDURE DIVISION for QTCNV917
+//*                               Added logic to handle EIBCALEN in QLCOL196
+//*                               Changed missing Procedure Division and missing return to warning
+//* 10/19/2011 Forrest Bentley    Added special logic for QECOTAXC
+//*                               Added special logic for QECOOC02
+//* 10/20/2011 Forrest Bentley    Added special conversion logic for D3COFM05 & D3COFM15
+//* 11/03/2011 Forrest Bentley    Added special logic to handle D6CNP204 Snap Statements
+//* 11/17/2011 Forrest Bentley    Added special conversion logic for QLCOL196
+//* 11/22/2011 Forrest Bentley    Added logic to change Procedure Div linkage DFHEIBLK DFHCOMMAREA
+//* 12/08/2011 Forrest Bentley    Added logic to handle program names for DVCZAPPC and Q2CZAPPC
+//* 01/12/2012 Forrest Bentley    Added logic to handle QTSNV095 and IDMS COPY QTVM1095.
+//* 02/28/2012 Forrest Bentley    Added logic to convert IDMS-STATUS paragraph.
+//* 02/29/2012 Forrest Bentley    Added special IDMS-STATUS logic for non-IDMS programs
+//* 04/17/2012 Forrest Bentley    Fixed IDMS-STATUS code to include SECTION after 9123-IDMS-STATUS.
+//*
+//***********************************************************************************************
+
+string  CICS-Name
+string  DC-Name
+string  CICS-Orig-Name
+string  DC-Orig-Name
+string  ReportName
+string  OutputReportLine
+integer ErrorCount
+string  LinkageName
+string  Newline
+string  SendQueueName
+string  ReceiveQueueName
+string  FirstReturn
+string  ConversionMessage = "000000* MQCONV.BED CODE ON @date@ AT @time@"
+string  Period
+string  ParagraphName
+string  AddSnapStatements
+string  SnapStatementsCommented
+integer SnapCount
+integer DCErrorCount
+string  ReturnLengthVariable
+integer LinkageTotal
+integer VariableSize
+string  Variable
+string  CICSVerb
+float   Renumber
+string  RenumberString
+string  NewNumber
+string  AddMQ
+string  LinkProgram
+string  OrigLinkProgram
+string  Commarea
+string  HoldLeft
+string  HoldSpace
+
+string  VariableName
+integer StringCount
+integer StringVarCount
+string  HoldRight
+string  HoldR2
+string  HoldWord
+string  FillerData
+string  StringToVariable
+string  StringVarSize
+integer StringSizeWarnings
+string  StringVariableName
+string  FillerRight
+string  FillerLeft
+string  HoldIndexName
+string  HoldStrRight
+string  HoldStrLeft
+string  HoldStrIndex
+string  QuoteVariable
+string  TestCompile
+string  Automatic = 'n'
+integer Errors
+integer Warnings
+
+integer CICSLines
+integer DCCOBOLLines
+integer DCCOBOLAddedLines
+
+string  InspectFrom
+string  InspectTo
+string  InspectVar
+string  InspectTally
+string  InspectLeading
+
+string  AddMQCopies
+string  RandomAdded
+string  RandomVariable
+string  RandomProg
+string  FormatTimeOK
+string  FormatTimeFrom
+string  FormatTimeTo
+string  FormattimeLines
+string  FormattimeType
+string  FormattimePeriod
+string  FormatTimeCode
+
+string  AddDfhresp
+string  ABCODE
+
+integer IDMS-Count
+
+//**************************************************
+//* Main Processing
+//**************************************************
+!a100_main
+    call !b100_init
+    call !b200_proc
+    call !b300_wrap
+    exit
+
+//**************************************************
+//* Initialization
+//**************************************************
+!b100_init
+    print:"************************************************************************************"
+    print:"* Program : DCCONV.BED"
+    print:"* Desc    : This program will convert a CICS program to DC-COBOL."
+    print:"            The CICS source must be located under the CICS directory of the run directory."
+    print:"************************************************************************************"
+    if (exists DCAuto.dat) 
++      call !b110_automatic
++      goto !b100_opens
++   endif
+
+!b100_loop
+    printx:"CICS Program Name (without the .cob extension):"
+    input CICS-Name
+    if (CICS-Name = null) exit
+    upper CICS-Name
+    CICS-Orig-Name = CICS-Name
+    CICS-Name = "cics\@CICS-Name@.cob"
+    open CICS-Source @CICS-Name error print:"Unable to locate @CICS-Name@" goto !b100_loop
+    printx:"Add SNAP statements to all paragraphs (y-n)?"
+    input AddSnapStatements
+    if (AddSnapStatements)
++      printx:"Do you want the SNAP statements commented out (y-n)?"
++      input SnapStatementsCommented
++   endif
+    printx:"Add MQ Logic (y-n)?"
+    input AddMQ
+    printx:"Test Compile (y-n)?"
+    input TestCompile
+
+!b100_opens
+    open MQLogic MQLOGIC.cob error print:"Unable to locate MQLOGIC.COB" wait exit
+    open DCErrorVerbs null
+    open CallProg CALLPROG.DAT error open CallProg null
+    open CICS-List CICSLIST.dat error print:"Unable to open CICSLIST.dat, please run CICSLIST.BED" open CICSLIST.dat null wait
+    open StringWorkingStorage null
+    i:/000000 01  W0100-STRING-DATA./
+    open ErrorReport null
+    OutputReportLine = "Converting @CICS-Orig-Name@ on @date@ at @time@" call !z100_Report
+    if (!AddMQ) OutputReportLine = "Note: MQ Logic was not added!" call !z100_Report
+    cols 1,72
+    file CICS-Source
+    b f;* CICSLines = pcount + 1 b
+    //*****************************************
+    //* Initialize Conversion Fields
+    //*****************************************
+    RandomAdded = 'n'
+    RandomProg = 'n'
+    FormatTimeCode = 'n'
+    if (CICS-Orig-Name = 'QTSNV095') call !b105_QTSNV095_Copy
+    return
+
+//**************************************************
+//* Substitute the IDMS copy with it's contents
+//**************************************************
+!b105_QTSNV095_Copy
+    open qtvm1095 qtvm1095.cpy
+    b copy;*
+
+    file CICS-Source
+    b
+    fs:/COPY IDMS QTVM1095/
+    d
+    b;1
+    paste
+    close qtvm1095
+    return
+
+//**************************************************
+//* Read the DCAuto.dat for input parameters
+//**************************************************
+!b110_automatic
+    Automatic = 'y'
+    open DCAuto DCAuto.dat
+    b
+    if (line = "None") exit
+    CICS-Name = line
+    upper CICS-Name
+    f;1 
+    AddSnapStatements = line
+    if (AddSnapStatements)
++      f;1
++      SnapStatementsCommented = line
++   endif
+    f;1
+    AddMQ = line
+    f;1
+    TestCompile = line
+    close DCAuto
+    print:"CICS Program Name (without the .cob extension):@CICS-Name@"
+    print:"Add SNAP statements to all paragraphs (y-n)?@AddSnapStatements@"
+    if (AddSnapStatements) print:"Do you want the SNAP statements commented out (y-n)?@SnapStatementsCommented@"
+    print:"Add MQ Logic (y-n)?@AddMQ@"
+    CICS-Orig-Name = CICS-Name
+    CICS-Name = "cics\@CICS-Name@.cob"
+    open CICS-Source @CICS-Name error print:"Unable to locate @CICS-Name@" wait exit
+
+!b110_return
+    return
+
+//**************************************************
+//* Main Conversion Processing
+//**************************************************
+!b200_proc
+    call !c050_check_add_mq_copies
+    call !c100_convert_name
+    call !c150_remove_right_side_numbers
+    call !c900_Renumber 
+    call !s100_special  
+    call !c205_programid
+    call !c200_conversion_message 
+    call !c210_protocol_mode
+    call !c220_Linkage
+    call !c230_procedure_division
+    call !c240_MQ_Init 
+    call !c250_CICS_EXEC 
+    call !c260_Paragraph_Snaps 
+    call !c300_MQ_LOGIC
+////call !c400_Inspect
+////call !c310_DC_Error_Verbs  
+////call !c315_comment_unstring
+    call !c320_comment_CICS_EXEC
+    call !c330_convert_displays
+////call !c340_convert_strings
+////call !c350_comment_strings
+    call !c500_eibdate_eibtime
+    call !c600_add_random
+    call !c610_add_formattime
+    call !c700_dfhresp_normal
+    call !c800_idms_status
+    call !f100_fix_comments
+    call !t100_test_compile
+    call !c150_remove_right_side_numbers
+    call !c900_Renumber
+    call !c910_Renum_right
+    call !c920_cleanup_comments
+    return
+
+//**************************************************
+//* Wrapup
+//**************************************************
+!b300_wrap
+    //print:"DC-Name @DC-Name@" wait
+    write CICS-Source @DC-Name
+    file CICS-Source
+    b f;* DCCOBOLLines = pcount + 1 b
+    DCCOBOLAddedLines = DCCOBOLLines - CICSLines
+    OutputReportLine = "==================================================" call !z100_Report
+    OutputReportLine = "CICS Lines     : @CICSLines@" call !z100_Report
+    OutputReportLine = "DC COBOL Lines : @DCCOBOLLines@" call !z100_Report
+    OutputReportLine = "Added Lines    : @DCCOBOLAddedLines@" call !z100_Report
+    OutputReportLine = "Warnings       : @Warnings@" call !z100_Report
+    OutputReportLine = "Errors         : @Errors@" call !z100_Report
+    OutputReportLine = "==================================================" call !z100_Report
+   
+    OutputReportLine = "Note: @CICS-Name@ has been converted to @DC-Name@" call !z100_Report
+    OutputReportLine = "Note: Report located at Report\@DC-Orig-Name@.rpt" call !z100_Report
+    write ErrorReport @ReportName
+    write ErrorReport DCCONV.rpt
+    file ErrorReport
+    b
+    copy;*
+    open ConversionMasterReport CONVMAST.rpt error open ConversionMasterReport null i:"********** CICS to DC-COBOL Conversion Master Report ************" i:" "
+    f;*
+    paste
+    write ConversionMasterReport CONVMAST.rpt
+    close ConversionMasterReport
+    call !b310_cics_list
+    write CallProg CALLPROG.DAT
+    close CallProg
+    close ErrorReport
+    close CICS-Source
+    close MQLogic
+    if (Automatic) 
++       open DCAuto DCAuto.dat
++       f;*
++       i:/@DC-Orig-Name@/
++       write DCAuto DCAuto.dat
++       close DCAuto
++   else
++      wait
++   endif
+    return
+
+//**************************************************
+//* Update CICS List
+//**************************************************
+!b310_cics_list
+    file CICS-List
+    b
+    fs:/@CICS-Orig-Name@/
+    if (eof) goto !b310_return
+    scan:/@line/:/*** Converted/ 
+    if (!found) 
++      Newline = "@line@    *** Converted on @date@ at @time@" 
++   else
++      Newline = "@left@*** Converted on @date@ at @time@"
++   endif
+    r:/@Newline/ 
+
+!b310_return
+    write CICS-List CICSLIST.dat
+    close CICS-List
+    return
+
+//**************************************************
+//* Check to see if MQ COPY statements should be added
+//**************************************************
+!c050_check_add_mq_copies
+    AddMQCopies = AddSnapStatements
+    if (AddMQCopies) goto !c050_return
+    b
+    pattern on fs:/###### PROCEDURE DIVISION/ pattern off
+!c050_find_display_loop
+    if (eof) goto !c050_return
+    fs:/ DISPLAY /
+    if (eof) goto !c050_return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '/') or (left = '*') f;1 goto !c050_find_display_loop
+    AddMQCopies = 'y'
+
+!c050_return
+    return
+
+//**************************************************
+//* Convert CICS Name to DC-COBOL
+//**************************************************
+!c100_convert_name
+    print:"Converting Name"
+    split:/@CICS-Orig-Name@/;3
+    DC-Name = "DC-COBOL/@left@Z"
+    DC-Orig-Name = "@left@Z"
+    split:/@right@/;1
+    DC-Name = "@DC-Name@@right@.cob"
+    DC-Orig-Name = "@DC-Orig-Name@@right@"
+
+    if (CICS-Orig-Name = "DVCZAPPC") DC-Orig-Name = "DVCZZPPC" DC-Name = "DC-COBOL\DVCZZPPC.cob"
+    if (CICS-Orig-Name = "Q2CZAPPC") DC-Orig-Name = "Q2CZZPPC" DC-Name = "DC-COBOL\Q2CZZPPC.cob"
+
+    //print:"@DC-Name@" print:"@DC-Orig-Name@" wait
+    split:/@DC-Orig-Name/;2
+    SendQueueName = 'OS390.FLEET.@left@.@DC-Orig-Name@.SEND'
+    ReceiveQueueName = 'OS390.FLEET.@left@.@DC-Orig-Name@.RECEIVE'
+    ReportName = "Report\@DC-Orig-Name@.rpt"
+    if (!exists Report) system:"md Report"
+    OutputReportLine = "Note: New DC-COBOL = @DC-Orig-Name@" call !z100_Report
+    return
+
+//**************************************************
+//* Remove numbers on right side
+//**************************************************
+!c150_remove_right_side_numbers
+    print:"Removing right side numbers"
+    b
+!c150_loop
+    split:/@line/;72
+    Newline = left
+    r:/@Newline/
+    f;1
+    if (!eof) goto !c150_loop
+    return
+
+//**************************************************
+//* Add conversion messages at the top of the program
+//**************************************************
+!c200_conversion_message
+    b
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    Newline = "000000* @DC-Orig-Name@ CONVERTED TO DC-COBOL FROM CICS PROGRAM @CICS-Orig-Name@"
+    i:/@Newline/
+    i:/@ConversionMessage@/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    return
+
+//**************************************************
+//* Change all occurances of the program name
+//**************************************************
+!c205_programid
+    print:"Converting old CICS name to new DC-COBOL name"
+    b 
+    fs:/PROGRAM-ID/ if (eof) OutputReportLine = "*** Warning: Unable to locate program name" Warnings ++ call !z100_Report
+    b 
+!c205_loop
+    fs:/@CICS-Orig-Name@/
+    if (eof) goto !c205_return
+    scan:/@line/:/ COPY /
+    if (found) goto !c205_next
+    Newline = /@CICS-Orig-Name@-/
+    scan:/@line/:/@Newline@/
+    if (found) goto !c205_next
+    rs:/@CICS-Orig-Name@/:/@DC-Orig-Name@/
+
+!c205_next
+    f;1
+    if (!eof) goto !c205_loop
+    goto !c205_return
+
+!c205_return
+    return
+
+//**************************************************
+//* Change the protocol mode from CICS-EXEC to IDMS-DC-NONAUTO
+//**************************************************
+!c210_protocol_mode
+    print:"Fixing PROTOCOL MODE"
+    b
+    fs:/CICS-EXEC/
+    if (eof) OutputReportLine = "*** Warning: Unable to locate PROTOCOL MODE CICS-EXEC" Warnings ++ call !z100_Report return
+    RS:/CICS-EXEC/:/IDMS-DC-NONAUTO/
+    split:/@line/;71
+    r:/@left@/
+    fs:/./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/000000* PROTOCOL MODE CICS-EXEC to IDMS-DC-NONAUTO FOR DC-COBOL/
+    i:/@ConversionMessage@/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    return
+
+//**************************************************
+//* Comment Linkage DFHCOMMAREA
+//**************************************************
+!c220_Linkage
+    print:"Processing LINKAGE SECTION"
+    b
+    pattern on fs:/###### LINKAGE SECTION/ pattern off
+    if (eof) OutputReportLine = "*** Warning: Unable to locate LINKAGE SECTION" Warnings ++ call !z100_Report return
+    call !c225_Add_MQ_WS
+
+    if (!AddMQ) goto !c220_find_linkage_name
+
+    //rvs:/ /:/*/
+    f;1
+    d
+
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/000000* 'LINKAGE SECTION' REMOVED FOR DC-COBOL/
+    i:/@ConversionMessage@/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+!c220_find_linkage_name
+    pattern on fs:/######*01/ pattern off
+    if (eof) OutputReportLine = "*** Warning: Unable to find Linkage 01" Warnings ++ call !z100_Report return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/') f;1 goto !c220_find_linkage_name
+    scan:/@right/:/01/
+    scan:/@right/:word
+    scan:/@left/:/./
+    LinkageName = left
+    //*******************************************************************
+    //* Fix DZCLBSCO,QJCZ200 Linkage Name
+    //*******************************************************************
+    if (DC-Orig-Name = "DZCZBSCO") or (DC-Orig-Name = "QJCZ200")
++      LinkageName = 'DFHCOMMAREA'
++   endif
+
+    OutputReportLine = "Note: Linkage Name[@LinkageName@]" call !z100_Report
+    if (AddMQ) 
++      call !d100_Return_Length
++   endif
+    return
+
+//**************************************************
+//* Add MQ Working Storage Copies
+//**************************************************
+!c225_Add_MQ_WS 
+    if (!AddMQCopies) goto !c225_return  
+    print:"Adding MQ WORKING STORAGE"
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:"000000* MQ SPECIFIC COPYBOOKS CREATED"
+    i:/@ConversionMessage@/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+
+    i:"000000 COPY MQERRREC."
+    i:"000000 COPY MQCOPYBK."
+    i:"000000 COPY MQFLDSWS."
+    i:"000000 COPY MQWRKFLD."
+    i:"000000 COPY MQERDATA."
+    if (!AddMQ) i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+
+!c225_return    
+    return
+
+//**************************************************
+//* Add linkage to Procedure Division
+//**************************************************
+!c230_procedure_division
+    if (AddMQ) goto !c230_return
+    b
+    pattern on fs:/###### PROCEDURE DIVISION/ pattern off
+    if (DC-Orig-Name = 'QTCZV917') return
+    if (eof) 
++      OutputReportLine = "*** Warning: Unable to locate PROCEDURE DIVISION for Linkage" 
++      Warnings ++ 
++      call !z100_Report 
++      goto !c230_return
++   endif
+    if (LinkageName = null) goto !c230_return
+    scan:/@line/:/./
+    if (!found)
++      f;1
++      scan:/@line/:/ USING /
++      if (!found)
++         b;1
++   endif
+    scan:/@line/:/ USING /
+    if (found)
++      OutputReportLine = "Note: Already using Linkage: @line@" 
++      call !z100_Report
++      goto !c230_return
++   endif
+    scan:/@line/:/DIVISION/
+    Newline = "@left@DIVISION USING @LinkageName@@right@"
+    r:/@Newline@/
+    OutputReportLine = "Note: PROCEDURE DIVISION USING @LinkageName@" call !z100_Report
+
+!c230_return
+    return
+
+//**************************************************
+//* Add MQ Setup Calls
+//**************************************************
+!c240_MQ_Init
+    if (!AddMQ) return
+    print:"Adding MQ setup calls"
+    b
+    pattern on fs:/###### PROCEDURE DIVISION/ pattern off
+!c240_loop
+    f;1
+    if (eof) OutputReportLine = "*** Error: Unable to locate correct spot for MQ Init calls" Errors ++ call !z100_Report return
+
+    pattern on fs:/###### ?/ pattern off
+    if (eof) OutputReportLine = "*** Error: Unable to locate correct spot for MQ Init calls" Errors ++ call !z100_Report return
+
+//    split:/@line/;6
+//    split:/@right/;1
+//    if (left != ' ') goto !c240_loop
+//    split:/@right/;1
+//    if (left = ' ') goto !c240_loop
+
+//    print:"AddSnapStatements[@AddSnapStatements@]" wait
+//    if (!AddSnapStatements)
+//+      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+//+      i:/@ConversionMessage@/
+//+   endif
+
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/@ConversionMessage@/
+
+    Newline = "000000     MOVE '@ReceiveQueueName@'"
+    i:/@Newline/
+    Newline = "000000                                    TO MQTM-QNAME."
+    I:/@Newline/
+    Newline = "000000     MOVE '@SendQueueName@'"
+    i:/@Newline/
+    Newline = "000000                                    TO MQ-DEST-QUEUE-NAME."
+    I:/@Newline/
+    Newline = "000000     MOVE 'OS390.FLEET.ERROR.QUEUE'"
+    i:/@Newline/
+    Newline = "000000                                    TO MQM-ERROR-QUEUE-NAME."
+    I:/@Newline/
+
+    i:/000000     PERFORM 90000-INIT-MQ                THRU 90000-EXIT./
+    Newline = /000000     MOVE MQM-INPUT-DATA            TO @LinkageName@./
+    i:/@Newline/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    //b;5 p;6 b
+    b
+    return
+
+
+//**************************************************
+//* Locate and Process all CICS EXECs
+//*     This logic will create new lines to replace the
+//*     CICS EXEC commands, and !c320_comment_CICS_EXEC
+//*     is used later to comment out all CICS EXEC lines.
+//**************************************************
+!c250_CICS_EXEC
+    print:"Converting all CICS EXEC commands"
+    cols 1,72
+    b
+    FirstReturn = 'y'
+!c250_loop   
+    if (DC-Orig-Name = 'DZCZBC38') or (DC-Orig-Name = 'QDCZX602') return
+    fs:/ EXEC CICS /
+    if (eof) 
++      if (FirstReturn) 
++         OutputReportLine = "*** Warning: Unable to locate CICS RETURN" 
++         Warnings ++ 
++         call !z100_Report 
++         return
++   endif
+
+    if (eof) goto !c250_return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = "/") f;1 goto !c250_loop
+    scan:/@line/:/EXEC CICS /
+    HoldLeft = left
+!c250_find_cics_verb
+    scan:/@right/:word
+    if (left = null) goto !c250_next_line
+    CICSVerb = left
+    fs:/END-EXEC/
+    if (eof) OutputReportLine = "*** Error: Bad EXEC CICS missing END-EXEC" Errors ++ call !z100_Report return
+    scan:/@line/:/END-EXEC./ if (found) Period = 'y' else Period = 'n'
+    if (CICSVerb = "RETURN") call !c251_CICS_Return goto !c250_next_1
+    if (CICSVerb = "LINK") call !c252_CICS_Link goto !c250_next_1
+    if (CICSVerb = "SYNCPOINT") goto !c250_next_1
+    if (CICSVerb = "ASSIGN") goto !c250_next_1
+    if (CICSVerb = "HANDLE") goto !c250_next_1
+    if (CICSVerb = "ABEND") call !c254_abend goto !c250_next_1
+    if (CICSVerb = "ASKTIME") call !c253_CICS_Asktime goto !c250_next_1
+    if (CICSVerb = "FORMATTIME") 
++      call !c257_CICS_Formattime 
++      if (FormatTimeOK) goto !c250_next_1
++   endif 
+    OutputReportLine = "*** Error: Unknown CICS EXEC [@CICSVerb@], please convert manually" Errors ++ call !z100_Report
+!c250_next_1
+    f;1
+    goto !c250_loop
+
+!c250_next_line
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad EXEC CICS missing END-EXEC" Errors ++ call !z100_Report return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = "/") goto !c250_next_line
+    goto !c250_find_cics_verb
+
+!c250_return
+    return
+
+//**************************************************
+//* Process CICS RETURN
+//**************************************************
+!c251_CICS_Return
+    //print:"    Converted CICS RETURN"
+    //OutputReportLine = "Note: Converted EXEC CICS RETURN" call !z100_Report
+    FirstReturn = 'n'
+    if (!AddMQ) goto !c251_check_goback
+
+    Newline = /000000     MOVE @LinkageName@/
+    i:/@Newline/
+    i:/000000                                    TO MQM-OUTPUT-DATA/
+    Newline = /000000     MOVE @ReturnLengthVariable@/
+    i:/@Newline/
+    i:/000000                                    TO MQM-BUFFER-LENGTH/
+    i:/000000     PERFORM 90400-WRAP-MQ                THRU 90400-EXIT./
+    if (!Period) rs:/./:/ /
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    goto !c250_loop
+
+!c251_check_goback
+    f;1
+    if (eof) OutputReportLine = "*** Error: Unable to locate GOBACK" Errors ++ call !z100_Report goto !c251_return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/') goto !c251_check_goback
+    split:/@right/;60
+    Newline = left
+    crush Newline
+    if (Newline = null) goto !c251_check_goback
+    scan:/@Newline/:/GOBACK/
+    if (!found)
++      Newline = "@HoldLeft@GOBACK"
++      if (Period)
++         Newline = '@Newline@.'
++   endif
+    if (!found)
++      ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      i:/@Newline/
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      OutputReportLine = "*** Note: Added GOBACK" call !z100_Report
++   endif
+    
+!c251_return
+    return
+
+//**************************************************
+//* Process CICS LINK
+//**************************************************
+!c252_CICS_Link
+    //print:"    Processing CICS LINK"
+!c252_exec_cics_loop
+    scan:/@line/:/EXEC CICS/
+    if (!found) b;1 goto !c252_exec_cics_loop
+    HoldLeft = left
+!c252_link_loop
+    scan:/@line/:/ LINK/
+    if (!found) f;1 goto !c252_link_loop
+!c252_program_loop
+    scan:/@right/:/PROGRAM/
+    if (!found) goto !c252_next_program_line
+!c252_paren_loop
+    scan:/@right/:/(/
+    if (!found) goto !c252_next_paren_line
+!c252_quote_loop
+    scan:/@right/:/'/
+    if (!found) goto !c252_next_quote_line
+    scan:/@right/:/'/
+    LinkProgram = left
+    crush LinkProgram
+    fs:/COMMAREA/
+    if (!found) OutputReportLine = "*** Error: Bad EXEC CICS LINK missing COMMAREA" Errors ++ call !z100_Report return
+    scan:/@line/:/COMMAREA/
+!c252_commarea_paren_loop
+    scan:/@right/:/(/
+    if (!found) goto !c252_commarea_paren
+    scan:/@right/:/)/
+!c252_commarea_paren_close_loop
+    if (!found) goto !c252_commarea_close_paren
+    Commarea = left
+    crush Commarea
+    fs:/END-EXEC/
+    if (!found) OutputReportLine = "*** Error: Bad EXEC CICS LINK missing END-EXEC" Errors ++ call !z100_Report return
+    OrigLinkProgram = LinkProgram
+    split:/@LinkProgram/;3
+    LinkProgram = "@left@Z"
+    split:/@right/;1
+    LinkProgram = "@LinkProgram@@right@"
+    OutputReportLine = "Note: Converted LINK @OrigLinkProgram@ to @LinkProgram@ using @Commarea@" call !z100_Report
+    Newline = "@HoldLeft@TRANSFER CONTROL '@LinkProgram@' LINK"
+    i:/@Newline@/
+    Newline = "@HoldLeft@                 USING @Commarea@"
+    if (Period) Newline = "@Newline@." else Newline = "@Newline@;"
+    i:/@Newline/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/ 
+
+    //********************************************************
+    //* Update the Called Program List File
+    //********************************************************
+    file CallProg
+    Newline = "CICS[@OrigLinkProgram@] DC-COBOL[@LinkProgram@]"
+    b
+    fs:/@Newline/
+    if (eof) 
++      Newline = "@Newline@ Called by: @DC-Orig-Name@"
++      i:/@Newline/
++   else
++      scan:/@line/:/@DC-Orig-Name@/
++      if (!found)
++        Newline = "@line@, @DC-Orig-Name@"
++        r:/@Newline@/
++   endif
+    file CICS-List
+    b
+    fs:/@OrigLinkProgram@/
+    //print:/Finding CICS-List Program - LinkProgram[@OrigLinkProgram@] line[@line@]/ wait
+    //*****************************************************************************
+    //* Parameters 1) SNAP's added 2) Comment Snaps 3) AddMQ Logic 4) Test Program
+    //*****************************************************************************
+    if (eof)
++      Newline = "@OrigLinkProgram@,y,y,n,n"
++      i:/@Newline/
++      rs:/.cob,/:/,/
++      //*****************************************************
++      //* Add to the CONVERT3.bat to process called program
++      //*****************************************************
++      open Convert3 CONVERT3.bat
++      i:/bedit call download.bed/
++      i:/bedit call dcconv.bed/
++      i:/bedit call upload.bed/
++      i:/rem/
++      write Convert3 CONVERT3.bat
++      close Convert3
++   endif
+    file CICS-Source
+    goto !c252_return
+
+!c252_next_program_line
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad EXEC CICS LINK missing PROGRAM" Errors ++ call !z100_Report return
+    split:/@line/;6
+    goto !c252_program_loop
+
+!c252_next_paren_line
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad EXEC CICS LINK missing (" Errors ++ call !z100_Report return
+    split:/@line/;6
+    goto !c252_paren_loop
+
+!c252_next_quote_line
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad EXEC CICS LINK missing quote" Errors ++ call !z100_Report return
+    split:/@line/;6
+    goto !c252_quote_loop
+
+!c252_commarea_paren
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad EXEC CICS LINK missing COMMAREA (" Errors ++ call !z100_Report return
+    split:/@line/;6
+    goto !c252_commarea_paren_loop
+
+!c252_commarea_close_paren
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad EXEC CICS LINK missing COMMAREA )" Errors ++ call !z100_Report return
+    split:/@line/;6
+    goto !c252_commarea_paren_close_loop
+
+!c252_return    
+    return
+
+//**************************************************
+//* Process CICS ASKTIME
+//**************************************************
+!c253_CICS_Asktime
+    //********************************************
+    //* Check for special Random Number programs
+    //********************************************
+    if (DC-Orig-Name = 'D3CZFM82') OR (DC-Orig-Name = 'D3CZFM86') OR (DC-Orig-Name = 'QDCZX927')
++      call !c255_random
++      goto !c253_return
++   endif
+
+!c253_return
+    return
+
+//**************************************************
+//* Process CICS ABEND
+//**************************************************
+!c254_abend
+    b;1
+    scan:/@line/:/ABCODE/
+    if (!found) goto !c254_abend
+    fs:/ABCODE/
+    scan:/@line/:/ABCODE/
+    scan:/@right/:/'/
+    scan:/@right/:/'/
+    ABCODE = left
+    fs:/END-EXEC/
+    Newline = "@HoldLeft@MOVE '@ABCODE@' TO L00-RETURN-CODE"
+    if (Period) Newline = '@Newline@.'
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/@ConversionMessage@/
+    i:/@Newline@/
+    Newline = "@HoldLeft@GOBACK"
+    if (Period) Newline = '@Newline@.'
+    i:/@Newline@/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    return
+
+//**************************************************
+//* Create Random number
+//**************************************************
+!c255_random
+    scan:/@line/:/EXEC CICS/
+    if (!found) b;1 goto !c255_random
+    fs:/(/
+    if (eof) 
++      OutputReportLine = "    *** Error: @lineno@ Unable to find '(' in ASKTIME, manual conversion required" 
++      Errors ++ 
++      goto !c255_return 
++   endif
+    RandomProg = 'y'
+    scan:/@line/:/(/
+    scan:/@right/:/)/
+    RandomVariable = left
+    fs:/END-EXEC/  
+    Newline = '@HoldLeft@PERFORM 9796-RANDOM-NUMBER THRU 9796-EXIT'
+    if (Period) Newline = "@Newline@."
+    i:/@Newline/
+    Newline = '@HoldLeft@MOVE W0100-RANDOM-15 TO @RandomVariable@'    
+    if (Period) Newline = "@Newline@."
+    i:/@Newline/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+     
+!c255_return
+    return
+
+//**************************************************
+//* Handle EXEC CICS FORMATTIME
+//**************************************************
+!c257_CICS_Formattime
+    //print:"c257_CICS_Formattime RandomProg[@RandomProg@]" wait
+    scan:/@line/:/EXEC CICS/
+    if (!found) b;1 goto !c257_CICS_Formattime
+    fs:/(/
+    scan:/@line/:/(/
+    scan:/@right/:/)/
+    FormatTimeFrom = left
+    if (RandomProg) f;1
+    fs:/(/   
+    scan:/@line/:/(/
+    scan:/@right/:/)/
+    FormatTimeTo = left
+    if (!RandomProg) call !c258_formattime goto !c257_return
+    Newline = '@HoldLeft@MOVE @FormatTimeFrom@ TO @FormatTimeTo@'    
+    if (Period) Newline = "@Newline@."
+    fs:/END-EXEC/
+    i:/@Newline/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/  
+    FormatTimeOK = 'y'
+
+!c257_return
+    return
+
+
+//**************************************************
+//* Handle all types of FORMATTIME
+//**************************************************
+!c258_formattime
+    FormattimeLines = 'n'
+    if (Period)
++      FormattimePeriod = '.'
++   else
++      FormattimePeriod = null
++   endif
+
+!c258_loop
+    scan:/@right/:/)/
+    if (!found) f;1
+    scan:/@line/:/END-EXEC/
+    if (found) goto !c258_done
+    split:/@line/;6
+    scan:/@right/:word
+    scan:/@left/:/(/
+    FormattimeType = left
+    crush FormattimeType
+    scan:/@right/:/)/
+    FormatTimeTo = left
+    split:/@FormatTimeTo@/;1 if (left = '(') FormatTimeTo = right
+    crush FormattimeType
+    //Newline = "FormattimeType[@FormattimeType@] FormatTimeTo[@FormatTimeTo@]" print:"@Newline@" wait
+    if (FormattimeType = 'YYYYMMDD')
++      Newline = "@HoldLeft@MOVE W0200-DATE-YYYYMMDD TO @FormatTimeTo@"
++      i:/@Newline/
++      cut b;1
++      FormattimeLines = 'y'
++      goto !c258_loop
++   endif
+
+    if (FormattimeType = 'YYMMDD')
++      Newline = "@HoldLeft@MOVE W0200-DATE-YYMMDD   TO @FormatTimeTo@@FormattimePeriod@"
++      i:/@Newline/
++      cut b;1
++      FormattimeLines = 'y'
++      goto !c258_loop
++   endif
+
+    if (FormattimeType = 'MMDDYY')
++      Newline = "@HoldLeft@MOVE W0200-DATE-MMDDYY   TO @FormatTimeTo@@FormattimePeriod@"
++      i:/@Newline/
++      cut b;1
++      FormattimeLines = 'y'
++      goto !c258_loop
++   endif
+
+    if (FormattimeType = 'TIME')
++      Newline = "@HoldLeft@MOVE W0200-TIME          TO @FormatTimeTo@@FormattimePeriod@"
++      i:/@Newline/
++      cut b;1
++      FormattimeLines = 'y'
++      goto !c258_loop
++   endif
+
+    //print:"Unknown FormattimeType [@FormattimeType@]" wait
+    OutputReportLine = "    *** Error: Unknown FORMATTIME Type [@FormattimeType@]" 
+    Errors ++ 
+    call !z100_Report 
+    goto !c258_return
+
+!c258_done
+    if (FormattimeLines) 
++      paste
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/ 
++   endif
+    FormatTimeCode = 'y'
+    FormatTimeOK = 'y'
+
+!c258_return
+    return
+
+//**************************************************
+//* Add SNAP Statements to All Paragraph 
+//**************************************************
+!c260_Paragraph_Snaps
+    if (!AddSnapStatements) return
+    print:"Adding paragraph SNAP statements"
+    b
+    pattern on fs:/###### PROCEDURE DIVISION/ pattern off
+    if (eof) if (FirstReturn) OutputReportLine = "*** Warning: Unable to locate PROCEDURE DIVISION for SNAPS" Warnings ++ call !z100_Report return
+    f;1
+!c260_loop
+    if (eof) goto !c260_return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = "*") or (left = "/") f;1 goto !c260_loop
+    split:/@right/;1
+    if (left = ' ') f;1 goto !c260_loop
+    scan:/@line/:/-EXIT/ if (found) f;1 goto !c260_loop
+    scan:/@line/:/ COPY / if (found) f;1 goto !c260_loop
+    split:/@line/;7
+    scan:/@right/:word
+    ParagraphName = left
+    scan:/@left/:/./ if (found) ParagraphName = left
+    //print:"Adding SNAP for @ParagraphName@"
+!c260_loop2
+    f;1
+    if (eof) goto !c260_add
+    split:/@line/;6
+    split:/@right/;1
+    if (left = "*") or (left = '/') goto !c260_loop2
+    b;1
+!c260_add
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/@ConversionMessage@/
+    Newline = "000000*    MOVE '@DC-Orig-Name@ @ParagraphName@'"
+    i:/@Newline/
+    i:/000000*                                   TO WS-SNAP-ERROR-TEXT./
+    i:/000000*    MOVE '0000'                    TO WS-SNAP-REASON-CODE./
+    i:/000000*    SNAP TITLE IS WS-SNAP-ERROR-MESSAGE./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    if (!SnapStatementsCommented) b;4 rs:/000000*/:/000000 /;4 f;1
+    SnapCount = 1
+    if (SnapCount > 0) 
++      f;1
++   else
++      d;1
++   endif
+    SnapCount ++
+    goto !c260_loop
+!c260_return  
+    return
+
+//**************************************************
+//* Add MQ Logic
+//**************************************************
+!c300_MQ_LOGIC
+    if (!AddMQ) return
+     print:"Adding MQ logic"
+     file MQLogic
+     b
+     copy;*
+     file CICS-Source
+     f;*
+     i:"000000/"
+     paste
+     return
+
+//**************************************************
+//* Collect all DC Error Verbs requiring manual correction
+//**************************************************
+!c310_DC_Error_Verbs
+    print:"Identifying DC Error verbs"
+    DCErrorCount = 0
+    b
+    pattern on fs:/###### PROCEDURE DIVISION/ pattern off
+    if (eof) if (FirstReturn) OutputReportLine = "*** Warning: Unable to locate PROCEDURE DIVISION" Warnings ++ call !z100_Report return
+!c310_string_loop
+    fs:/ STRING /
+    if (eof) goto !c310_string_done
+    split:/@line/;6
+    split:/@right/;1
+    if (left = "*") or (left = "/") f;1 goto !c310_string_loop
+    DCErrorCount ++
+    Newline = "    *** Warning: @lineno@ Contains STRING verb, please review converted code" Warnings ++
+    file DCErrorVerbs
+    i:/@Newline/
+    file CICS-Source
+    f;1
+    goto !c310_string_loop
+!c310_string_done
+    b
+!c310_unstring_loop
+    fs:/ UNSTRING /
+    if (eof) goto !c310_unstring_done
+    split:/@line/;6
+    split:/@right/;1
+    if (left = "*") or (left = "/") f;1 goto !c310_unstring_loop
+    DCErrorCount ++
+    Newline = "    *** Errors: @lineno@ Contains UNSTRING verb, manual conversion required" Errors ++
+    file DCErrorVerbs
+    i:/@Newline/
+    file CICS-Source
+    f;1
+    goto !c310_unstring_loop
+
+!c310_unstring_done
+
+!c310_DC_Error_Report
+    if (DCErrorCount = 0) goto !c310_Return
+    print:"******************************************************"
+    print:"The following COBOL lines contain verbs that are not"
+    print:"allowed in DC-COBOL and must be corrected manually."
+    print:"------------------------------------------------------"
+    file DCErrorVerbs
+    b
+    p;*
+    print:"------------------------------------------------------"
+    b
+    copy;*
+    file ErrorReport
+    i:/    **********************************************************/
+    i:"    Note: The following COBOL lines contain verbs that are not"
+    i:"          allowed in DC-COBOL and must be corrected manually."
+    i:"    ------------------------------------------------------"
+    paste
+    i:"    ------------------------------------------------------"
+    file CICS-Source
+!c310_Return
+    return
+
+//**************************************************
+//* Locate and Process all CICS EXECs
+//*     Comment out all UNSTRING lines
+//**************************************************
+!c315_comment_unstring
+    print:"Commenting all UNSTRING statements"
+    b
+!c315_unstring_loop
+    fs:/ UNSTRING /
+    if (eof) goto !c315_return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/') f;1 goto !c315_unstring_loop
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    i:/@ConversionMessage@/
+    f;1
+    scan:/@line/:/ UNSTRING/
+    HoldSpace = left
+    scan:/@right/:word
+    VariableName = left
+    splitr:/@VariableName@/;1
+    if (right = ',') VariableName = left
+    cols 7,7 rs:/ /:/*/ cols 1,72
+!c315_unstring_commented
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad UNSTRING missing INTO or END-UNSTRING" Errors ++ call !z100_Report return
+    cols 7,7 rs:/ /:/*/ cols 1,72
+    scan:/@line/:/ INTO /
+    if (found) copy goto !c315_unstring_done
+    //scan:/@line/:/END-UNSTRING/
+    //if (found) goto !c315_unstring_done
+    goto !c315_unstring_commented   
+
+!c315_unstring_done
+    Newline = "@HoldSpace@ MOVE @VariableName@"
+    i:/@Newline@/
+    paste
+    rs:/*/:/ /
+    rs:/ INTO/:/     TO/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    goto !c315_unstring_loop
+    
+!c315_return
+    return
+
+//**************************************************
+//* Locate and Comment all CICS EXECs
+//**************************************************
+!c320_comment_CICS_EXEC
+    print:"Removing all CICS EXEC commands"
+    b
+!c320_loop
+    fs:/ EXEC CICS /
+    if (eof) goto !c320_return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/') f;1 goto !c320_loop
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    i:/@ConversionMessage@/
+    f;1
+    cols 7,7 rs:/ /:/*/ cols 1,72
+    scan:/@line/:/END-EXEC/
+    if (found) 
++       i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/  
++       f;1 
++       goto !c320_loop
++   endif
+
+!c320_end_exec_loop
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad CICS EXEC missing END-EXEC" Errors ++ call !z100_Report return
+    cols 7,7 rs:/ /:/*/ cols 1,72
+    scan:/@line/:/END-EXEC/
+    if (!found) goto !c320_end_exec_loop
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    goto !c320_loop
+
+!c320_return
+    return
+
+//**************************************************
+//* Convert DISPLAY statements to SNAP
+//**************************************************
+!c330_convert_displays
+    print:"Converting all DISPLAYs to SNAP"
+    b
+!c330_loop
+    fs:/ DISPLAY /
+    if (eof) goto !c330_return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/') f;1 goto !c330_loop
+    //p wait
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/@ConversionMessage@/
+    f;1
+    copy
+    rs:/ /:/*/
+    paste
+    rs:/DISPLAY/:/MOVE/
+    scan:/@line/:/MOVE/
+    HoldSpace = left
+
+!c330_find_first_quote
+    scan:/@line/:/'/
+    if (!found) goto !c330_next_line
+    HoldLeft = /@left@'/
+    scan:/@right/:/'/
+    HoldLeft = /@HoldLeft@@left@'/
+    scan:/@right/:/./
+    if (found) Period = 'y' r:/@HoldLeft@/ else Period = 'n'        
+    i:/000000                                    TO WS-SNAP-ERROR-TEXT/
+    Newline = /@HoldSpace@MOVE '0000' TO WS-SNAP-REASON-CODE/
+    i:/@Newline/
+    Newline = /@HoldSpace@SNAP TITLE IS WS-SNAP-ERROR-MESSAGE./
+    i:/@Newline/
+    if (!Period) rs:/./:/ / 
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+
+    goto !c330_loop
+
+!c330_next_line
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad DISPLAY missing 's" Errors ++ call !z100_Report return
+    goto !c330_find_first_quote
+
+!c330_return
+    return
+
+//**************************************************
+//* Convert STRING commands to MOVEs
+//**************************************************
+!c340_convert_strings
+    print:"Converting all STRING commands"
+    b
+    StringCount = 0
+    StringVarCount = 0
+
+//***************************************
+//* Find the next STRING command
+//***************************************
+!c340_string_loop
+    fs:/ STRING /
+    if (eof) goto !c340_return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/') f;1 goto !c340_string_loop
+    //print:"==================================================================="
+    //print:"STRING c340_string_loop @line@"
+    scan:/@line/:/STRING /
+    HoldSpace = left
+    StringCount ++
+    file StringWorkingStorage
+    //********************************
+    //* Create String Working Storage
+    //********************************
+    Newline = "000000     05  WS-STRING-@StringCount@."
+    i:/@Newline/
+    open StringMoves null
+    file CICS-Source
+    HoldIndexName = null
+
+//***************************************
+//* Find a variable being strung
+//***************************************
+!c340_find_string_variable
+//    print:"debug c340_find_string_variable right[@right@]" wait
+    scan:/@right/:word
+    if (left != null) goto !c340_found_string_variable
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad STRING delimiter 3" Errors ++ call !z100_Report return
+    split:/@line/;6
+    goto !c340_find_string_variable
+
+//***************************************
+//* Found something being strung
+//***************************************
+!c340_found_string_variable
+    //print:"debug c340_found_string_variable left[@left@] right[@right@]" wait
+    if (left = ',') goto !c340_find_string_variable
+    HoldWord = left
+    HoldRight = right
+    HoldR2 = right
+    splitr:/left/;1 if (right = ',') right = HoldRight goto !c340_found_string_variable
+    split:/@HoldWord/;1
+    if (left = /'/) left = HoldWord right = HoldRight goto !c340_quote
+    //****************************
+    //* Is VARIABLE (INDEX)
+    //****************************
+    if (left = '(')
++      //print:"Found Index VariableName[@VariableName@] HoldWord[@HoldWord@]" wait
++      left = HoldWord
++      HoldIndexName = left
++      right = HoldRight
++      goto !c340_delimit
++   endif
+
+    //****************************
+    //* Does VARIABLE (INDEX) follow
+    //****************************
+    HoldStrRight = right
+    HoldStrLeft = left
+    scan:/@HoldRight/:word
+    //print:"Looking for following INDEX HoldWord[@HoldWord@] left[@left@]" wait
+    HoldStrIndex = left
+    split:/@left/;1
+    if (left = '(')
++      right = HoldStrRight
++      left = HoldStrLeft
++      HoldIndexName = HoldStrIndex
++   endif
+
+    right = HoldStrRight
+    left = HoldStrLeft
+
+    if (HoldWord = "INTO") goto !c340_string_command_done
+    splitr:/@HoldWord/;1
+    //print:"After Split - HoldWord[@HoldWord@] left[@left@] right[@right@]" wait
+    if (right = ',') 
++      //print:"HoldWord[@HoldWord@] left[@left@] right[@right@]" wait
++      HoldWord = left
++      right = HoldStrRight
++      left = HoldStrLeft
++   endif
+    VariableName = HoldWord
+    //print:"VariableName[@VariableName@]" wait
+    VariableSize = 99
+    StringVarCount ++
+    file StringMoves
+
+    //********************************
+    //* Create String Move Statement
+    //********************************
+    //if (HoldIndexName != null) print:"MOVEing VariableName[@VariableName@] HoldIndexName[@HoldIndexName@]" wait
+    StringVariableName = "WS-@VariableName@-@StringVarCount@"
+    if (HoldIndexName = null)
++      Newline = "@HoldSpace@MOVE @VariableName@ TO"
++   else
++      Newline = "@HoldSpace@MOVE @VariableName@ @HoldIndexName@ TO"
++   endif
+    i:/@Newline/
+    Newline = "@HoldSpace@     WS-@VariableName@-@StringVarCount@"
+    i:/@Newline/
+    //print:"NULLing HoldIndexName" wait
+    HoldIndexName = null
+    file StringWorkingStorage
+
+    StringVarSize = "X(99)"
+
+    Newline = "000000         10  WS-@VariableName@-@StringVarCount@"
+    i:/@Newline/
+    //p
+    Newline = "000000                            PIC @StringVarSize@."
+    i:/@Newline/
+    file CICS-Source           
+    goto !c340_delimit
+
+//***************************************
+//* Fixed value is being strung
+//***************************************
+!c340_quote
+    //print:"debug c340_quote left[@left@] right[@right@]" wait
+    HoldRight = right
+    HoldLeft = left
+    if (lleft < 2) goto !c340_q_2
+    splitr:/@left/;1
+    if (right = /'/) left = HoldLeft right = HoldRight goto !c340_q_3
+    QuoteVariable = HoldLeft
+    scan:/@HoldRight/:/'/ if (!found) OutputReportLine = "*** Error: Bad STRING quotes 1 @line@" Errors ++ call !z100_Report return
+    QuoteVariable = "@QuoteVariable@ @left@'"
+    //print:"QuoteVariable[@QuoteVariable@]" wait
+    left = QuoteVariable
+    HoldRight = right
+    HoldR2 = right
+    goto !c340_q_3
+!c340_q_2
+    //print:"c340_q_2 left[@left@] right[@right@]" wait
+    scan:/@right/:/'/ if (!found) goto !c340_quote_space
+!c340_q_3
+    //print:"c340_q_3 left[@left@] right[@right@]" wait
+    if (left = null) left = ' '
+    FillerData = left
+    call !c341_fix_fillerdata
+    HoldRight = right
+    file StringWorkingStorage
+    StringVarSize = "00@lleft@"
+    splitr:/@StringVarSize@/;2
+    Newline = "000000         10  FILLER         PIC X(@right@) VALUE"
+    i:/@Newline/
+    //p
+    Newline = "000000             '@FillerData@'."
+    i:/@Newline/
+    //p
+    file CICS-Source
+    goto !c340_delimit
+
+//***************************************
+//* Find if there's a delimiter
+//***************************************
+!c340_delimit
+    //print:"debug c340_delimit HoldRight[@HoldRight@]" wait
+    scan:/@HoldRight/:word
+    if (left != null) goto !c340_check_delimited
+    f;1
+    if (eof) OutputReportLine = "*** Error: Bad STRING delimiter 1" Errors ++ call !z100_Report return
+    split:/@line/;6
+    HoldRight = right
+    goto !c340_delimit
+
+//***************************************
+//* See if we're at a DELIMITED token
+//***************************************
+!c340_check_delimited
+//    print:"debug c340_check_delimited left[@left@]" wait
+    if (left = "DELIMITED") goto !c340_found_delimit
+    HoldWord = left
+    HoldRight = right
+    split:/@left/;1
+    if (left = /'/) left = HoldWord right = HoldRight goto !c340_quote
+    left = HoldWord
+    right = HoldRight
+    goto !c340_found_string_variable
+
+//***************************************
+//* Figure out how the field is delimited
+//***************************************
+!c340_found_delimit
+//    print:"debug c340_found_delimit right[@right@]" wait
+    scan:/@right/:/BY / 
+    if (!found) f;1 scan:/@line/:/BY / if (!found) OutputReportLine = "*** Error: Bad STRING delimiter 2" Errors ++ call !z100_Report return
+    scan:/@right/:word
+    if (left = "SIZE") or (left = "SIZE,") goto !c340_delimit_size
+    if (left = "SPACE,") left = "SPACE"
+    if (left = "'") if (lleft = 1) scan:/@right/:/'/ left = "'@left@'" if (left = /''/) left = /' '/
+    OutputReportLine = "*** Error: STRING delimited by @left@, Manual Conversion Required" Errors ++ call !z100_Report
+    //close StringMoves error
+    goto !c340_find_string_variable 
+    
+//***************************************
+//* The field being strung is by size
+//***************************************
+!c340_delimit_size
+//  print:"debug c340_delimit_size" wait
+    goto !c340_find_string_variable
+
+//***************************************
+//* INTO has been found so finish the string command
+//***************************************
+!c340_string_command_done
+    //print:"debug c340_string_command_done HoldRight[@HoldRight@]" wait
+    scan:/@HoldRight/:word
+    StringToVariable = left
+    HoldRight = right
+    scan:/@right/:word
+    HoldIndexName = null
+    if (left != null) HoldIndexName = left split:/@left/;1 if (left != '(') HoldIndexName = null
+    Period = 'n'
+    scan:/@right/:word 
+    if (left = '.') Period = 'y' goto !c340_string_moves
+    if (left = "END-STRING.") Period = 'y' goto !c340_string_moves
+    if (left = "END-STRING") goto !c340_string_moves
+    f;1
+    if (eof) goto !c340_string_moves
+    scan:/@line/:/END-STRING/ if (!found) b;1 goto !c340_string_moves
+    scan:/@right/:/./ if (found) Period = 'y'
+    goto !c340_string_moves
+
+//***************************************
+//* Create the MOVE statement
+//***************************************
+!c340_string_moves    
+    call !c342_on_overflow
+    //print:"debug c340_string_moves" wait
+    file StringMoves
+    Newline = "@HoldSpace@MOVE WS-STRING-@StringCount@ TO"
+    i:/@Newline/
+    Newline = "@HoldSpace@     @StringToVariable@"
+    if (HoldIndexName != null) Newline = "@Newline@ @HoldIndexName@"
+    if (Period) Newline = "@Newline@."
+    i:/@Newline@/
+    //b p;* wait
+    b
+    cut;*
+    file CICS-Source
+    paste
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    close StringMoves
+    goto !c340_string_loop
+
+//***************************************
+//* Insert the STRING Working Storage variables
+//***************************************    
+!c340_return
+//    print:"debug c340_return" wait
+    if (StringCount = 0) return
+    call !c345_working_storage_size
+    file StringWorkingStorage
+    b
+//    rs:/''/:/'/;*
+//    b
+    cut;*
+    file CICS-Source
+    b
+    fs:/COPY MQERDATA./
+    paste
+    return
+
+//***************************************
+//* Remove quotes from FillerData
+//***************************************    
+!c341_fix_fillerdata
+//    print:"c341_fix_fillerdata [@FillerData@]" wait
+    FillerRight = right
+    FillerLeft = left
+    split:/@FillerData/;1
+    if (left != /'/) goto !c341_return
+    FillerData = right
+    splitr:/@FillerData/;1
+    if (right != /'/) goto !c341_return
+    FillerData = left
+
+!c341_return
+//    print:"FillerData[@FillerData@]" wait
+    left = FillerData
+    right = FillerRight
+    return
+
+//***************************************
+//* Check for STRING ON OVERFLOW
+//***************************************    
+!c342_on_overflow
+    scan:/@line/:/ON OVERFLOW/ if (found) OutputReportLine = "*** Warning: Check STRING ON OVERFLOW" Warnings ++ call !z100_Report goto !c342_find_end_string
+    f;1
+    scan:/@line/:/ON OVERFLOW/ if (found) OutputReportLine = "*** Warning: Check STRING ON OVERFLOW" Warnings ++ call !z100_Report goto !c342_find_end_string
+    b;1
+    goto !c342_return
+
+!c342_find_end_string
+    fs:/END-STRING/
+    if (eof) OutputReportLine = "*** Error: Check STRING ON OVERFLOW" Errors ++ call !z100_Report
+
+!c342_return
+    return
+
+//***************************************
+//* Fix the SRING working storage variable sizes
+//***************************************    
+!c345_working_storage_size
+    StringSizeWarnings = 0
+    //print:"c345_working_storage_size" wait
+    open CICS-Comp CICSCOMP.dat error open CICS-Comp null
+    //b print:"CICS-Comp Data:" p;10 wait
+    b
+    file StringWorkingStorage
+    b
+!c345_loop
+    //print:"c345_loop" p wait
+    fs:/    10  /
+    if (eof) goto !c345_return
+    scan:/@line/:/ FILLER /
+    if (found)
++      f;1
++      if (eof) 
++         goto !c345_return
++   endif
+    if (found)
++      goto !c345_loop
++   endif
+    //print:"Processing @line@" wait
+    scan:/@line/:/     10  /
+    scan:/@right/:/WS-/
+    scanr:/@right/:/-/
+    VariableName = / @left@ /
+    file CICS-Source
+    b
+    fs:/@VariableName@/
+    if (eof) goto !c345_cics_comp
+    //print:"Found @VariableName@ in CICS-Source on: @line@" wait
+    scan:/@line/:/ PIC /
+    if (!found) f;1 scan:/@line/:/ PIC / if (!found) goto !c345_cics_comp
+!c345_change_pic
+    scan:/@right/:word
+    Newline = "000000                            PIC @left@"
+    scan:/@Newline/:/./
+    if (!found) Newline = "@Newline@."
+    file StringWorkingStorage
+    //print:"Changing @line@"
+    f;1
+    //p
+    //print:"@Newline@" wait
+    r:/@Newline@/
+    goto !c345_next
+
+!c345_cics_comp
+    file CICS-Comp
+    b 
+    fs:/@VariableName@/ 
+    if (eof) goto !c345_next
+    //print:"Found @VariableName@ in CICS-Comp on: @line@" wait
+    scan:/@line/:/ PIC /
+    if (!found) f;1 scan:/@line/:/ PIC / if (!found) OutputReportLine = "*** Warning: Check for @VariableName@ STRING size" Warnings ++ call !z100_Report StringSizeWarnings ++ goto !c345_next
+    goto !c345_change_pic
+
+!c345_next
+//    print:"c345_next" wait
+    file StringWorkingStorage
+    f;1
+    if (eof) goto !c345_return
+    goto !c345_loop
+
+!c345_return
+    //print:"c345_return" wait
+    close CICS-Comp
+    if (!StringSizeWarnings) return
+    OutputReportLine = "*************************************************************************" call !z100_Report
+    OutputReportLine = "*** Note: If this is will be the first compile of @DC-Orig-Name@" call !z100_Report
+    OutputReportLine = "          after compiling use the XDC command to write the output to" call !z100_Report
+    OutputReportLine = "          Userid.COMPILE.SYSOUT, then re-run CONVERT.BAT" call !z100_Report
+    OutputReportLine = "*************************************************************************" call !z100_Report
+    return
+
+//***************************************
+//* Comment all STRING Commands
+//***************************************    
+!c350_comment_strings
+    print:"Commenting out all STRING commands"
+    b
+!c350_comment_string_loop    
+    fs:/ STRING /
+    if (eof) goto !c350_return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/') f;1 goto !c350_comment_string_loop    
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/@ConversionMessage@/
+    f;1
+!c350_string_commenting
+    rs:/ /:/*/
+    //p wait
+    scan:/@line/:/ INTO /
+    if (found) goto !c350_end_string
+    scan:/@line/:/END-STRING/
+    if (found) goto !c350_end_string
+    f;1
+    goto !c350_string_commenting
+!c350_end_string
+    scan:/@line/:/END-STRING/
+    if (found) goto !c350_comment_string_loop
+    scan:/@line/:/ON OVERFLOW/
+    if (found) goto !c350_string_commenting
+    f;1
+    scan:/@line/:/ON OVERFLOW/
+    if (found) goto !c350_string_commenting
+    scan:/@line/:/END-STRING/
+    if (found) rs:/ /:/*/ goto !c350_comment_string_loop
+    f;1
+    goto !c350_comment_string_loop   
+
+!c350_return
+    return
+
+//**************************************************
+//* Convert INSPECT statements
+//**************************************************
+!c400_Inspect
+    b
+!c400_find_inspect_loop
+    if (eof) goto !c400_return
+    //****************************
+    //* Find INSPECT
+    //****************************
+    fs:/ INSPECT /
+    if (eof) goto !c400_return
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/')
++      f;1
++      goto !c400_find_inspect_loop
++   endif
+    scan:/@line/:/ INSPECT /
+    //****************************
+    //* Find INSPECT Variable
+    //****************************
+    scan:/@right/:word
+    if (left = null)
++      f;1
++      scan:/@line/;6
++      scan:/@right/:word
++   endif
+    if (left = null)
++      OutputReportLine = "*** Warning: Unable to determine INSPECT [@line@]" 
++      Warnings ++ 
++      call !z100_Report
++      f;1
++      goto !c400_find_inspect_loop
++   endif
+    InspectVar = left
+    //****************************
+    //* Find INSPECT Command
+    //****************************
+    scan:/@right/:word
+    if (left = null)
++      f;1
++      scan:/@line/;6
++      scan:/@right/:word
++   endif
+
+!c400_return
+    return
+
+//**************************************************
+//* Add logic if EIBDATE or EIBTIME is used
+//**************************************************
+!c500_eibdate_eibtime
+    if (DC-Orig-Name = "QJCZ012") goto !c500_set_eib
+    b
+    pattern on fs:/###### PROCEDURE DIVISION/ pattern off
+    fs:/ EIBDATE /-/EIBTIME/
+    if (eof) goto !c500_return
+!c500_set_eib
+    b
+    OutputReportLine = "Note: EIBDATE/EIBTIME Logic Added" call !z100_Report
+    pattern on fs:/###### LINKAGE SECTION/ pattern off
+    if (CICS-Orig-Name = "QTSNV095") b fs:/RECORD DATE-PARAM/
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    i:/@ConversionMessage@/    
+    i:/000000 COPY EIBWSCPY./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    f;*
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    i:/@ConversionMessage@/    
+    i:/000000 COPY EIBCDCPY./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    b
+    pattern on fs:/###### PROCEDURE DIVISION/ pattern off
+    cols 1,8
+    f;1
+    pattern on fs:/###### ?/ pattern off
+    cols 1,72
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    i:/@ConversionMessage@/    
+    i:/000000     PERFORM 9797-EIB-VARIABLES THRU 9797-EXIT./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+
+!c500_return
+    return
+
+//**************************************************
+//* Add RANDOM copies if required
+//**************************************************
+!c600_add_random
+    //*************************************
+    //* Add Copies
+    //*************************************
+    if (!RandomProg) return
+    b
+    OutputReportLine = "Note: Added CICS ASKTIME for RANDOM Number" call !z100_Report
+    pattern on fs:/###### LINKAGE SECTION/ pattern off
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    i:/@ConversionMessage@/    
+    i:/000000 COPY RANDWSCP./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    f;*
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    i:/@ConversionMessage@/    
+    i:/000000 COPY RANDCDCP./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/   
+    return
+
+//**************************************************
+//* Add FORMATTIME copies if required
+//**************************************************
+!c610_add_formattime
+    //*************************************
+    //* Add Copies
+    //*************************************
+    if (!FormatTimeCode) return
+    b
+    OutputReportLine = "Note: Added CICS ASKTIME for Formatting Variables" call !z100_Report
+    pattern on fs:/###### LINKAGE SECTION/ pattern off
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    i:/@ConversionMessage@/    
+    i:/000000 COPY FTIMWSCP./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    f;*
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    i:/@ConversionMessage@/    
+    i:/000000 COPY FTIMCDCP./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/   
+
+    b
+    pattern on fs:/###### PROCEDURE DIVISION/ pattern off
+    cols 1,8
+    f;1
+    pattern on fs:/###### ?/ pattern off
+    cols 1,72
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/    
+    i:/@ConversionMessage@/    
+    i:/000000     PERFORM 9799-FORMATTIME THRU 9799-EXIT./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/ 
+    return
+
+//**************************************************
+//* Handle DFHRESP(NORMAL)
+//**************************************************
+!c700_dfhresp_normal
+    b
+    pattern on fs:/###### PROCEDURE DIVISION/ pattern off
+    AddDfhresp = 'n'
+!c700_loop
+    if (eof) goto !c700_done
+    fs:/ DFHRESP/
+    if (eof) goto !c700_done
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/') f;1 goto !c700_loop
+    scan:/@line/:/ DFHRESP/
+    HoldLeft = left
+    //print:"DFHRESP HoldLeft[@HoldLeft@] line[@line@]" wait
+    scan:/@right/:/(/
+    if (!found) f;1 goto !c700_loop
+    scan:/@right/:word
+    scan:/@left/:/)/
+    if (left != 'NORMAL')
++      OutputReportLine = "*** Error: DFHRESP(@left@) Not Handled" Errors ++ call !z100_Report
++      f;1
++      goto !c700_loop
++   endif
+
+    Newline = '@HoldLeft@ W0300-DFHRESP-NORMAL'
+    scan:/@HoldLeft@/:/(/ if (found) Newline = "@Newline@)"
+    scan:/@line/:/./
+    if (found) Newline = "@Newline@."
+
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/@ConversionMessage@/
+    f;1
+    rs:/ /:/*/
+    i:/@Newline/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    AddDfhresp = 'y'
+    goto !c700_loop
+
+!c700_done
+    if (!AddDfhresp) goto !c700_return
+    b
+    pattern on fs:/###### LINKAGE SECTION/ pattern off
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/@ConversionMessage@/
+    Newline = "000000 01  w0300-DFHRESP-NORMAL          PIC S9(08) VALUE ZERO."
+    i:/@Newline/
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+!c700_return
+    return
+
+//**************************************************
+//* Fix IDMS-STATUS
+//**************************************************
+!c800_idms_status
+    b
+    pattern on fs:/###### PROCEDURE DIVISION/ pattern off
+!c800_loop
+    rvs:/PERFORM IDMS-STATUS/:/PERFORM 9123-IDMS-STATUS/;*
+    IDMS-Count = pcount
+    b rvs:/PERFORM  IDMS-STATUS/:/PERFORM 9123-IDMS-STATUS/;*
+    IDMS-Count = IDMS-Count + pcount
+    if (IDMS-Count < 1) b goto !c800_return
+    b
+    fs:/COPY IDMS IDMS-STATUS/
+    //if (found) b;1
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/@ConversionMessage@/
+    i:/000000 9123-IDMS-STATUS SECTION./
+    i:/000000     IF DB-STATUS-OK GO TO 9123-ISABEX./
+    i:/000000     PERFORM IDMS-ABORT./
+    i:/000000     ROLLBACK./
+    i:/000000     GOBACK./
+    i:/000000 9123-ISABEX./
+    i:/000000     EXIT./
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    f;1
+    split:/@line/;6
+    HoldLeft = left
+    split:/@right/;1
+    Newline = "@HoldLeft@*@right@"
+    //r:/@Newline/
+    b
+!c800_return
+    return
+    
+
+//**************************************************
+//* Renumber the program line numbers by 100
+//**************************************************
+!c900_Renumber
+    print:"Renumbering left side"
+    b
+    Renumber = 100
+!c900_loop
+    RenumberString = "000000@Renumber@"
+    scan:/@RenumberString@/:/./
+    splitr:/@left@/;6
+    NewNumber = right
+    split:/@line/;6
+    Newline = "@NewNumber@@right@"
+    r:/@Newline@/
+    Renumber = Renumber + 100
+    f;1
+    if (!eof) goto !c900_loop
+
+!c900_return
+    return
+
+//**************************************************
+//* Renumber right side line numbers
+//**************************************************
+!c910_Renum_right
+    print:"Renumbering right side"
+    b
+!c910_loop
+    if (eof) goto !c910_return
+    split:/@line/;6
+    NewNumber = left
+    Newline = "@line@                                                                                                 "
+    split:/@Newline/;72
+    Newline = "@left@00@NewNumber@"
+    r:/@Newline/
+    f;1
+    goto !c910_loop
+
+!c910_return
+    return
+
+//**************************************************
+//* Cleanup Comments left by DCCONV.BED
+//**************************************************
+!c920_cleanup_comments
+    print:"Cleaning up DCCONV comments"
+    b
+!c920_loop
+    fs:/ADDED BY MQCONV.BED/
+    f;2
+    if (eof) goto !c920_return
+    scan:/@line/:/ADDED BY MQCONV.BED/
+    if (!found) goto !c920_next
+    b;1 d;2
+    goto !c920_next
+
+!c920_next
+    if (!eof) goto !c920_loop
+
+!c920_return
+    return
+
+//**************************************************
+//* Find the Return Length variable name
+//**************************************************
+!d100_Return_Length
+    if (!AddMQ) return
+    print:"Locating return length variable"
+    LinkageTotal = 0
+    ReturnLengthVariable = '32000'
+!d100_loop
+    f;1
+    if (eof) goto !d100_bad
+
+//    print:"LinkageTotal[@LinkageTotal@] line[@line@]" wait
+
+    scan:/@line/:/ DIVISION./
+    if (found) goto !d100_bad
+    scan:/@line/:/ COPY /
+    if (found) goto !d100_bad
+    scan:/@line/:/ PIC /
+    if (!found) goto !d100_loop
+    scan:/@line/:/ PIC /
+    if (!found) goto !d100_loop
+    scan:/@right/:/(/ if (!found) goto !d100_explicit
+    scan:/@right/:/)/ if (!found) goto !d100_loop
+    VariableSize = left
+    scan:/@line/:/ COMP./ if (found) VariableSize = VariableSize / 2
+    scan:/@line/:/ COMP / if (found) VariableSize = VariableSize / 2
+    LinkageTotal = LinkageTotal + VariableSize
+    if (LinkageTotal = 30) goto !d100_found
+    if (LinkageTotal > 30) goto !d100_bad
+    goto !d100_loop
+
+!d100_explicit
+//    print:"!d100_explicit" wait
+    scan:/@line/:/ PIC /
+    scan:/@right/:word
+    Variable = left
+    scan:/@Variable/:/./ if (found) Variable = left
+    pack Variable
+    VariableSize = len(Variable)
+    scan:/@line/:/ COMP./ if (found) VariableSize = VariableSize / 2
+    scan:/@line/:/ COMP / if (found) VariableSize = VariableSize / 2
+    LinkageTotal = LinkageTotal + VariableSize
+    if (LinkageTotal = 30) goto !d100_found
+    if (LinkageTotal > 30) goto !d100_bad
+    goto !d100_loop
+   
+!d100_found
+//    print:"!d100_found" wait
+    f;1
+    if (eof) goto !d100_bad
+    split:/@line/;6
+    scan:/@right/:word
+    scan:/@right/:word
+    ReturnLengthVariable = left
+    OutputReportLine = "Note: Return Length Variable[@ReturnLengthVariable@]" call !z100_Report
+//    print:"ReturnLengthVariable[@ReturnLengthVariable@]" wait
+    goto !d100_return
+
+!d100_bad
+//    print:"!d100_bad" wait
+    OutputReportLine = "*** Warning: Unable to locate linkage return length variable, defaulting to 32000" Warnings ++
+    call !z100_Report
+    OutputReportLine = "    LinkageTotal[@LinkageTotal@] line[@line@]" 
+    call !z100_Report
+    goto !d100_return
+
+!d100_return
+    return
+
+//**************************************************
+//* Fix multiple comment lines
+//**************************************************
+!f100_fix_comments
+    b
+!f100_loop
+    fs:/* MQCONV.BED/
+    if (eof) goto !f100_return
+    fs:/*%%%%/
+    if (eof) goto !f100_return
+    f;1
+    if (eof) goto !f100_return
+    scan:/@line/:/*%%%%/
+    if (!found) f;1 goto !f100_loop
+    f;1
+    scan:/@line/:/* MQCONV.BED/
+    if (found) b;2 d;3
+    goto !f100_loop
+
+!f100_return
+    return
+
+//**************************************************
+//* Special conversion logic
+//**************************************************
+!s100_special    
+    b
+    rs:/DFHEIBLK DFHCOMMAREA/:/DFHCOMMAREA/
+    //*****************************
+    //* Fix for D6CNP204
+    //*****************************
+    if (DC-Orig-Name = "D6CZP204")
++      b
++      fs:/DATA DIVISION/
++      r:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      i:/000000 IDMS-CONTROL SECTION./
++      i:/000000 PROTOCOL./
++      i:/000000     MODE IS IDMS-DC-NONAUTO DEBUG IDMS-RECORDS MANUAL./
++      i:/000000 DATA DIVISION./
++      i:/000000 SCHEMA SECTION./
++      i:/000000 DB DSSSQFIS WITHIN DSSCFLVH./
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      fs:/LINKAGE SECTION./
++      ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      i:/000000 COPY IDMS SUBSCHEMA-CONTROL./
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++   endif
+
+    //*****************************
+    //* Fix for D3COFM05
+    //*****************************
+    if (DC-Orig-Name = "D3CZFM05")
++      b
++      rs:/D3COMF05/:/D3CZFM05/;*
++   endif
+
+    //*****************************
+    //* Fix for D3COFM15
+    //*****************************
+    if (DC-Orig-Name = "D3CZFM15")
++      b
++      rs:/d3cofm15/:/D3CZFM15/;*
++   endif
+
+    //*****************************
+    //* Fix for QECOTAXC
+    //*****************************
+    if (DC-Orig-Name = "QECZTAXC")
++      b fs:/IDMS-RECORDS MANUAL/
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      i:/000000 SCHEMA SECTION./
++      i:/000000 DB DSSSQ4BL WITHIN DSSCFLVH./
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      b fs:/WORKING STORAGE ENDS/ f;1
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      i:/000000 COPY IDMS SUBSCHEMA-CONTROL./
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      b
++   endif
+    //*****************************
+    //* Fix for QECOOC02
+    //*****************************
+    if (DC-Orig-Name = "QECZOC02")
++      b fs:/OBJECT-COMPUTER/
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      i:/000000 IDMS-CONTROL SECTION./
++      i:/000000 PROTOCOL. MODE IS IDMS-DC-NONAUTO DEBUG./
++      i:/000000           IDMS-RECORDS MANUAL./
++      i:/000000 SCHEMA SECTION./
++      i:/000000 DB DSSSQ4BL WITHIN DSSCFLVH./
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      fs:/WORKING STORAGE ENDS/ f;1
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      i:/000000 COPY IDMS SUBSCHEMA-CONTROL./
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      b
++   endif
+
+    //*****************************
+    //* Fix for QLCOL196 EIBCALEN
+    //*****************************
+    if (DC-Orig-Name = "QLCZL196")
++      b fs:/EIBCALEN < 1/
++      ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      f;1
++      cols 7,8
++      rs:/  /:/* /;6
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      b
++      cols 1,72
++   endif
+
+    //*****************************
+    //* Fix for QLCOL195 EIBCALEN
+    //*****************************
+    if (DC-Orig-Name = "QLCZL195")
++      b fs:/EIBCALEN < 1/
++      ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      f;1
++      cols 7,8
++      rs:/  /:/* /;3
++      rs:/- /:/*-/
++      rs:/  /:/* /;3
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      b
++      cols 1,72
++   endif
+
+    //*****************************
+    //* Fix for D3COFM51 and D3COFM54
+    //*****************************
+    if (DC-Orig-Name = "D3CZFM51") or (DC-Orig-Name = "D3CZFM54")
++      rs:/COPY IDMS DV001-ADQ-TAX-CALC-LINKAGE./:/COPY IDMS DV001-ADQ-TAX-CALC-LINKAGE VERSION 1./
++      b
++   endif
+
+    //*****************************
+    //* Fix Linkage Section for D2CCS008
+    //*****************************
+    if (DC-Orig-Name = "D2CZS008")
++      rs:/  LINKAGE SECTION./:/ LINKAGE SECTION. /
++   endif    
+
+    //*****************************
+    //* Change non-MQ copy name
+    //*****************************
+    b
+    if (DC-Orig-Name != "QFCZ0040")
++      rs:/WS-PROGRAM-NAME/:/WS-PROG-NAME/;*
++   endif
+
+    b
+
+    //*****************************
+    //* Fix for D6CNP204
+    //*****************************
+    rs:/PROCEDURE DIVISION USING DFHEIBLK DFHCOMMAREA./:/PROCEDURE DIVISION USING DFHCOMMAREA.         /
+    b
+
+    //**********************************
+    //* Change to standard copy QTPNV600
+    //**********************************
+//!s100_qtpnv600_loop
+//    fs:/ COPY IDMS QTPNV600
+//    if (eof) goto !s100_qtpnv600_done
+//    Newline = "000000 COPY QTPNV600."
+//    r:/@Newline@/
+//    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+//    i:/@ConversionMessage@/
+//    OutputReportLine = "Note: COPY IDMS QTPNV600 changed to COPY QTPNV600" call !z100_Report
+//    f;1
+//    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+//    goto !s100_qtpnv600_loop
+//!s100_qtpnv600_done
+
+    b
+
+    //*****************************
+    //* Add Version 1 if required
+    //*****************************
+!s100_qtpnv290_loop
+    fs:/ COPY IDMS QTDNV290-WORK-RECORD/
+    if (eof) goto !s100_qtpnv290_done
+    scan:/@line/:/VERSION 1/
+    if (found) f;1 goto !s100_qtpnv290_loop
+    Newline = "000000 COPY IDMS QTDNV290-WORK-RECORD VERSION 1."
+    r:/@Newline@/
+    ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    i:/@ConversionMessage@/
+    OutputReportLine = "Note: Added Version 1 to QTDNV290-WORK-RECORD" call !z100_Report
+    f;1
+    i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
+    goto !s100_qtpnv290_loop
+!s100_qtpnv290_done
+    b
+
+    //*******************************************************************
+    //* Fix D3CZFM03 garaging address logic (counter can't be > 10)
+    //*******************************************************************
+    if (DC-Orig-Name = "D3CZFM03")
++      b
++      fs:/3210-MOVE-NAME-ADDR-FIELDS SECTION/
++      fs:/VEHADDR-ADDR-TYPE (W07-I) = '01' OR W07-I/
++      ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      i:/000000* FIXED DRIVER ADDRESS INDEX LOGIC TO CHECK >= 10/
++      OutputReportLine = "Note: Special fix for Driver Address Index logic to >= 10" call !z100_Report
++      f;1
++      rs:/> 10/:/>= 10/
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      fs:/VEHADDR-ADDR-TYPE (W07-I) = '06' OR W07-I/
++      ib:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++      i:/@ConversionMessage@/
++      i:/000000* FIXED GARAGE ADDRESS INDEX LOGIC TO CHECK >= 10/
++      OutputReportLine = "Note: Special fix for Garage Address Index logic to >= 10" call !z100_Report
++      f;1
++      rs:/> 10/:/>= 10/
++      i:/000000*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%/
++   endif
+
+    if (DC-Orig-Name = "QJCZ009") or (DC-Orig-Name = "QJCZ012")
++      rs:/DFHEIBLK DFHCOMMAREA/:/DFHCOMMAREA/
++   endif
+
+!s100_return
+    return
+    
+//**************************************************
+//* Fix source for Test Compile
+//**************************************************
+!t100_test_compile
+    if (TestCompile)
++      print:"*** Fixing for Test Compile ***"
++      b
++      fs:/PROGRAM-ID/
++      rs:/@DC-Orig-Name@/:/D3TESTER/
++      b
++      Newline = '@DC-Orig-Name@.RECEIVE'
++      fs:/@Newline/
++      r:/000000     MOVE 'OS390.FLEET.TESTAPP.D3TESTER.RECEIVE'/
++      b
++      Newline = '@DC-Orig-Name@.SEND'
++      fs:/@Newline/
++      r:/000000     MOVE 'OS390.FLEET.TESTAPP.D3TESTER.SEND'/
++   endif
+    return
+    
+    
+//**************************************************
+//* Generate Error Report Line
+//**************************************************
+!z100_Report
+    print:"@OutputReportLine@"
+    file ErrorReport
+    if (ErrorCount > 0) OutputReportLine = "    @OutputReportLine@"
+    ErrorCount ++
+    i:/@OutputReportLine@/
+    file CICS-Source
+    return
+
+//**************************************************
+//* End of program DCCONV.BED
+//**************************************************

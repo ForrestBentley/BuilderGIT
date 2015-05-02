@@ -1,0 +1,14 @@
+T1_Win1_WIN,Connector,Arrow3,741,110,838,299,0,0,0
+T1_Win1_WIN,Connector,Arrow3,748,97,1037,192,0,0,0
+T1_Win1_WIN,Connector,Arrow3,878,223,744,106,0,0,0
+T1_Win1_WIN,Connector,Arrow3,886,294,887,264,0,0,0
+T1_Win1_WIN,Connector,Arrow3,1040,215,938,310,0,0,0
+T1_Win1_WIN,T1_Win1_Testing,TextTilt,35,25,0,0,255,0,0,,Testing
+T1_Win1_WIN,T1_Win1_Testing,TextTilt,35,25,0,0,255,0,255,,Testing
+T1_Win1_WIN,T1_Win1_B1_Ellipse,Ellipse,1051,200,30,50,0,0,255
+T1_Win1_WIN,T1_Win1_B1.1_Ellipse,Ellipse,877,333,155,79,255,0,0
+T1_Win1_WIN,T1_Win1_B1.2_Ellipse,Ellipse,734,89,30,50,0,0,255
+T1_Win1_WIN,T1_Win1_B1.3_Ellipse,Ellipse,888,240,30,50,0,255,0
+T1_Win1_WIN,T1_Win1_B33_BitmapFit,BitmapFit,562,221,66,65,c:\BEdit\BEDITWIN\Builder\GECTechGELogo.bmp
+T1_Win1_WIN,T1_Win1_Asddf_Arrow5,Arrow5,514,80,139,73,255,0,255
+T1_Win1_WIN,T1_Win1_Asddf.Text_Text,TextTilt,524,105,20,0,255,255,255,Times New Roman,Testing

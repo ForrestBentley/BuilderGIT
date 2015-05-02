@@ -1,0 +1,15 @@
+Test2_Win1_WIN,Connector,Arrow3,645,65,751,67,0,0,0
+Test2_Win1_WIN,Connector,Arrow3,608,85,576,132,0,0,0
+Test2_Win1_WIN,Connector,Arrow3,613,285,748,311,0,0,0
+Test2_Win1_WIN,Connector,Arrow3,668,177,587,155,0,0,0
+Test2_Win1_WIN,Connector,Arrow3,773,204,772,291,0,0,0
+Test2_Win1_WIN,Connector,Arrow3,681,191,611,270,0,0,0
+Test2_Win1_WIN,Connector,Arrow3,776,156,775,91,0,0,0
+Test2_Win1_WIN,Connector,Arrow3,641,79,689,166,0,0,0
+Test2_Win1_WIN,Test2_Win1_Test_Ellipse,Ellipse,777,180,220,49,255,150,0
+Test2_Win1_WIN,Test2_Win1_Test.Text_Text,TextTilt,685,168,25,0,255,255,0,Lucida Calligraphy,Testing Object
+Test2_Win1_WIN,Test2_Win1_E1_Ellipse,Ellipse,563,152,50,50,0,0,255
+Test2_Win1_WIN,Test2_Win1_E1.1_Ellipse,Ellipse,775,67,50,50,255,255,0
+Test2_Win1_WIN,Test2_Win1_E1.2_Ellipse,Ellipse,772,315,50,50,150,150,150
+Test2_Win1_WIN,Test2_Win1_E1.3_Ellipse,Ellipse,589,281,50,50,0,255,0
+Test2_Win1_WIN,Test2_Win1_E1.4_Ellipse,Ellipse,621,65,50,50,255,0,0

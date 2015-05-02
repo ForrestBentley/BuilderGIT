@@ -1,0 +1,12 @@
+c:\JavaMail\Contact.java
+c:\JavaMail\EMail.java
+c:\JavaMail\JavaMail.java
+c:\JavaMail\Backup\EMail.java
+c:\JavaMail\Backup\JavaMail.java
+c:\JavaMail\Backup\JavaMailer.java
+c:\JavaMail\Backup\Test.java
+c:\JavaMail\Backup\Testing.java
+c:\JavaMail\GenericSource\EMail.java
+c:\JavaMail\GenericSource\JavaMail.java
+c:\JavaMail\Old\EMail.java
+c:\JavaMail\Old\JavaMail.java

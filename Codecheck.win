@@ -1,0 +1,11 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Codecheck_Codecheck_WIN,65,90,450,310,Code Check
+STTXT1,Codecheck_Codecheck_System_STTXT,35,25,54,24,System
+EFOBJL,Codecheck_Codecheck_System_EFOBJ,92,25,194,24,
+LBOBJ1,Codecheck_Codecheck_System_LBOBJ,92,48,194,150,
+PBOBJ1,Codecheck_Codecheck_Directory_PBOBJ,12,200,74,24,&Directory
+EFOBJL,Codecheck_Codecheck_Directory_EFOBJ,92,200,334,24,
+PBOBJ1,Codecheck_Codecheck_Ok_PBOBJ,93,235,114,24,&OK
+PBOBJ1,Codecheck_Codecheck_Cancel_PBOBJ,216,235,114,24,&Cancel

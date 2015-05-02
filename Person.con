@@ -1,0 +1,6 @@
+Person_Test_B4_Box3D,Person_Test_B5_Boxround,Straight
+Person_Test_C234_Circle,Person_Test_B4_Box3D,Straight
+Person_Test_B5_Boxround,Person_Test_Bb2_Ellipse,Straight
+Person_Test_B3_Box,Person_Test_B4_Box3D,Straight3
+Person_Test_B3_Box,Person_Test_B2_Rectangle,Straight3
+Person_Test_B2_Rectangle,Person_Test_B4_Box3D,Straight3

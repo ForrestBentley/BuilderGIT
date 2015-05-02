@@ -1,0 +1,33 @@
+Function List
+                                                                  Start    Size
+                                                                  -----    ----
+c:\javamail\contact.java
+    main
+c:\javamail\email.java
+    EMail
+    SendMail
+c:\javamail\javamail.java
+    main
+c:\javamail\backup\email.java
+    EMail
+    SendMail
+c:\javamail\backup\javamail.java
+    main
+c:\javamail\backup\javamailer.java
+    main
+    SendMail
+c:\javamail\backup\test.java
+    Test
+    main
+c:\javamail\backup\testing.java
+    main
+c:\javamail\genericsource\email.java
+    EMail
+    SendMail
+c:\javamail\genericsource\javamail.java
+    main
+c:\javamail\old\email.java
+    EMail
+    SendMail
+c:\javamail\old\javamail.java
+    main

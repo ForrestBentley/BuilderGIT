@@ -1,0 +1,21 @@
+***********************************
+* M E N U
+***********************************
+TITLE,TaskTrack
+MENU,~Test
+ITEM,Tasktrack_Tasks_MSOBJ,~Tasks
+ITEM,Tasktrack_Finish_MSOBJ,~Finish
+ITEM,Tasktrack_Daily_MSOBJ,~Daily
+--------------------
+ITEM,Tasktrack_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Tasktrack_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Tasktrack_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Tasktrack_Main_About_MSOBJ,~About Tasktrack System

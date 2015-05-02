@@ -1,0 +1,179 @@
+<!DOCTYPE HTML SYSTEM "about:legacy-compat">
+<html><head><meta content="IE=8, IE=9, IE=10" http-equiv="X-UA-Compatible"/><meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/><META CONTENT="no-cache" HTTP-EQUIV="Pragma"/><META CONTENT="no-cache,no-Store" HTTP-EQUIV="Cache-Control"/><script type="text/javascript">
+		
+		function makeItLandingPage(){
+			document.getElementById("TARGET").value=parent.window.location;
+			if(self.location != top.location){
+				parent.window.location.reload();
+			}
+		};
+		var faviconPath = window.location.origin + "/FaviconAnimatedtire16x16.ico";
+		var testPath = "https://testmfo2.comfin.ge.com/FaviconAnimatedtire16x16.ico";		
+ 
+		
+		document.write('<link type="image/x-icon" href="' + faviconPath + '" rel="shortcut icon"/>');
+		document.write('<link type="image/gif" href="resources/web-resources/img/FaviconAnimatedtire16x16.gif" rel="icon"/>');
+		
+		</script><title>GE Fleet Services - Login</title><link type="text/css" rel="stylesheet" href="/auth/resources/web-resources/css/idams_global.css"/><link type="text/css" rel="stylesheet" href="/auth/resources/web-resources/css/idams_register.css"/><link type="text/css" rel="stylesheet" href="/auth/resources/web-resources/css/common_idams_auth_reg.css"/><link type="image/x-icon" href="/auth/ecosystem/resources/web-resources/img/FaviconAnimatedtire16x16.ico" rel="shortcut icon"/><link type="image/gif" href="resources/web-resources/img/FaviconAnimatedtire16x16.gif" rel="icon"/><script src="/auth/resources/web-resources/js/libs/jquery-1.7.1.js" type="text/javascript"></script><script src="/auth/resources/web-resources/js/libs/underscore-1.3.3.js" type="text/javascript"></script><script src="/auth/resources/web-resources/js/ge/framework.min.js" type="text/javascript"></script><script type="text/javascript" src="/auth/resources/web-resources/js/libs/jquery.idle-timer.js"></script><script type="text/javascript">
+	
+			$(document).data({
+				'locale': 'en_US',
+				'documenttimeout': (5*60*1000),
+				'documenttimeouthref': 'sessionTimeout.htm?'
+			});
+			$.cookie("clientlanguage", $(document).data('locale'),{path:'/'});
+		
+		</script><script src="/auth/resources/web-resources/js/ge/jquery/tooltip.js" type="text/javascript"></script><script src="/auth/resources/web-resources/js/libs/jquery.validate.js" type="text/javascript"></script><script src="/auth/resources/web-resources/js/ge/idams_pm_fp.js" type="text/javascript"></script><script src="/auth/resources/web-resources/js/ge/idams_login_global.js" type="text/javascript"></script><script src="/auth/resources/web-resources/js/ge/legalDocs.js" type="text/javascript"></script><script type="text/javascript" src="/auth/resources/web-resources/js/ge/loading/FileLoader.js"></script><script src="/auth/resources/web-resources/js/ge/jquery/gizmodal.js" type="text/javascript"></script><script src="/auth/resources/web-resources/js/ge/util/commonLoadingModal.js" type="text/javascript"></script><script src="/auth/resources/web-resources/js/ge/parts/contactmodal.js" type="text/javascript"></script><script src="/auth/resources/web-resources/js/ge/locales/localeUtils.js" type="text/javascript"></script><script type="text/javascript">
+					JSFileLoader.loadDevOmniture();
+				</script><script type="text/javascript">
+	// JS ERROR MESSAGES
+		errorMSGs = {
+		"newPassword_required":"-Must be between 8 and 15 characters. </br>-Must contain letters (one letter must be lower-case) and numbers.</br>-Must contain two numbers that cannot start or end the password (Example: ab1cd2ef)",
+		"error_login_5_01_user_not_verified":"Unable to verify the information provided. Please re-enter and try again.",
+		"newPassword_minlength":"-Must be between 8 and 15 characters. </br>-Must contain letters (one letter must be lower-case) and numbers.</br>-Must contain two numbers that cannot start or end the password (Example: ab1cd2ef)",
+		"newPassword_maxlength":"-Must be between 8 and 15 characters. </br>-Must contain letters (one letter must be lower-case) and numbers.</br>-Must contain two numbers that cannot start or end the password (Example: ab1cd2ef)",
+		"newPassword_passwordtest":"-Must be between 8 and 15 characters. </br>-Must contain letters (one letter must be lower-case) and numbers.</br>-Must contain two numbers that cannot start or end the password (Example: ab1cd2ef)",
+		"newPassword_usernamenotinpassword":"Your password cannot contain your Username. Please choose another password.",
+		"newPasswordConfirm_equalTo":"The passwords entered do not match. Please try again.",
+		"newPasswordConfirm_required":"The passwords entered do not match. Please try again.",
+		"newPasswordConfirm_minlength":"The passwords entered do not match. Please try again.",
+		"newPasswordConfirm_maxlength":"The passwords entered do not match. Please try again.",
+		"passwordtest":"-Must be between 8 and 15 characters. </br>-Must contain letters (one letter must be lower-case) and numbers.</br>-Must contain two numbers that cannot start or end the password (Example: ab1cd2ef)",
+		"userAnswer[0]":"Please provide an answer to the challenge question",
+		"userAnswer[1]":"Please provide an answer to the challenge question",
+		"userAnswer[2]":"Please provide an answer to the challenge question",
+		"selectedQuestion[0]":"Please select a challenge question",
+		"selectedQuestion[1]":"Please select a challenge question",
+		"selectedQuestion[2]":"Please select a challenge question",
+		"acceptTermsAndConditions_required":"Error!  Please review and agree to Terms and Conditions.",
+		"acceptTermsAndConditions_checktermsandconditions":"Error!  Please review and agree to Terms and Conditions.",
+		"UC00522M":"Your security answer can only contain letters, numbers, spaces, and no more than 50 characters.",
+		"selectAtLeastOneCountry":"You must select at least one country in which you do business."
+	};
+	</script><script type="text/javascript">
+		var appName = $.cookie('APPLICATION_NAME');
+		if ($.cookie('Pgact')) {
+			if ($.cookie('Pgact').indexOf('driverportal') >= 0) {
+				appName = "MyVehicle";
+				$('.leftcolumn_spacer').css('display', 'none');
+			}
+		};
+ 
+		
+		var applicationImage = '';
+		
+		switch (appName) {
+		
+			case "MyFleetOffice":
+				applicationImage = "mfo_wht.png";
+			break;
+				
+			case "MyFleetOffice2":
+				applicationImage = "mfo2_wht.png";
+			break;
+			
+			case "MyVehicle":
+				applicationImage = "myVehicle_allwht.png";
+			break;
+			
+			default:	
+				applicationImage = "mfo_wht.png";
+		}
+ 
+		
+		sessionStorage.setItem("applicationImage", applicationImage);
+ 
+	</script></head><body onload="makeItLandingPage();" id="login" class="bodycontent3"><input id="TARGET" name="TARGET" type="hidden"/><div id="tooltip"><div class="tooltip rounded"></div><div class="tooltipindicator"></div></div><div class="headPageWrapper" version="2.0"><div id="utilitynav"> </div></div><div class="pageWrapper" version="2.0"><script type="text/javascript">
+	//
+		$(document).ready(function(){
+			if (top.frames.length!=0){
+				top.location=self.document.location;
+			}
+			var bodyContentClass = 'bodycontent3';
+			
+			function getRandomNumber(start, end){
+				var lowerLimit = start;
+				var upperLimit = end;
+				var imageNum = '';
+				
+				imageNum = Math.floor(Math.random() * upperLimit) + lowerLimit;
+				
+				return imageNum;
+				
+			};
+ 
+			
+			switch(getRandomNumber(1,5))
+			{
+				case 1:
+					bodyContentClass = 'bodycontent1';
+				break;
+ 
+				case 2:
+					bodyContentClass = 'bodycontent2';
+ 
+				case 3:
+					bodyContentClass = 'bodycontent3';					
+ 
+				break;
+ 
+				case 4:
+					bodyContentClass = 'bodycontent4';
+					
+				break;
+				
+				default:
+					bodyContentClass = 'bodycontent2';
+			}
+			
+			$('#login').removeClass('bodycontent3').addClass(bodyContentClass);
+			
+			var appName = $.cookie('APPLICATION_NAME');
+ 
+//			$.cookie("Pgact", "driverportal", {path:'/'});
+			
+			// check for Pgact cookie to see if this is driverportal. If it exists see if it is for driverportal in any environment
+			if ($.cookie('Pgact')) {
+				if ($.cookie('Pgact').indexOf('driverportal') >= 0) {
+					appName = "MyVehicle";
+					$('.leftcolumn_spacer').css('display', 'none');
+				}
+			};
+			
+ 
+			//console.log("appname", appName);			
+			
+			var applicationImage = '';
+			
+			switch (appName) {
+			
+				case "MyFleetOffice":
+					applicationImage = "mfo_wht.png";
+				break;
+					
+				case "MyFleetOffice2":
+					applicationImage = "mfo2_wht.png";
+				break;
+				
+				case "MyVehicle":
+					applicationImage = "myVehicle_allwht.png";
+				break;
+				
+				default:	
+					applicationImage = "mfo_wht.png";
+			}
+			
+			sessionStorage.setItem("applicationImage", applicationImage);
+			
+			
+			sessionStorage.setItem("backgroundCSS", bodyContentClass);
+			imageUrl = sessionStorage.getItem("applicationImage");
+			$('#logo').css('background-image', 'url("resources/web-resources/img/' + imageUrl + '")');
+			
+		});
+	//</script><div id="top"><div id="logo" class="appImage_myfleetoffice"></div></div><div class="clearfloat"> </div><div id="deck"><h1 class="pagehead">User Login</h1></div><div class="columnfull rounded" id="contentwrapper"><div class="columnfourth rounded filterpanel"><div class="sidebar rounded"><div class="leftcolumn"><div class="leftcolumn_spacer"><div class="roundedtop"><button value="en_US" class="selectedlang secondary">English</button><button value="es_MX" class="selectedlang secondary">Espa&ntilde;ol</button><button value="fr_CA" class="selectedlang secondary">Fran&ccedil;ais</button></div><div class="dotted"></div><div id="loginlinks"><ul><li><a href="forgotUserName.htm;jsessionid=30D03E83ECF4DE06F5B7347813B2602C.secauthnode1">Forgot Username</a></li><li><a href="https://qafltgefleet.gefleet.com/contact-us" target="_blank">Web Support</a></li><li><a href="/idams/resources/web-resources/html/faq.html" target="_blank">Security FAQs</a></li><li><a href="https://qafltgefleet.comfin.ge.com">Return to gefleet.com</a></li></ul><div class="dotted"></div><span style="font-weight:bold;">Other Helpful Links</span><br/><br/><ul><li><a href="https://qafltgefleet.gefleet.com/personalMileage/index.html" target="_blank">Drivers - report personal &amp; business miles/kilometers</a></li><li><a href="https://qafltgefleet.gefleet.com/SupplierLocator" target="blank">Find Maintenance &amp; service providers</a></li><li><a href="https://qafltgefleet.gefleet.com/fuelpricemap" target="_blank">Access U.S. fuel price mapping</a></li></ul></div></div></div><div class="rightcolumn"><div class="columnthreefourth"><div class="passkeyouter"><div class="passkeyimg rounded"><div class="passkeyinner rounded"><div class="passkey rounded lockimg"></div></div></div></div><div class="loginform"><form class="validated" action="validateLogin.htm;jsessionid=30D03E83ECF4DE06F5B7347813B2602C.secauthnode1" id="validateLoginForm" name="validateLoginForm" method="POST"><input value="$SM$http://qamfo2.comfin.ge.com/" name="TARGET" type="hidden"/><div class="errormessage" id="errormessage"></div><label for="USER" class="header">Username</label><input data-validation-message="Unable to verify the information provided. Please re-enter and try again." value="" name="USER" id="USER" type="text" autocomplete="off"/><label for="rememberUserName"><input value="false" data-gizmo-type="checkbox" name="rememberUserName" id="rememberUserName" type="checkbox"/><span class="label">Remember Me</span></label><input id="pm_fp" name="pm_fp" type="hidden"/><script type="text/javascript">
+										post_deviceprint_to_form(document.getElementById('validateLoginForm').pm_fp);		
+									</script><span data-tooltip="By checking this box, we will pre-populate your username the next time you come to the site." class="tooltipicon question" style="display:inline-block;float:none;position:relative;top:3px;"></span><input value="Submit" id="btnSubmit" data-gizmo-type="submit" type="submit" style="margin-top:50px;"/></form></div></div><div class="clearfloat"> </div></div></div></div><div class="clearfloat"> </div></div><script type="text/javascript">
+		var omnitureObject = new omniture.OmniturePayload("idams-login");
+		trackMe(omnitureObject);	
+	</script></div><div class="pageWrapper" version="2.0"><div id="footer"><div title="GE Capital Fleet Services" class="footerlogo"></div><div class="footertext"><ul><li><a class="footer_link" target="_blank" href="http://www.ge.com/terms.html">Terms</a></li><li><span>|</span></li><li><a class="footer_link" target="_blank" href="https://qafltgefleet.gefleet.com/home/mfo-privacy">Privacy</a></li><li><span>|</span></li><li><a class="footer_link" target="_blank" href="https://qafltgefleet.gefleet.com/contact-us">Contact Us</a></li></ul><div class="copyright">Copyright &copy; 2013 General Electric Company</div></div><div class="clearfloat"> </div></div></div></body><HEAD><META CONTENT="NO-CACHE" HTTP-EQUIV="PRAGMA"/></HEAD></html>

@@ -1,0 +1,301 @@
+//***********************************************************************
+//* Browse Directory Functions
+//***********************************************************************
+//******************************
+//* Setup the Fields
+//******************************
+!a1600_Browse_Setup
+    perm BuilderBrowse.bed
+
+    string Directory = 'c:\'   error
+    string Extension           error
+    string MacroCommand        error
+    string DirField            error
+    string FileField           error
+
+    string Builder_Browse_Refresh_PBOBJ           = "call BuilderBrowse.bed!a1600_Builder_Browse_Refresh_PBOBJ" error return
+    string Builder_Browse_Back_PBOBJ              = "call BuilderBrowse.bed!a1600_Builder_Browse_Back_PBOBJ"
+    string Builder_Browse_Ok_PBOBJ                = "call BuilderBrowse.bed!a1600_Builder_Browse_Ok_PBOBJ"
+    string Builder_Browse_Cancel_PBOBJ            = "call BuilderBrowse.bed!a1600_Builder_Browse_Cancel_PBOBJ"
+    string Builder_Browse_Newdir_PBOBJ            = "call BuilderBrowse.bed!a1600_Builder_Browse_Newdir_PBOBJ"
+    string Builder_Browse_Open_PBOBJ              = "call BuilderBrowse.bed!a1600_Builder_Browse_Open_PBOBJ"
+    string Builder_Browse_Subdir_LBOBJ            = "call BuilderBrowse.bed!a1600_Builder_Browse_Subdir_LBOBJ"
+    window action Builder_Browse_Subdir_LBOBJ
+    string Builder_Browse_Files_LBOBJ             = "call BuilderBrowse.bed!a1600_Builder_Browse_Files_LBOBJ"
+    window action Builder_Browse_Files_LBOBJ
+    return
+
+//******************************
+//* Double-click Browse Sub-dir List
+//******************************
+!a1600_Builder_Browse_Subdir_LBOBJ
+    window obtain Builder_Browse_Directory_EFOBJ
+    window obtain Builder_Browse_Extension_EFOBJ
+    crush Builder_Browse_Extension_EFOBJ
+    upper Builder_Browse_Extension_EFOBJ
+    window modify Builder_Browse_Extension_EFOBJ
+    Extension = Builder_Browse_Extension_EFOBJ
+    window obtain Builder_Browse_Subdir_LBOBJ
+    leftjust Builder_Browse_Directory_EFOBJ
+    pack Builder_Browse_Directory_EFOBJ
+    splitr:/@Builder_Browse_Directory_EFOBJ@/;1
+    if (right = '\')
++      Builder_Browse_Directory_EFOBJ = '@Builder_Browse_Directory_EFOBJ@@Builder_Browse_Subdir_LBOBJ@'
++   else  
++      Builder_Browse_Directory_EFOBJ = '@Builder_Browse_Directory_EFOBJ@\@Builder_Browse_Subdir_LBOBJ@'
++   endif
+    window modify Builder_Browse_Directory_EFOBJ
+    call !s200_show_dir
+    return
+
+//******************************
+//* Double-click Browse Files List
+//******************************
+!a1600_Builder_Browse_Files_LBOBJ
+    if  (FileField = null)
++       return
++   endif
+
+    window obtain Builder_Browse_WIN
+    MacroCommand = '@FileField@ = "@Builder_Browse_Directory_EFOBJ@\@Builder_Browse_Files_LBOBJ@"' $MacroCommand 
+    MacroCommand = 'window modify @FileField@' $MacroCommand 
+    scanr:/@Builder_Browse_Files_LBOBJ@/:/./
+    if (found)
++      Builder_Browse_Extension_EFOBJ = right
++      window modify Builder_Browse_Extension_EFOBJ
++   endif
+    call !a1600_Builder_Browse_Ok_PBOBJ
+    return
+
+//******************************
+//* Refresh the Browse
+//******************************
+!a1600_Builder_Browse_Refresh_PBOBJ
+    window obtain Builder_Browse_Extension_EFOBJ
+    crush Builder_Browse_Extension_EFOBJ
+    upper Builder_Browse_Extension_EFOBJ
+    window modify Builder_Browse_Extension_EFOBJ
+    Extension = Builder_Browse_Extension_EFOBJ
+    call !s200_show_dir
+    return
+
+//******************************
+//* Back up 1 browse directory
+//******************************
+!a1600_Builder_Browse_Back_PBOBJ
+    window obtain Builder_Browse_Directory_EFOBJ
+    window obtain Builder_Browse_Extension_EFOBJ
+    crush Builder_Browse_Extension_EFOBJ
+    upper Builder_Browse_Extension_EFOBJ
+    window modify Builder_Browse_Extension_EFOBJ
+    Extension = Builder_Browse_Extension_EFOBJ
+    scanr:/@Builder_Browse_Directory_EFOBJ@/:"\"
+    if (found)
++      Builder_Browse_Directory_EFOBJ = left
++      window modify Builder_Browse_Directory_EFOBJ
++      call !s200_show_dir
++   endif
+    return
+
+//******************************
+//* Accept the current browse dir
+//******************************
+!a1600_Builder_Browse_Ok_PBOBJ
+    window obtain Builder_Browse_Directory_EFOBJ
+    Directory = Builder_Browse_Directory_EFOBJ
+    //**********************************************
+    //* Pass directory to calling window dir field
+    //**********************************************
+    if (DirField != null)
++      MacroCommand = '@DirField@ = Builder_Browse_Directory_EFOBJ' $MacroCommand 
++      MacroCommand = 'window modify @DirField@' $MacroCommand 
++   endif
+    window obtain Builder_Browse_Extension_EFOBJ
+    Extension = Builder_Browse_Extension_EFOBJ
+    window close Builder_Browse_WIN
+    return
+
+//******************************
+//* Close the browse window
+//******************************
+!a1600_Builder_Browse_Cancel_PBOBJ
+    window close Builder_Browse_WIN
+    return
+
+//******************************
+//* Open a file on the Browse Window
+//******************************
+!a1600_Builder_Browse_Open_PBOBJ
+    string FileOpenName error
+    window obtain Builder_Browse_WIN
+    if (Builder_Browse_Files_LBOBJ = null)
++      message = "Please select a file"
++      window message error ok
++      window setfocus Builder_Browse_Files_LBOBJ
++      return
++   endif
+    split:/@Builder_Browse_Directory_EFOBJ@/;3
+    FileOpenName = '@left@"@right@\@Builder_Browse_Files_LBOBJ@"'
+    MacroCommand = |system:"start @FileOpenName@"| message = MacroCommand window message info ok
+    $MacroCommand
+    return
+
+//******************************
+//* Open the new directory window
+//******************************
+!a1600_Builder_Browse_Newdir_PBOBJ
+    window obtain Builder_Browse_WIN
+    window open Builder_Newdir_WIN shade
+    window clear Builder_Newdir_WIN
+    window center Builder_Newdir_WIN
+    window unshade Builder_Newdir_WIN
+    return
+
+//******************************
+//* Create a new directory
+//******************************
+!a1650_Builder_Newdir_Ok_PBOBJ
+    window obtain Builder_Newdir_Name_EFOBJ
+    crush Builder_Newdir_Name_EFOBJ
+    if (Builder_Newdir_Name_EFOBJ = null)
++      message = "Please enter a Name"
++      window message error ok
++      window setfocus Builder_Newdir_Name_EFOBJ
++      return
++   endif
+    MacroCommand = |system:"md @Builder_Browse_Directory_EFOBJ@\@Builder_Newdir_Name_EFOBJ@"|
+    $MacroCommand
+    Builder_Browse_Directory_EFOBJ = "@Builder_Browse_Directory_EFOBJ@\@Builder_Newdir_Name_EFOBJ@"
+    window modify Builder_Browse_Directory_EFOBJ
+    window close Builder_Newdir_WIN
+    window push Builder_Browse_Refresh_PBOBJ
+    return
+
+//******************************
+//* Close the new directory window
+//******************************
+!a1650_Builder_Newdir_Cancel_PBOBJ
+    window close Builder_Newdir_WIN
+    return
+
+//******************************
+//* Show Directory Screen
+//*     DirField:  should be set to the EFOBJ to update when the Browse OK button is pressed
+//*     Directory: Should be set prior to calling s100 to setup the initial directory
+//*     Extension: Should be set prior to calling s100 to setup if you want to limit the files selectable
+//******************************
+!s100_directory
+    window pointer wait
+    window open Builder_Browse_WIN shade
+    window center Builder_Browse_WIN
+    window clear Builder_Browse_WIN
+
+    if  (Directory = null)
++       Directory = 'c:\'
++   endif
+
+    Builder_Browse_Directory_EFOBJ = Directory
+    window modify Builder_Browse_Directory_EFOBJ
+    Builder_Browse_Extension_EFOBJ = Extension
+    window modify Builder_Browse_Extension_EFOBJ
+
+    if  (FileField = null)
++       window disable Builder_Browse_Files_STTXT
++       window disable Builder_Browse_Extension_STTXT
++       window disable Builder_Browse_Extension_EFOBJ
++       window disable Builder_Browse_Refresh_PBOBJ
++   else
++       window enable Builder_Browse_Files_STTXT
++       window enable Builder_Browse_Extension_STTXT
++       window enable Builder_Browse_Extension_EFOBJ
++       window enable Builder_Browse_Refresh_PBOBJ
++   endif
+
+    call !a1600_Builder_Browse_Refresh_PBOBJ
+    
+    window unshade Builder_Browse_WIN
+    window pointer arrow
+    return
+
+//******************************
+//* Show the Browsed Dir
+//******************************
+!s200_show_dir
+    close Directory error
+    open Directory null
+
+    window obtain Builder_Browse_Directory_EFOBJ
+    pack Builder_Browse_Directory_EFOBJ
+    if  (Builder_Browse_Directory_EFOBJ != null)
++       scan:/@Builder_Browse_Directory_EFOBJ@/:/\/
++       if (!found) 
++          Builder_Browse_Directory_EFOBJ = '@Builder_Browse_Directory_EFOBJ@\'
++   endif
+    window modify Builder_Browse_Directory_EFOBJ
+
+    pack Builder_Browse_Extension_EFOBJ
+
+    //********************************************
+    //* Directory in Quotes to allow for spaces
+    //********************************************
+    MacroCommand = |dir "@Builder_Browse_Directory_EFOBJ@"|
+    systemcurr:"@MacroCommand@"
+
+    b
+    fs:/Directory of/
+    scan:/@line/:/Directory of/
+    //scan:/@right/:word
+    //window clear Builder_Browse_WIN
+    Builder_Browse_Subdir_LBOBJ = 'ALL'
+    window delete Builder_Browse_Subdir_LBOBJ
+    Builder_Browse_Files_LBOBJ = 'ALL'
+    window delete Builder_Browse_Files_LBOBJ
+    Builder_Browse_Subdir_LBOBJ = null
+    window modify Builder_Browse_Subdir_LBOBJ
+    Builder_Browse_Directory_EFOBJ = right
+    leftjust Builder_Browse_Directory_EFOBJ
+    pack Builder_Browse_Directory_EFOBJ
+    window modify Builder_Browse_Directory_EFOBJ
+    b
+    //*********************************************
+    //* remove top and bottom of directory listing
+    //*********************************************
+    d;5
+    f;*
+    b;1 d;*
+    b
+    //*********************************************
+    //* Find all Sub-directories and files
+    //*********************************************
+    do 
+        if-eof (!eof)
++          scan:/@line/:/<DIR>/
++          if-dir (found)
++             //scan:/@right/:word
++             Builder_Browse_Subdir_LBOBJ = right
++             leftjust Builder_Browse_Subdir_LBOBJ
++             pack Builder_Browse_Subdir_LBOBJ
++             if-dots  (Builder_Browse_Subdir_LBOBJ != '.') and (Builder_Browse_Subdir_LBOBJ != '..')
++                 //Builder_Browse_Subdir_LBOBJ = left
++                 window insert end default Builder_Browse_Subdir_LBOBJ
++          else-dir
++             scan:/@line/:word
++             scan:/@right/:word  
++             scan:/@right/:word
++             scan:/@right/:word
++             Builder_Browse_Files_LBOBJ = right
++             leftjust Builder_Browse_Files_LBOBJ
++             if-extension (Builder_Browse_Extension_EFOBJ != null)
++                scanr:/@Builder_Browse_Files_LBOBJ@/:/./
++                upper right
++                if-found (found) and (Builder_Browse_Extension_EFOBJ = right)
++                   window insert end default Builder_Browse_Files_LBOBJ
++             else-extension
++                window insert end default Builder_Browse_Files_LBOBJ
++       endif
+        f;1
+    until (eof)
+    window paint Builder_Browse_Subdir_LBOBJ
+    window hide Builder_Browse_Subdir_LBOBJ
+    window show Builder_Browse_Subdir_LBOBJ
+    return

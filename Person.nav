@@ -1,0 +1,7 @@
+Person_Address_Ok_PBOBJ,Test,open
+Person_Address_Cancel_PBOBJ,Address,close
+Person_Address_Phone_PBOBJ,Phone,open
+Person_Phone_Ok_PBOBJ,Phone,close
+Person_Phone_Cancel_PBOBJ,Phone,close
+Person_Test_Ok_PBOBJ,Test,close
+Person_Test_Cancel_PBOBJ,Test,close

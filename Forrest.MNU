@@ -1,0 +1,20 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Generated using Forrest Bentley's GECA B-Edit Analysis System v1.2
+MENU,~Test
+ITEM,Forrest_Details_MSOBJ,Forrest_Details_WIN
+ITEM,Forrest_Multiselect_MSOBJ,Forrest_Multiselect_WIN
+--------------------
+ITEM,Forrest_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Forrest_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Forrest_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Forrest_Main_About_MSOBJ,~About Forrest System

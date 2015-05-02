@@ -1,0 +1,109 @@
+Builder Files Descriptions 
+--------------------------------------------
+
+BuilderWindowFile: .WIN file - List of all Windows and Controls on Windows
+	WINDOW,WindowName,x,y,cx,cy,Title
+	ControlType,ControlName,x,y,cx,cy,Text
+
+        Control                 Control Type
+        ---------------------   ------------
+	Push Button 		PBOBJ1
+	Entry Field 		EFOBJL
+	Text 			STTXT1
+	Check Box 		CBOBJ1
+	Group Box 		GBOBJ1
+	List Box 		LBOBJ1
+	Radio Button 		RBOBJ1
+	Combo Box 		COOBJS
+	Drop Down List 		COOBJL
+	Multi-Line Entry 	MLOBJ1
+	Rectangle 		STTXTF
+	Box 			STTXTR
+
+WindowList: Temp List of Windows in the System
+	Window Name (without Naming Convention: e.g. Window1 not System_Window1_WIN)
+	e.g. Window1
+             Window2	
+
+WindowNav: .NAV File - Window Button Navigation
+	Button Name,Window Name (without Naming Convention: e.g. Window1 not System_Window1_WIN),Action (Open,Close,None)
+        e.g. Test_Win1_Window2_PBOBJ,Win2,open
+             Test_Win1_Cancel_PBOBJ,Win1,close
+
+Controls: Temp file containing a list of Controls on a Window
+	ControlName,ControlType,Text
+	e.g. Test_Win1_Cancel_PBOBJ,PBOBJ1,&Cancel
+	
+GenCode: .BED file - All BEDITWIN logic for the system
+
+ButtonProc: Temp file that holds the .BED Menu & Button Processing for pasting after Vars Created
+	.BED Menu/Button Code
+
+MenuNav: .MNU File - Menu Navigation
+	TITLE,System Title
+	MENU,Menu Text
+	ITEM,Menu Selection Text,Window Name to Open
+	------- (Menu Separator)
+
+	e.g. TITLE,Testing 123
+	     MENU,~Test
+	     ITEM,Test_Win1_MSOBJ,Test_Win1_WIN
+	     --------------------
+	     ITEM,Test_Main_Exit_MSOBJ,E~xit
+
+Master: .MST File - System Information
+	Line1 = System Window Title
+	Line2 = System Description
+
+SystemList: Temp List of all .WIN files in directory used in System Window for show Systems to modify
+	WindowName
+	e.g. Win1
+
+ViewListWork: Temp list of all Windows in the system, used in view
+	e.g. Win1
+
+ViewListAdd: Temp copy of ViewList for Filtering (identical to ViewList)
+
+ViewList: Temp list of all Windows in the system with appropriate level numbers
+    	Level-n,WindowName
+	e.g. Level-1,Win1
+ViewObjects: Temp list of objects on the View screen to be deleted when Cancel is pushed
+	WindowName-n
+	e.g. Win1-1
+ViewPositions: Temp list of objects with their positions
+	WindowName,Level,x,y,cx,cy
+	e.g. Win1,1,109,56,102,74
+
+ViewFilterList: Temp list of Names of Windows
+	WindowFullName,ViewDisplayName,WindowListName
+	e.g. Builder_Filter_WIN,Filter Window,Filter
+
+Entryaction: .ACT list of Entry Fields and their actions
+	EntryFieldName,Action,size
+             Action = text
+                      alpha
+                      numeric
+                      upper
+                      lower
+                      mix
+                      date
+                      dollar
+                      telephone
+                Note: Action with a concatinated -P designates a password field
+                     
+             
+	e.g. Builder_Entry_Size_EFOBJ,numeric,5
+             TestSystem_Authorization_Password_EFOBO,text-P,10
+
+GroupPositions: Temp list of all controls within a group move used to drag a group of objects
+        ControlName,Xoffset,Yoffset 
+		where xoffset is the distance from the group drag box x pos and the object's x pos
+	              yoffset is the distance from the group drag box y pos and the object's y pos
+ 	e.g. Test_Win1_OK_PBOBJ,10,10
+
+SearchList: Temp list of all Search Strings
+	AND/OR SearchString
+	e.g. 	VEHUNT
+		AND VEHAUD
+
+

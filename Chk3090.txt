@@ -1,0 +1,147 @@
+**********************************************************************************************************
+*                                              GE Fleet Services                             Date:10/02/14
+*                                               3090 Code Scan                         Start Time:16:04:59
+*                                             Version 01-11-2014                         End Time:16:05:05
+**********************************************************************************************************
+* Scan directory = c:\3090-Check
+**********************************************************************************************************
+ 
+*************************************************************
+c:\3090-Check\D3CBF912.cob
+*************************************************************
+          ***** PIC on 01 Level (Warning) : 003300 01  INPUT-REC1    PIC X(29996).                                  01520000
+          ***** PIC on 01 Level (Warning) : 004600 01  WS-ONLINE                PIC X(1)  VALUE 'N'.                01740000
+          ***** PIC on 01 Level (Warning) : 014700 01  WS-INPUT-EOF                 PIC X(01) VALUE 'N'.            02930000
+          ***** PIC on 01 Level (Warning) : 014800 01  W01-RECS-IN                  PIC 9(07) VALUE ZEROES.         02940000
+          ***** PIC on 01 Level (Warning) : 014900 01  W01-ORDS-LOG                 PIC 9(07) VALUE ZEROES.         02950000
+          ***** PIC on 01 Level (Warning) : 015000 01  W01-BYPASS-RECORDS           PIC 9(07) VALUE ZEROES.         02960000
+          ***** PIC on 01 Level (Warning) : 015100 01  W01-GARBAGE-RECORDS          PIC 9(07) VALUE ZEROES.         02970000
+          ***** PIC on 01 Level (Warning) : 015900 01  W01-UNTNO-SEQ-CNTR       PIC 9(01)  VALUE ZEROES.            03050000
+          ***** PIC on 01 Level (Warning) : 016000 01  W01-NEW-LOG-NO           PIC 9(08)  VALUE ZEROES.            03060000
+          ***** PIC on 01 Level (Warning) : 016100 01  W01-NVORD-099-SW         PIC X(01).                          03070000
+          ***** PIC on 01 Level (Warning) : 018500 01  W08-MDL-MK               PIC X(5)  VALUE SPACES.             03400000
+          ***** PIC on 01 Level (Warning) : 018600 01  W08-MDL-SRS-DESC         PIC X(25) VALUE SPACES.             03410000
+          ***** PIC on 01 Level (Warning) : 018700 01  W08-MDL-MDL-TYPE         PIC X(20) VALUE SPACES.             03420000
+          ***** PIC on 01 Level (Warning) : 018800 01  W08-MDL-MOC              PIC X(15) VALUE SPACES.             03430000
+          ***** PIC on 01 Level (Warning) : 018900 01  W08-MDL-NO-DRS           PIC 9(01) VALUE ZEROES.             03440000
+          ***** PIC on 01 Level (Warning) : 019000 01  W08-MDL-BDY-STYL         PIC X(10) VALUE SPACES.             03450000
+          ***** PIC on 01 Level (Warning) : 019100 01  W08-MDL-WHLBASE-400      PIC 9(03)V99 VALUE ZEROES.          03460000
+          ***** PIC on 01 Level (Warning) : 019200 01  W08-MDL-GVW-400          PIC 9(07) VALUE ZEROES.             03470000
+          ***** PIC on 01 Level (Warning) : 019300 01  W08-MDL-CA               PIC 9(03) VALUE ZEROES.             03480000
+          ***** PIC on 01 Level (Warning) : 019400 01  W08-MDL-ASST-CODE        PIC X(04) VALUE SPACES.             03490000
+          ***** PIC on 01 Level (Warning) : 019500 01  W08-MDL-ALLOW-FO         PIC X(01) VALUE SPACES.             03500000
+          ***** PIC on 01 Level (Warning) : 022200 01  W12-CLIENT-NO            PIC X(06) VALUE SPACES.             03860000
+          ***** PIC on 01 Level (Warning) : 022300 01  W12-ORD-FRMT-IND         PIC X(01) VALUE SPACES.             03870000
+          ***** PIC on 01 Level (Warning) : 024700 01  W14-CREDIT-IND           PIC X(01).                          04110000
+          ***** PIC on 01 Level (Warning) : 024900 01  W15-QUEDEPT-KEY          PIC X(12).                          04130000
+          ***** PIC on 01 Level (Warning) : 028900 01  W99-WS-ENDS              PIC X(25) VALUE                     05250000
+          ***** GOTO non-EXIT (Error) : 061200       GO TO 0000-LOG-ORDER                                       11940000    COBOL-IDMS
+    Sub-Schema:DSSSD1VO                 Schema:DSSCFLVH.
+          ***** OCCURS 29926 TIMES (ERROR) line 548
+          ***** PERFORM and THRU on separate lines : (Error) 058404        THRU 9200-EXIT.                                           10350000
+          ***** AND on same line as IF (Error) : 059552     IF ANY-ERROR-STATUS AND NOT DB-REC-NOT-FOUND                 11030000
+          Area:NVORD-AREA               UPDATE 
+          Area:IX-NVORD-AREA            UPDATE 
+          Area:IX-ORDUNT-AREA           UPDATE 
+          Area:IX-ORDUNT2-AREA          UPDATE 
+          Area:NVAUD-AREA               UPDATE 
+          Area:MKMDL-AREA               RETRIEVAL 
+          Area:IX-MKMDL-AREA            RETRIEVAL 
+          Area:VEHUNT-AREA              UPDATE 
+          Area:IX-VEHUNT1-AREA          UPDATE 
+          Area:IX-VEHUNT2-AREA          UPDATE 
+          Area:IX-VEHUNT3-AREA          UPDATE 
+          Area:IX-VEHUNT4-AREA          UPDATE 
+          Area:VEHADDR-AREA             UPDATE 
+          Area:IX-VEHADDR-AREA          UPDATE 
+          Area:VEHACCE-AREA             UPDATE 
+          Area:PROCPRM-AREA             UPDATE 
+          Area:STRUCT-AREA              RETRIEVAL 
+          Area:IX-STRUCT01-AREA         RETRIEVAL 
+          Area:IX-STRUCT02-AREA         RETRIEVAL 
+          Area:QUEUE-AREA               UPDATE 
+          Area:IX-QUEUE-AREA            UPDATE 
+          Area:IX-CUSTLOC-AREA          RETRIEVAL 
+          Area:IX-PRNTLOC-AREA          RETRIEVAL 
+          Area:SYSPASS-AREA             UPDATE 
+          Area:SYSPIX-AREA              UPDATE 
+          Area:VEHOVRD-AREA             UPDATE 
+          Area:TABLE-AREA               RETRIEVAL 
+     FIND/OBTAIN VEHLOG
+     FIND/OBTAIN CUSTUNT
+     MODIFY VEHLOG
+          ***** Sentence Length 39 (Warning) line 1228
+*************************************************************
+c:\3090-Check\GOTO\CACMRCOB.cob
+*************************************************************
+          ***** PIC on 01 Level (Warning) :        01  DSPGM-BUFFER-GROUP-NAME PIC X(8) VALUE 'CSSS0ALL'.           DS100810
+          ***** PIC on 01 Level (Warning) :        01  CASECDOC    PIC X(08) VALUE 'CASECDOC'.
+          ***** PIC on 01 Level (Warning) :        01  DFHCOMMAREA  PIC X(8).                                       DS100810    COBOL
+          ***** Sentence Length 32 (Warning) line 631
+=================================================================
+Mainframe Code Scan Summary for c:\3090-Check
+=================================================================
+
+-------- F I L E S    S C A N N E D ---------
+COBOL Files Scanned                         1
+COBOL-IDMS Files Scanned                    1
+CICS Files Scanned                          0
+CICS-IDMS Files Scanned                     0
+DB2 Files Scanned                           0
+ADSO Files Scanned                          0
+COPY  Files Scanned                         0
+JCL   Files Scanned                         0
+PROC  Files Scanned                         0
+                              ---------------
+Total Files Scanned                         2
+
+-------- L I N E S    S C A N N E D ---------
+COBOL Lines Scanned                       900
+COBOL-IDMS Lines Scanned                 1230
+CICS Lines Scanned                           
+CICS-IDMS Lines Scanned                      
+DB2 Lines Scanned                            
+ADSO Lines Scanned                           
+COPY  Lines Scanned                          
+JCL   Lines Scanned                          
+PROC  Lines Scanned                          
+                              ---------------
+Total Lines Scanned                      2130
+
+------------- W A R N I N G S ---------------
+Code Line Warnings                          0
+Comment Line Warnings                       0
+OCCURS Warnings                             0
+MOVE CORRESPONDING Warnings                 0
+Sentence Length Warnings                    2
+Area Walk Warnings                          0
+01 PIC Warnings                            29
+
+--------------- E R R O R S -----------------
+Code Line Errors                            0
+IDMS-ABORT Errors                           0
+PERFORM THRU diff line Errors               1
+Comment Line Errors                         0
+Copyright Errors                            0
+OCCURS Errors                               1
+Sentence Length Errors                      0
+CICS Program Name Errors                    0
+SYSCTL with RETRIEVAL Errors                0
+Missing Move to LS-RETURN-LEN               0
+Missing Maintenance Log Errors              0
+Missing WORKING STORAGE start               0
+IDMS-STATUS Usage Errors                    0
+AND on same line as IF Errors               1
+GOTO Errors                                 1
+                              ---------------
+Total Errors                                4
+
+ 
+DPMO = 125
+ 
+Sigma = 5.1
+
+====================================== N O T E S ============================================
+Please ensure that the change log date is updated in all COBOL programs with the production rollout date.
+
+For a full list of the 3090 standards see: GEFS_3090_Standards.doc

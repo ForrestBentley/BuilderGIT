@@ -1,0 +1,3366 @@
+//********************************************************************************
+//* Program : Builderlang.bed
+//* Author  : Forrest Bentley
+//* Date    : 02/26/14 
+//* Desc    : This program will process all of the Builder Language Interface 
+//*           commands.
+//* 
+//********************************************************************************
+//*              M A I N T E N A N C E       L O G
+//*
+//* Date       Author           Description
+//* ---------- ---------------- --------------------------------------------------
+//* 02/26/2014 Forrest Bentley  Created Program
+//*                             Create entry/text fields, buttons
+//*                             move controls
+//* 02/28/2014 Forrest Bentley  Added Delete controls
+//*                             Added move above, below, right of, left of
+//*                             Added move All
+//*                             Added move ___ left/right/above/below ___ type
+//* 03/01/2014 Forrest Bentley  Finished Move
+//*                             Fixed Delete and Change to use Field Type
+//*                             Create all controls
+//*                             Added Make
+//*                             Added Undo
+//*                             Bypass AND/OR
+//* 03/02/2014 Forrest Bentley  Added BuilderLang.dat file
+//*                             Added Size Window
+//*                             Fixed Move all Radio
+//*                             Added Language Interface Help
+//* 03/04/2014 Forrest Bentley  Added align/distribute
+//* 03/06/2014 Forrest Bentley  Added Create Batch System
+//*                             Added Create Windows System
+//*                             Added Create Window
+//*                             Added 'size window' to window control commands
+//* 03/07/2014 Forrest Bentley  Added change batch/windows system
+//*                             Added change window
+//*                             Added run of bedit program (bedit for .bed, beditwin for .win)
+//*                             Added Close All
+//*                             Added Longer
+//* 03/10/2014 Forrest Bentley  Added Make Navigation (open/close)
+//*                             Corrected new Control Names Type to 5 characters
+//* 03/11/2014 Forrest Bentley  Corrected Change bug (always changing window not just text)
+//* 03/15/2014 Forrest Bentley  Added 'text' as a create control
+//* 03/22/2014 Forrest Bentley  Added 'add' as 'create'
+//* 11/04/2014 Forrest Bentley  Added Box3D, Ellipse, Ellipse3D
+//* 11/05/2014 Forrest Bentley  Added Textfont, TextTilt
+//*                             Added move for PaintFile objects
+//* 11/06/2014 Forrest Bentley  Corrected move with parameters
+//*                             Allow Make for PaintFile objects
+//*                             Added Repeat
+//*                             Added Make Color
+//* 11/07/2014 Forrest Bentley  Don't create PaintFile object if name already exists
+//*                             Oops/Undo resizes the window
+//*                             Create Bitmap/BitmapFit
+//*                             Added align for PaintFile objects
+//*                             Added Duplicate objects
+//* 11/08/2014 Forrest Bentley  Added move to front/back (for PaintFile objects only)
+//* 11/10/2014 Forrest Bentley  Make navigation for PaintFile objects
+//*                             Added Make objects same size/color
+//*                             Make the same Height/Length/Width
+//*                             Added Connector logic
+//*                             Added Disconnect
+//* 11/13/2014 Forrest Bentley  Cleaned up Text connectors
+//*                             Improved Text Connector Length Calculation (Upper/Lower/Space)
+//* 11/15/2014 Forrest Bentley  Clear Text control entry field if non-text PaintFile object
+//* 11/19/2014 Forrest Bentley  Fixed "Make" to size window when finished
+//*                             Fixed Move and Make objects to mixed case
+//* 11/20/2014 Forrest Bentley  Connect Diamond to points
+//*                             Connect BitmapFit to edges (if width not = 0)
+//* 11/21/2014 Forrest Bentley  Added GOTO window
+//*                             Added Bent connectors
+//* 11/23/2014 Forrest Bentley  Cleaned up Bent Connectors for all conditions obj1 to obj2
+//* 11/24/2014 Forrest Bentley  Connectors (Straight/Bent) working for non-PaintFile objects
+//*                             Corrected removing connections when objects don't exist
+//* 11/26/2014 Forrest Bentley  Bent connectors conenct properly to Ellipse, Ellipse3D, Circle
+//* 11/27/2014 Forrest Bentley  Added Arrow 2,3,4
+//* 12/01/2014 Forrest Bentley  Added Straight Arrow Connectors
+//* 12/02/2014 Forrest Bentley  Moved BuilderLang.bed variables to Builder.bed
+//* 12/08/2014 Forrest Bentley  Changed connect to not connect 1 object to itself
+//* 04/24/2015 Forrest Bentley  Removed lowercase command line to retain case
+//*                             should be lowercased though if using interactive voice commands
+//*
+//********************************************************************************
+
+//****************************************************
+//* Main Procesing
+//****************************************************
+!a100_main
+    LangCommand = null
+    LanguageReturn = null
+
+    file LanguageCommandsFile error call !L100_language_commands
+    ObjectX = MinX + 40
+    ObjectY = MinY + 40
+    ObjectCX = 100
+    ObjectCY = 20
+
+    LangError = 'n'
+    window obtain Builder_Language_Commands_MLOBJ
+    leftjust Builder_Language_Commands_MLOBJ
+    pack Builder_Language_Commands_MLOBJ
+    if  (Builder_Language_Commands_MLOBJ = null) return
+
+    if-1  (Builder_Language_Commands_MLOBJ = 'repeat')
++       Builder_Language_Commands_MLOBJ = RepeatLine
++   else-1
++       RepeatLine = Builder_Language_Commands_MLOBJ
++       file Repeat error open Repeat null
++       fs:/@Builder_Language_Commands_MLOBJ@/
++       if-2  (line != Builder_Language_Commands_MLOBJ)
++           i:/@Builder_Language_Commands_MLOBJ@/
++   endif
+
+    //**************************************************
+    //* should lowercase if using voice interactive
+    //**************************************************
+    //lower Builder_Language_Commands_MLOBJ
+
+    //***************************
+    //* Remove Plurals
+    //***************************
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ buttons /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ button @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ lists /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ list @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ checks /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ check @right@"
+    until (!found)
+    //***************************
+    //* Change Commands to Standard
+    //***************************
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/new /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@create @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/add /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@create @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/del /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@delete @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/remove /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@delete @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/erase /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@delete @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/longer/
+        if (found) Builder_Language_Commands_MLOBJ = "@left@wider@right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/dist /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@distribute @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/distrib /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@distribute @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/modify /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@change @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/update /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@change @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/undo/
+        if (found) Builder_Language_Commands_MLOBJ = "@left@oops@right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/make copy of/
+        if (found) Builder_Language_Commands_MLOBJ = "@left@duplicate@right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/make a copy of/
+        if (found) Builder_Language_Commands_MLOBJ = "@left@duplicate@right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/make a duplicate of/
+        if (found) Builder_Language_Commands_MLOBJ = "@left@duplicate@right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/size the window/
+        if (found) Builder_Language_Commands_MLOBJ = "@left@size window@right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/to the/
+        if (found) Builder_Language_Commands_MLOBJ = "@left@to@right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ top/
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ front@right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ bottom/
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ back@right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ balls /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ ellipse3d @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ ball /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ ellipse3d @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ the same /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ same @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ color as /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ color @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ size as /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ size @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ width as /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ width @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ length as /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ length @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/ height as /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ height @right@"
+    until (!found)
+    do
+        scan:/@Builder_Language_Commands_MLOBJ@/:/go to /
+        if (found) Builder_Language_Commands_MLOBJ = "@left@ goto @right@"
+    until (!found)
+
+    //***************************
+    //* Add 'size window'
+    //***************************
+    scan:/@Builder_Language_Commands_MLOBJ@/:/size window/
+    if (!found)
++      scan:/@Builder_Language_Commands_MLOBJ@/:/move /
++      if (found)
++         Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
++   endif
+    scan:/@Builder_Language_Commands_MLOBJ@/:/size window/
+    if (!found)
++      scan:/@Builder_Language_Commands_MLOBJ@/:/create /
++      if  (found)
++          scan:/@Builder_Language_Commands_MLOBJ@/:/create window/
++          if (!found)
++             Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
++   endif
+    scan:/@Builder_Language_Commands_MLOBJ@/:/size window/
+    if (!found)
++      scan:/@Builder_Language_Commands_MLOBJ@/:/make /
++      if (found)
++         Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
++   endif
+    scan:/@Builder_Language_Commands_MLOBJ@/:/size window/
+    if (!found)
++      scan:/@Builder_Language_Commands_MLOBJ@/:/size /
++      if (found)
++         Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
++   endif
+    scan:/@Builder_Language_Commands_MLOBJ@/:/size window/
+    if (!found)
++      scan:/@Builder_Language_Commands_MLOBJ@/:/delete /
++      if (found)
++         Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
++   endif
+    scan:/@Builder_Language_Commands_MLOBJ@/:/size window/
+    if (!found)
++      scan:/@Builder_Language_Commands_MLOBJ@/:/align /
++      if (found)
++         Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
++   endif
+    scan:/@Builder_Language_Commands_MLOBJ@/:/size window/
+    if (!found)
++      scan:/@Builder_Language_Commands_MLOBJ@/:/distribute /
++      if (found)
++         Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
++   endif
+    scan:/@Builder_Language_Commands_MLOBJ@/:/size window/
+    if (!found)
++      scan:/@Builder_Language_Commands_MLOBJ@/:/oops/
++      if (found)
++         //Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
++   endif
+    scan:/@Builder_Language_Commands_MLOBJ@/:/size window/
+    if (!found)
++      scan:/@Builder_Language_Commands_MLOBJ@/:/duplicate /
++      if (found)
++         Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
++   endif
+    if (!found)
++      scan:/@Builder_Language_Commands_MLOBJ@/:/dup /
++      if (found)
++         Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
++   endif
+
+    //message = Builder_Language_Commands_MLOBJ window message info ok
+
+    //********************************************
+    //* Run a BEDIT Program
+    //********************************************
+    if  (Builder_Language_Commands_MLOBJ beginswith 'run') or (Builder_Language_Commands_MLOBJ beginswith 'execute')
++       scan:/@Builder_Language_Commands_MLOBJ@/:word
++       scan:/@right/:word
++       string CheckFile error
++       CheckFile = '@left@.bed'
++       MacroCommand = |if (exists @CheckFile@) call !r100_run goto !a100_clear| $MacroCommand
++   endif
+
+    //********************************************
+    //* Check command in the BuilderLang.dat 
+    //* commands file
+    //********************************************
+    if  (Builder_Language_Commands_MLOBJ beginswith 'run') or (Builder_Language_Commands_MLOBJ beginswith 'execute')
++       scan:/@Builder_Language_Commands_MLOBJ@/:word
++       Builder_Language_Commands_MLOBJ = right
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith 'start') or (Builder_Language_Commands_MLOBJ beginswith 'launch')
++       scan:/@Builder_Language_Commands_MLOBJ@/:word
++       Builder_Language_Commands_MLOBJ = right
++   endif 
+    if  (Builder_Language_Commands_MLOBJ beginswith 'show')
++       scan:/@Builder_Language_Commands_MLOBJ@/:word
++       Builder_Language_Commands_MLOBJ = right
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith 'explain ')
++       scan:/@Builder_Language_Commands_MLOBJ@/:word
++       Builder_Language_Commands_MLOBJ = right
++   endif
+
+    close LangCommands error
+    //message = 'opening BuilderLang.dat' window message info ok
+    open LangCommands BuilderLang.dat error goto !b100_process_control_win
+    //message = 'opened BuilderLang.dat' window message info ok
+    b
+    CommandSearch = '@Builder_Language_Commands_MLOBJ@:'
+    do
+        fs:/@CommandSearch@/
+        if (!eof)
++          scan:/@line/:/:/
++          if (left = Builder_Language_Commands_MLOBJ)
++             LanguageReturn = right
++             close LangCommands
++             Builder_Language_Commands_MLOBJ = null
++             window modify Builder_Language_Commands_MLOBJ
++             return
++       endif
+        f;1
+    until (eof)
+    close LangCommands
+
+    //message = 'Command[@Builder_Language_Commands_MLOBJ@]' window message info ok
+    //********************************************
+    //* Check for Window Button Commands
+    //********************************************
+
+    //********************************************
+    //* Close All
+    //********************************************
+    if  (Builder_Language_Commands_MLOBJ = 'close all')
++       LanguageReturn = 'call !l400_close_all'
++       goto !a100_clear
++   endif
+
+    //***********************************
+    //* View Window
+    //***********************************
+    if  (Builder_Language_Commands_MLOBJ = 'cancel') or (Builder_Language_Commands_MLOBJ = 'close')
++       window hwnd Builder_View_WIN status LanguageReturn = |window push Builder_View_Cancel_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'open')
++       window hwnd Builder_View_WIN status LanguageReturn = |call !a500_Builder_View_Open_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'comments')
++       window hwnd Builder_View_WIN status LanguageReturn = |call !a500_Builder_View_Comments_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'filter')
++       window hwnd Builder_View_WIN status LanguageReturn = |call !a500_Builder_View_Filter_PBOBJ| goto !a100_clear error
++   endif
+
+    //***********************************
+    //* Code Assist Window
+    //***********************************
+    if  (Builder_Language_Commands_MLOBJ = 'test')
++       window hwnd Builder_Codeassist_WIN status LanguageReturn = |call !a1900_Builder_Codeassist_Test_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'debug')
++       window hwnd Builder_Codeassist_WIN status LanguageReturn = |call !a1900_Builder_Codeassist_Debugrun_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'view') or (Builder_Language_Commands_MLOBJ = 'view modules') or (Builder_Language_Commands_MLOBJ = 'view mods')
++       Builder_Codeassist_Viewmods_RBOBJ = 'Y' window modify Builder_Codeassist_Viewmods_RBOBJ
++       Builder_Codeassist_Viewfiles_RBOBJ = 'N' window modify Builder_Codeassist_Viewfiles_RBOBJ
++       Builder_Codeassist_Viewvars_RBOBJ = 'N' window modify Builder_Codeassist_Viewvars_RBOBJ
++       window hwnd Builder_Codeassist_WIN status LanguageReturn = |call !a1900_Builder_Codeassist_View_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'view files')
++       Builder_Codeassist_Viewmods_RBOBJ = 'N' window modify Builder_Codeassist_Viewmods_RBOBJ
++       Builder_Codeassist_Viewfiles_RBOBJ = 'Y' window modify Builder_Codeassist_Viewfiles_RBOBJ
++       Builder_Codeassist_Viewvars_RBOBJ = 'N' window modify Builder_Codeassist_Viewvars_RBOBJ
++       window hwnd Builder_Codeassist_WIN status LanguageReturn = |call !a1900_Builder_Codeassist_View_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'view variables') or (Builder_Language_Commands_MLOBJ = 'view vars')
++       Builder_Codeassist_Viewmods_RBOBJ = 'N' window modify Builder_Codeassist_Viewmods_RBOBJ
++       Builder_Codeassist_Viewfiles_RBOBJ = 'N' window modify Builder_Codeassist_Viewfiles_RBOBJ
++       Builder_Codeassist_Viewvars_RBOBJ = 'Y' window modify Builder_Codeassist_Viewvars_RBOBJ
++       window hwnd Builder_Codeassist_WIN status LanguageReturn = |call !a1900_Builder_Codeassist_View_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'save')
++       window hwnd Builder_Codeassist_WIN status LanguageReturn = |call !a1900_Builder_Codeassist_Ok_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'close')
++       window hwnd Builder_Codeassist_WIN status LanguageReturn = |call !a1900_Builder_Codeassist_Close_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'code')
++       window hwnd Builder_Codeassist_WIN status LanguageReturn = |call !a1900_Builder_Codeassist_Code_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'edit')
++       LanguageCommand = 'y'
++       window hwnd Builder_Codeassist_WIN status LanguageReturn = |call !a1900_Builder_Codeassist_Edit_PBOBJ| goto !a100_clear error
++   endif
+
+    //***********************************
+    //* Control Maintenance Window
+    //***********************************
+    if  (Builder_Language_Commands_MLOBJ = 'test')
++       window hwnd Builder_Control_WIN status LanguageReturn = |call !a400_Builder_Control_Save_PBOBJ call !a300_Builder_Window_Test_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'save')
++       window hwnd Builder_Control_WIN status LanguageReturn = |call !a400_Builder_Control_Save_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'close')
++       window hwnd Builder_Control_WIN status LanguageReturn = |call !a400_Builder_Control_Save_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'cancel')
++       window hwnd Builder_Control_WIN status LanguageReturn = |call !a400_Builder_Control_Cancel_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'refresh')
++       window hwnd Builder_Control_WIN status LanguageReturn = |call !a400_Builder_Control_Refresh_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'code')
++       window hwnd Builder_Control_WIN status LanguageReturn = |call !a400_Builder_Control_Save_PBOBJ call !a300_Builder_Window_Code_PBOBJ| goto !a100_clear error
++   endif
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'goto ')
++       call !p100_parse
++       call !p100_parse
++       file WindowList
++       b
++       mix LangCommand
++       fs:/@LangCommand/
++       if-2 (eof)
++           goto !a100_clear
++       else-2
++           GotoWindow = LangCommand
++           window hwnd Builder_Control_WIN status LanguageReturn = |call !a400_Builder_Control_Go_PBOBJ_language| goto !a100_clear error
++   endif
+
+    //***********************************
+    //* Window Maintenance Window
+    //***********************************
+    if  (Builder_Language_Commands_MLOBJ = 'test')
++       window hwnd Builder_Window_WIN status LanguageReturn = |call !a300_Builder_Window_Test_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'view')
++       window hwnd Builder_Window_WIN status LanguageReturn = |call !a300_Builder_Window_View_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'close')
++       window hwnd Builder_Window_WIN status LanguageReturn = |call !a300_Builder_Window_Close_PBOBJ| goto !a100_clear error
++   endif
+
+    //***********************************
+    //* System Window
+    //***********************************
+    if  (Builder_Language_Commands_MLOBJ = 'close')
++       window hwnd Builder_System_WIN status LanguageReturn = |call !a200_Builder_System_Cancel_PBOBJ| goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'test')
++       window hwnd Builder_System_WIN status window push Builder_Window_Test_PBOBJ goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'view')
++       window hwnd Builder_System_WIN status window push Builder_Window_View_PBOBJ goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'debug')
++       window hwnd Builder_System_WIN status window push Builder_Window_Debug_PBOBJ goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'save') or (Builder_Language_Commands_MLOBJ = 'generate')
++       window hwnd Builder_System_WIN status window push Builder_Window_Save_PBOBJ goto !a100_clear error
++   endif
+    if  (Builder_Language_Commands_MLOBJ = 'code')
++       window hwnd Builder_System_WIN status window push Builder_Window_Code_PBOBJ goto !a100_clear error
++   endif
+
+    //********************************************
+    //* Create Commands
+    //********************************************
+    if  (Builder_Language_Commands_MLOBJ beginswith "create new") or (Builder_Language_Commands_MLOBJ beginswith "make new") or (Builder_Language_Commands_MLOBJ beginswith "build new")
++       scan:/@Builder_Language_Commands_MLOBJ@/:word
++       Builder_Language_Commands_MLOBJ = right
++   endif
+
+    //********************************************
+    //* Change (.WIN .BED) Commands
+    //********************************************
+    if  (Builder_Language_Commands_MLOBJ beginswith "change ")
++       scan:/@Builder_Language_Commands_MLOBJ@/:word
++       scan:/@right@/:word
++       string CheckFile error
++       mix left
++       CheckFile = '@left@.win'
++       MacroCommand = |if (exists @CheckFile@) SystemName = left LanguageReturn = 'call !l300_change_windows' goto !a100_clear|
++       $MacroCommand
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith "change ")
++       scan:/@Builder_Language_Commands_MLOBJ@/:word
++       scan:/@right@/:word
++       string CheckFile error
++       mix left
++       CheckFile = '@left@.bed'
++       MacroCommand = |if (exists @CheckFile@) SystemName = left LanguageReturn = 'call !l300_change_batch' goto !a100_clear|
++       $MacroCommand
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith "change ")
++       scan:/@Builder_Language_Commands_MLOBJ@/:word
++       scan:/@right@/:word
++       window hwnd Builder_System_WIN status error goto !a100_skip_system
++       string LanguageWindow error
++       mix left
++       LanguageWindow = left
++       window hwnd Builder_Control_WIN status error LanguageReturn = |call !l300_change_one_window| goto !a100_clear
++   endif
+
+!a100_skip_system
+    if  (Builder_Language_Commands_MLOBJ beginswith "create batch system ") or (Builder_Language_Commands_MLOBJ beginswith "new batch system ")
++       //*********************
++       //* B-Edit Batch
++       //*********************
++       call !p100_parse
++       call !p100_parse
++       call !p100_parse
++       window close Builder_System_WIN error
++       window close Builder_Window_WIN error
++       window close Builder_Control_WIN error
++       call !p100_parse
++       Builder_System_Systemname_EFOBJ = LangCommand
++       Builder_System_Title_EFOBJ = LangCommand
++       Builder_System_Desc_MLOBJ = LangCommand
++       LanguageReturn = 'call !l100_create_batch'
++       goto !a100_clear
++   endif
+
+    if  (Builder_Language_Commands_MLOBJ beginswith "create windows system ") or (Builder_Language_Commands_MLOBJ beginswith "new windows system ")
++       //*********************
++       //* B-Edit Windows
++       //*********************
++       call !p100_parse
++       call !p100_parse
++       call !p100_parse
++       window close Builder_System_WIN error
++       window close Builder_Window_WIN error
++       window close Builder_Control_WIN error
++       call !p100_parse
++       Builder_System_Systemname_EFOBJ = LangCommand
++       Builder_System_Title_EFOBJ = LangCommand
++       Builder_System_Desc_MLOBJ = LangCommand
++       LanguageReturn = 'call !l100_create_windows'
++       goto !a100_clear
++   endif
+
+    if  (Builder_Language_Commands_MLOBJ beginswith "create window ") or (Builder_Language_Commands_MLOBJ beginswith "new window ")
++       //*********************
++       //* B-Edit Windows
++       //*********************
++       call !p100_parse
++       call !p100_parse
++       call !p100_parse
++       Builder_Window_Windowname_EFOBJ = LangCommand
++       Builder_Window_WindowTitle_EFOBJ = LangCommand
++       LanguageReturn = 'call !l100_create_new_window'
++       goto !a100_clear
++   endif
+
+    //********************************************
+    //* Process the commands in Control Window
+    //********************************************
+    do
+        call !p100_parse
+        if  (LangCommand != null)
++           call !b100_process_command
++       endif
+    until (LangCommand = null) or (LangError)
+    if  (!LangError)
++       Builder_Language_Commands_MLOBJ = null
++       window modify Builder_Language_Commands_MLOBJ
++       call BuilderConnect.bed!m100_update_connect window paint Builder_Control_WIN
++   endif
+    window setfocus Builder_Language_Commands_MLOBJ
+    return
+
+!a100_clear
+    Builder_Language_Commands_MLOBJ = null
+    window modify Builder_Language_Commands_MLOBJ
+    return
+
+
+//****************************************************
+//* Process a Command
+//****************************************************
+!b100_process_command
+    ControlGroupType = null
+    SearchGroupType = null
+    AllControls = 'n'
+    RadioGroup = null
+
+    //message = 'Control Window Commands LangCommand[@LangCommand@]' window message info ok
+    //***********************************
+    //* Controls Window Commands
+    //***********************************
+    file Controls error open Controls null
+
+    if  (LangCommand = 'create') call !c100_create return
+    if  (LangCommand = 'move')   call !d100_move   return
+    if  (LangCommand = 'delete') call !d200_delete return
+    if  (LangCommand = 'del') call !d200_delete return
+    if  (LangCommand = 'erase') call !d200_delete return
+    if  (LangCommand = 'change') call !d300_change return
+    if  (LangCommand = 'make') call !d400_make return
+    if  (LangCommand = 'size') call !d500_size return
+    if  (LangCommand = 'align') call !d600_align return
+    if  (LangCommand = 'dist') call !d700_distribute return
+    if  (LangCommand = 'distrib') call !d700_distribute return
+    if  (LangCommand = 'distribute') call !d700_distribute return
+    if  (LangCommand = 'duplicate') call !e100_duplicate return
+    if  (LangCommand = 'dup') call !e100_duplicate return
+    if  (LangCommand = 'connect') call !f100_connect return
+    if  (LangCommand = 'disconnect') call !f200_disconnect return
+
+    message = 'Unknown Language Command [@LangCommand@]'
+    window message error ok
+    LangError = 'y'
+    return
+
+//****************************************************
+//* Command - Create
+//****************************************************
+!c100_create
+    //message = 'Processing - Create' window message info ok
+    if (Builder_Language_Commands_MLOBJ beginswith "push ")
++      scan:/@Builder_Language_Commands_MLOBJ@/:word
++      Builder_Language_Commands_MLOBJ = right
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith "entry ") call !c200_create_entry return
+    if (Builder_Language_Commands_MLOBJ beginswith "text ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "button ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "buttons ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "group ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "radio ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "list ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "check ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "combo ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "rectangle ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "box ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "box3d ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "ellipse ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "ellipse3d ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "ellipse3d ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "boxcolor ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "circle ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "diamond ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "line ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "arrow ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "textfont ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "texttilt ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "bitmap ") call !c220_create_other_control return
+    if (Builder_Language_Commands_MLOBJ beginswith "bitmapfit ") call !c220_create_other_control return
+    call !p100_parse
+    message = 'Unknown Create Command [@LangCommand@]'
+    window message error ok
+    LangError = 'y'  
+    return
+
+//****************************************************
+//* Command - Create Entry Fields
+//****************************************************
+!c200_create_entry
+    //message = 'create entry' window message info ok
+    close LangControlFile error
+    open LangControlFile null
+    call !p100_parse
+    if (Builder_Language_Commands_MLOBJ beginswith "field ") or (Builder_Language_Commands_MLOBJ beginswith "fields ")
++      call !p100_parse
++   endif
+
+!c200_create_entry_loop
+    call !l200_check_command
+    if  (LangCmdFound) goto !c200_create_entry_control
+    call !p100_parse
+    if  (LangCommand = null) goto !c200_create_entry_control
+    Newline = LangCommand
+    file LangControlFile
+    i:/@Newline/
+    goto !c200_create_entry_loop
+
+!c200_create_entry_control
+    //write LangControlFile fgb.dat
+    file LangControlFile
+    b
+    do
+    if  (!eof)
++       //***************************
++       //* Create Static Text Label
++       //***************************
++       ControlType = 'STTXT1'
++       ControlTypeName = 'STTXT'
++       ControlText = line
++       ControlNameWork = line
++       crush ControlNameWork
++       mix ControlNameWork
++       ControlName = '@SystemName@_@WindowName@_@ControlNameWork@_@ControlTypeName@'
++       call !c900_create_control
++       //***************************
++       //* Create Static Text Label
++       //***************************
++       ControlType = 'EFOBJL'
++       ControlTypeName = 'EFOBJ'
++       ObjectX = ObjectX + 130
++       ControlText = null
++       ControlName = '@SystemName@_@WindowName@_@ControlNameWork@_@ControlTypeName@'
++       call !c900_create_control
++       //***************************
++       //* Setup for Next Control
++       //***************************
++       file LangControlFile
++       ObjectX = ObjectX - 130
++       ObjectY = ObjectY + ObjectCY + 10
++       f;1
++   endif
+    until (eof)
+    close LangControlFile
+    return
+
+//****************************************************
+//* Create a Control
+//****************************************************
+!c220_create_other_control
+    //message = 'create control' window message info ok
+    LangDir = 'down'
+    close LangControlFile error
+    open LangControlFile null
+    call !p100_parse
+    if (LangCommand = 'button') ControlType = 'PBOBJ1' ControlTypeName = 'PBOBJ'
+    if (LangCommand = 'text') ControlType = 'STTXT1' ControlTypeName = 'STTXT'
+    if (LangCommand = 'buttons') ControlType = 'PBOBJ1' ControlTypeName = 'PBOBJ'
+    if (LangCommand = 'group') ControlType = 'GBOBJ1' ControlTypeName = 'GBOBJ'
+    if (LangCommand = 'radio') ControlType = 'RBOBJ1' ControlTypeName = 'RBOBJ'
+    if (LangCommand = 'list') ControlType = 'LBOBJ1' ControlTypeName = 'LBOBJ'
+    if (LangCommand = 'check') ControlType = 'CBOBJ1' ControlTypeName = 'CBOBJ'
+    if (LangCommand = 'combo') ControlType = 'COOBJS' ControlTypeName = 'COOBJ'
+    if (LangCommand = 'rectangle') ControlType = 'STTXTF' ControlTypeName = 'STTXT'
+    if (LangCommand = 'box') ControlType = 'STTXTR' ControlTypeName = 'STTXT'
+    if (LangCommand = 'box3d') ControlType = 'Box3D' ControlTypeName = 'Box3D'
+    if (LangCommand = 'ellipse') ControlType = 'Ellipse' ControlTypeName = 'Ellipse' ObjectCX = 30 ObjectCY = 30
+    if (LangCommand = 'ellipse3d') ControlType = 'Ellipse3D' ControlTypeName = 'Ellipse3D' ObjectCX = 30 ObjectCY = 30
+    if (LangCommand = 'boxcolor') ControlType = 'Box' ControlTypeName = 'Box'
+    if (LangCommand = 'circle') ControlType = 'Circle' ControlTypeName = 'Circle' ObjectCX = 30 ObjectCY = 30
+    if (LangCommand = 'diamond') ControlType = 'Diamond' ControlTypeName = 'Diamond'
+    if (LangCommand = 'line') ControlType = 'Line' ControlTypeName = 'Line' ObjectCX = ObjectX + 50 ObjectCY = ObjectY + 50
+    if (LangCommand = 'arrow') ControlType = 'Arrow' ControlTypeName = 'Arrow' ObjectCX = ObjectX + 50 ObjectCY = ObjectY + 50
+    if (LangCommand = 'textfont') 
++      ControlType = 'Text' 
++      ControlTypeName = 'Text'
++      scan:/@Builder_Language_Commands_MLOBJ/:word
++      Builder_Language_Commands_MLOBJ = '@left@ size window'
++      scan:/@right/:/size window/
++      ControlText = left
++   endif
+    if (LangCommand = 'texttilt') 
++      ControlType = 'TextTilt' 
++      ControlTypeName = 'TextTilt'
++      scan:/@Builder_Language_Commands_MLOBJ/:word
++      Builder_Language_Commands_MLOBJ = '@left@ size window'
++      scan:/@right/:/size window/
++      ControlText = left
++   endif
+
+    if (LangCommand = 'bitmap') 
++      ControlType = 'Bitmap' 
++      ControlTypeName = 'Bitmap'
++      scan:/@Builder_Language_Commands_MLOBJ/:word
++      Builder_Language_Commands_MLOBJ = '@left@ size window'
++      scan:/@right/:/size window/
++      ControlFilename = left
++   endif
+
+    if (LangCommand = 'bitmapfit') 
++      ControlType = 'BitmapFit' 
++      ControlTypeName = 'BitmapFit'
++      scan:/@Builder_Language_Commands_MLOBJ/:word
++      Builder_Language_Commands_MLOBJ = '@left@ size window'
++      scan:/@right/:/size window/
++      ControlFilename = left
++      ObjectCX = 100 
++      ObjectCY = 100
++   endif
+
+!c220_create_other_loop
+    call !l200_check_command
+    if (LangCmdFound) goto !c220_create_other_control_ready
+    call !p100_parse
+    if  (LangCommand = null) goto !c220_create_other_control_ready
+    if (LangCommand = 'down') or (LangCommand = 'across')
++      LangDir = LangCommand
++      goto !c220_create_other_loop
++   endif
+    Newline = LangCommand
+    file LangControlFile
+    i:/@Newline/
+    goto !c220_create_other_loop
+
+!c220_create_other_control_ready
+    //write LangControlFile fgb.dat
+    int Offset error
+    if  (ControlType = 'RBOBJ1') or (ControlType = 'CBOBJ1')
++       Offset = 5
++   else
++       Offset = 20
++   endif
+    file LangControlFile
+    b
+    do
+        if-1  (!eof)
++           //***************************
++           //* Check for Radio
++           //***************************
++           call !c800_check_radio
++           //***************************
++           //* Create Control
++           //***************************
++           file LangControlFile
++           call !c220_text
++           ControlNameWork = line
++           crush ControlNameWork
++           mix ControlNameWork
++           ControlName = '@SystemName@_@WindowName@_@ControlNameWork@_@ControlTypeName@'
++           call !c900_create_control
++           //***************************
++           //* Setup for Next Control
++           //***************************
++           file LangControlFile
++           f;1
++           if-2  (LangDir = 'down')
++               ObjectY = ObjectY + ObjectCY + Offset
++           else-2
++               ObjectX = ObjectX + ObjectCX + Offset
++       endif
+    until (eof)
+    close LangControlFile
+    if  (ControlType = 'RBOBJ1')
++       //*****************************************
++       //* Size the Radio Button Group
++       //*****************************************
++       ControlName = '@SystemName@_@WindowName@_@RadioGroup@_GBOBJ'
++       ObjectX = RadioX
++       ObjectY = RadioY
++       ObjectCX = RadioCX
++       ObjectCY = RadioCY
++       MacroCommand = 'window size @ControlName@ @ObjectX@ @ObjectY@ @ObjectCX@ @ObjectCY@' $MacroCommand
++   endif
+    return
+
+!c220_text
+    if  (ControlType != 'Text') and (ControlType != 'TextTilt')
++      ControlText = "@line@"
++   endif
+    return  
+
+//****************************************************
+//* Create a Control
+//****************************************************
+!c800_check_radio
+    string CreateGroup error
+    //*********************
+    //* Setup for Radio Group
+    //*********************
+    if  (ControlType = 'RBOBJ1') and (RadioGroup = null)
++       file LangControlFile
++       CreateGroup = 'Grp@line@'
++       leftjust CreateGroup
++       crush CreateGroup
++       mix CreateGroup
++       //*****************************************
++       //* Create the Group Box for Radio Buttons
++       //*****************************************
++       ControlTypeName = 'GBOBJ'
++       ControlType = 'GBOBJ1'
++       ControlName = '@SystemName@_@WindowName@_@CreateGroup@_@ControlTypeName@' //message = ControlName window message info ok
++       ControlText = '@CreateGroup@ Group'
++       call !c900_create_control
++       ControlTypeName = 'RBOBJ'
++       ControlType = 'RBOBJ1'
++   endif
+    return
+
+//****************************************************
+//* Create a Control
+//****************************************************
+!c900_create_control
+    if  (ControlType = 'PBOBJ1') ControlText = '&@ControlText@'
+    if  (ControlType = 'RBOBJ1') ControlText = '&@ControlText@'
+    if  (ControlType = 'CBOBJ1') ControlText = '&@ControlText@'
+    if (ControlType = 'STTXTF') ControlText = null
+    if (ControlType = 'STTXTR') ControlText = null
+    if (ControlType = 'Box3D') ControlText = null
+    if (ControlType = 'Ellipse') ControlText = null
+    if (ControlType = 'Ellipse3D') ControlText = null
+    if (ControlType = 'Box') ControlText = null
+    if (ControlType = 'Circle') ControlText = null
+    if (ControlType = 'Diamond') ControlText = null
+    if (ControlType = 'Line') ControlText = null
+    if (ControlType = 'Arrow') ControlText = null
+    if (ControlType = 'Bitmap') ControlText = null
+    if (ControlType = 'BitmapFit') ControlText = null
+    if (ControlType = 'Text')
++      ObjectCX = 20
++      ObjectCY = 0
++   endif
+    if (ControlType = 'TextTilt')
++      ObjectCX = 20
++      ObjectCY = 45
++   endif
+
+    if (ControlType = 'LBOBJ1') 
++      ControlText = null
++      ObjectCX = 200
++      ObjectCY = 200
++   endif
+    if (ControlType = 'COOBJS') 
++      ControlText = null
++      ObjectCX = 200
++      ObjectCY = 200
++   endif
+    file Controls error open Controls null
+    Newline = '@ControlName@,@ControlType@,@ControlText@'
+    b
+    fs:/@Newline@/
+    if-1 (eof)
++      if-2  (ControlType = 'Box3D') or (ControlType = 'Ellipse') or (ControlType = 'Ellipse3D') or (ControlType = 'Box') or (ControlType = 'Circle') or (ControlType = 'Diamond') or (ControlType = 'Line') or (ControlType = 'Arrow') or (ControlType = 'Text') or (ControlType = 'TextTilt') or (ControlType = 'Bitmap') or (ControlType = 'BitmapFit')
++          call !c901_create_paintfile_object
++      else-2
++          i:/@Newline@/
++          //message = 'creating ControlName[@ControlName@]' window message info ok
++          window createcontrol Builder_Control_WIN @ControlName @ObjectX @ObjectY @ObjectCX @ObjectCY @ControlType @ControlText error 
++          Builder_Control_ControlList_COOBJ = ControlName
++          window insert end default Builder_Control_ControlList_COOBJ
++   endif
+    //*********************
+    //* Add close to Nav
+    //*********************
+    if  (ControlType = 'PBOBJ1')
++       NavAction = 'close'
++       file WindowNav error open WindowNav null
++       b
++       fs:/@ControlName@/
++       Newline = "@ControlName@,@WindowName@,@NavAction@"
++       if  (eof)
++           i:/@Newline@/
++   endif
+    //*********************
+    //* Setup for Radio Group
+    //*********************
+    if  (ControlType = 'RBOBJ1') and (RadioGroup = null)
++       file LangControlFile
++       RadioGroup = 'Grp@line@'
++       leftjust RadioGroup
++       crush RadioGroup
++       mix RadioGroup
++       RadioX = ObjectX - 10
++       RadioY = ObjectY - 20
++   endif
+
+    if-1  (ControlType = 'RBOBJ1')
++       if-2  (LangDir = 'down')
++           RadioCX = ObjectCX + 20
++           RadioCY = ObjectY - RadioY + ObjectCY + 10
++       else-2
++           RadioCX = ObjectX - RadioX + ObjectCX + 10
++           RadioCY = ObjectCY + 30
++   endif
+    //message = 'ControlName[@ControlName@] ControlType[@ControlType@] ObjectX[@ObjectX@] ObjectY[@ObjectY@] ObjectCX[@ObjectCX@] ObjectCY[@ObjectCY@] RadioCX[@RadioCX@] RadioCY[@RadioCY@]' window message info ok
+    return
+
+//****************************************************
+//* Create a PaintFile object
+//****************************************************
+!c901_create_paintfile_object
+    //ObjectX = MinX
+    //ObjectY = MinY + 25
+    file PaintFile error open PaintFile null
+    b
+    scan:/@ControlName@/:/_/
+    scan:/@right/:/_/
+    scan:/@right/:/_/
+    HoldName = left
+
+    //******************************
+    //* Make sure name doesn't exist
+    //******************************
+    do
+        if  (!eof)
++           scan:/@line/:/,/
++           if  (left = 'Builder_Control_WIN')
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               if  (left = HoldName)
++                   return
++       endif
+        f;1
+    until (eof)
+
+    if-1  (ControlType = 'Text') or (ControlType = 'TextTilt')
++       MacroCommand = /i:'Builder_Control_WIN,@ControlName@,@ControlType@,@ObjectX@,@ObjectY@,@ObjectCY@,@ObjectCX@,@Red@,@Green@,@Blue@,@CurrFont@,@ControlText@'/ $MacroCommand
++   else-1
++       if-2  (ControlType = 'Bitmap')
++           MacroCommand = /i:'Builder_Control_WIN,@ControlName@,@ControlType@,@ObjectX@,@ObjectY@,@ControlFilename@'/ $MacroCommand
++       else-2
++           if-3  (ControlType = 'BitmapFit')
++               MacroCommand = /i:'Builder_Control_WIN,@ControlName@,@ControlType@,@ObjectX@,@ObjectY@,@ObjectCX@,@ObjectCY@,@ControlFilename@'/ $MacroCommand
++           else-3
++               MacroCommand = /i:'Builder_Control_WIN,@ControlName@,@ControlType@,@ObjectX@,@ObjectY@,@ObjectCX@,@ObjectCY@,@Red@,@Green@,@Blue@'/ $MacroCommand
++   endif
+    //write PaintFile fgb.dat
+    b
+    call BuilderConnect.bed!m100_update_connect window paint Builder_Control_WIN
+    ButtonFocus = ControlName
+    Builder_Control_ControlList_COOBJ = ControlName
+    window insert end default Builder_Control_ControlList_COOBJ
+    return
+
+//****************************************************
+//* Move controls
+//****************************************************
+!d100_move
+    //message = 'd100_move [@Builder_Language_Commands_MLOBJ@]' window message info ok
+    close LangControlFile error
+    open LangControlFile null
+
+!d100_move_control_loop
+    if (Builder_Language_Commands_MLOBJ beginswith "up ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "down ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "right ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "left ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "above ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "over ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "below ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "under ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "front ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "to front ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "back ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "to back ") goto !d100_move_control
+
+    if (Builder_Language_Commands_MLOBJ beginswith "text ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "entry ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "button ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "buttons ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "radio ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "list ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "group ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "box3d ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "ellipse ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "ellipse3d ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "boxcolor ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "circle ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "diamond ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "line ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "arrow ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "textfont ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "texttilt ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "bitmap ") goto !d100_move_control
+    if (Builder_Language_Commands_MLOBJ beginswith "bitmapfit ") goto !d100_move_control
+
+    call !p100_parse
+    if  (LangCommand = null) goto !d100_move_control
+    Newline = LangCommand
+    //message = Newline window message info ok
+    if-1  (LangCommand beginswith 'text') or (LangCommand beginswith 'entry') or (LangCommand beginswith 'button') or (LangCommand beginswith 'radio') or (LangCommand beginswith 'list') or (LangCommand beginswith 'check') or (LangCommand beginswith 'group') or (LangCommand beginswith 'box') or (LangCommand beginswith 'ellipse') or (LangCommand beginswith 'diamond') or (LangCommand beginswith 'line') or (LangCommand beginswith 'arrow') or (LangCommand beginswith 'bitmap')
++       ControlGroupType = LangCommand
++       if-2 (ControlGroupType endswith 's')
++          splitr:/@ControlGroupType@/;1
++          ControlGroupType = left
++          goto !d100_move_control_loop
++       else-2
++          goto !d100_move_control_loop
++   endif
+    if  (LangCommand = 'all')
++       call !x100_all_controls
++       goto !d100_move_control
++   endif
+    file LangControlFile
+    mix Newline
+    i:/@Newline/
+    goto !d100_move_control_loop
+
+//****************************************************
+//* Move Controls
+//****************************************************
+!d100_move_control
+    //write LangControlFile fgb.dat
+    //message = 'd100' window message info ok
+
+    call !p100_parse
+    //message = 'd100_move_control LangCommand[@LangCommand@]' window message info ok
+    if-1  (LangCommand beginswith 'text') or (LangCommand beginswith 'entry') or (LangCommand beginswith 'button') or (LangCommand beginswith 'radio') or (LangCommand beginswith 'list') or (LangCommand beginswith 'check') or (LangCommand beginswith 'group') or (LangCommand beginswith 'box') or (LangCommand beginswith 'circle') or (LangCommand beginswith 'diamond') or (LangCommand beginswith 'ellipse') or (LangCommand beginswith 'line') or (LangCommand beginswith 'arrow') or (LangCommand beginswith 'bitmap')
++       ControlGroupType = LangCommand
++       if-2 (ControlGroupType endswith 's')
++          splitr:/@ControlGroupType@/;1
++          ControlGroupType = left
++          call !p100_parse
++       else-2
++          call !p100_parse
++   endif
+
+    if  (LangCommand = 'to') call !p100_parse
+    LangDir = LangCommand
+
+    //message = 'A LandDir[@LangDir@] LangCommand[@LangCommand@] Builder_Language_Commands_MLOBJ[@Builder_Language_Commands_MLOBJ@]' window message info ok
+
+    if  (LangCommand != 'front') and (LangCommand != 'back') 
++       call !p100_parse
++   endif
+
+    if (LangDir = 'below') or (LangDir = 'under') or (LangDir = 'right')
++      SearchPos = 'last'
++   else
++      SearchPos = 'first'
++   endif
+
+    //message = 'd100_move_control LangDir[@LangDir@]' window message info ok
+
+    if-1 (LangDir = 'above') or (LangDir = 'over') or (LangDir = 'below') or (LangDir = 'under')
++      SearchControl = LangCommand
++      if-2  (Builder_Language_Commands_MLOBJ beginswith 'text') or (Builder_Language_Commands_MLOBJ beginswith 'entry') or (Builder_Language_Commands_MLOBJ beginswith 'button') or (Builder_Language_Commands_MLOBJ beginswith 'radio') or (Builder_Language_Commands_MLOBJ beginswith 'list') or (Builder_Language_Commands_MLOBJ beginswith 'check') or (Builder_Language_Commands_MLOBJ beginswith 'group')
++            //message = 'setting SearchGroupType1' window message info ok
++            call !p100_parse
++            SearchGroupType = LangCommand
++            call !s100_search_control
++      else-2
++            call !s100_search_control
++   else-1
++      LangAmount = LangCommand
++      if-3  (LangDir = 'left') or (LangDir = 'right')
++          LangDirOf = 'n'
++          if-4  (LangCommand = 'of')
++              LangDirOf = 'y'
++              call !p100_parse
++              SearchControl = LangCommand
++              if-5  (Builder_Language_Commands_MLOBJ beginswith 'text') or (Builder_Language_Commands_MLOBJ beginswith 'entry') or (Builder_Language_Commands_MLOBJ beginswith 'button') or (Builder_Language_Commands_MLOBJ beginswith 'radio') or (Builder_Language_Commands_MLOBJ beginswith 'list') or (Builder_Language_Commands_MLOBJ beginswith 'check') or (Builder_Language_Commands_MLOBJ beginswith 'group') or (Builder_Language_Commands_MLOBJ beginswith 'ellipse') or (Builder_Language_Commands_MLOBJ beginswith 'circle') or (Builder_Language_Commands_MLOBJ beginswith 'box') or (Builder_Language_Commands_MLOBJ beginswith 'diamond') or (Builder_Language_Commands_MLOBJ beginswith 'bitmap')
++                  //message = 'setting SearchGroupType1' window message info ok
++                  call !p100_parse
++                  SearchGroupType = LangCommand
++                  //message = 'SearchGroupType[@SearchGroupType@]' window message info ok
++                  call !s100_search_control
++              else-5
++                  call !s100_search_control
++   endif
+    if  (LangCommand = 'size') Builder_Language_Commands_MLOBJ = 'size @Builder_Language_Commands_MLOBJ@'
+
+    //write LangControlFile fgb.dat message = 'written to fgb.dat' window message info ok
+    //message = 'B LandDir[@LangDir@] LangCommand[@LangCommand@] Builder_Language_Commands_MLOBJ[@Builder_Language_Commands_MLOBJ@]' window message info ok
+    if  (LangDir = 'front')
++       file PaintFile error open PaintFile null
++       clear b copy;*
++       close FrontPaintFile error
++       open FrontPaintFile null
++       paste
++   endif
+    file LangControlFile
+    b
+    do
+    if  (!eof)
++       call !d110_move
++       file LangControlFile
++       f;1
++   endif
+    until (eof)
+    close LangControlFile
+    file PaintFile
+    b
+    call BuilderConnect.bed!m100_update_connect window paint Builder_Control_WIN
+    return
+
+//****************************************************
+//* Move 1 Control
+//****************************************************
+!d110_move
+    ControlNameWork = line
+    crush ControlNameWork
+    mix ControlNameWork
+
+    if  (ControlGroupType = 'button') or (ControlGroupType = 'entry') or (ControlGroupType = 'radio') or (ControlGroupType = 'check') or (ControlGroupType = 'group') or (ControlGroupType = 'list')
++       goto !d110_move_controls
++   endif
+
+    //**************************
+    //* PaintFile
+    //**************************
+    //Newline = 'Builder_Control_WIN,@SystemName@_@WindowName@_@ControlNameWork@_'
+    //message = 'finding [@Newline@] ControlGroupType[@ControlGroupType@]' window message info ok
+    file PaintFile error open PaintFile null
+    //write PaintFile fgb.dat
+    b
+    if (LangAmount < 1)
++      LangAmount = 10
++   endif
+    do
+        Newline = 'Builder_Control_WIN,@SystemName@_@WindowName@_@ControlNameWork@_'
+        fs:/@Newline@/
+        if  (eof) goto !d110_move_next_paint
+        scan:/@line/:/,/	
+        scan:/@right/:/,/
+        scan:/@right/:/,/
+        scanr:/@left@/:/_/
+        if  (ControlGroupType = 'box3d') and (right != 'Box3D') goto !d110_move_next_paint
+        if  (ControlGroupType = 'box') and (right != 'Box') goto !d110_move_next_paint
+        if  (ControlGroupType = 'circle') and (right != 'Circle') goto !d110_move_next_paint
+        if  (ControlGroupType = 'ellipse') and (right != 'Ellipse') goto !d110_move_next_paint
+        if  (ControlGroupType = 'ellipse3d') and (right != 'Ellipse3D') goto !d110_move_next_paint
+        if  (ControlGroupType = 'diamond') and (right != 'Diamond') goto !d110_move_next_paint
+        if  (ControlGroupType = 'arrow') and (right != 'Arrow') goto !d110_move_next_paint
+        if  (ControlGroupType = 'line') and (right != 'Line') goto !d110_move_next_paint
+        if  (ControlGroupType = 'text') and (right != 'Text') goto !d110_move_next_paint
+        if  (ControlGroupType = 'texttilt') and (right != 'TextTilt') goto !d110_move_next_paint
+        if  (ControlGroupType = 'bitmap') and (right != 'Bitmap') goto !d110_move_next_paint
+        if  (ControlGroupType = 'bitmapfit') and (right != 'BitmapFit') goto !d110_move_next_paint
+
+        if  (LangDir = 'front')
++           clear
++           PaintPos = line
++           file FrontPaintFile
++           b
++           fs:/@PaintPos/
++           cut
++           f;*
++           paste
++           file PaintFile
++           goto !d110_move_next_paint
++       endif
+        if-1  (LangDir = 'back')
++           //message = line window message info ok
++           clear
++           cut;1
++           PaintPos = line
++           b
++           paste
++           fs:/@PaintPos/
++           goto !d110_move_next_paint
++       endif
+
+        scan:/@line/:/,/
+        HoldLeft = left
+        scan:/@right/:/,/
+        HoldLeft = '@HoldLeft@,@left@'
+        scan:/@right/:/,/
+        HoldControlType = left
+        HoldLeft = '@HoldLeft@,@left@'
+        scan:/@right/:/,/ ObjectX = left
+        scan:/@right/:/,/ ObjectY = left
+        scan:/@right/:/,/ ObjectCX = left
+        scan:/@right/:/,/ ObjectCY = left
+        HoldRight = right
+        if-1  (LangDir = 'right') 
++           if-2 (LangDirOf)
++              ObjectX = SearchX + SearchCX + 20
++              ObjectY = SearchY
++           else-2
++              ObjectX += LangAmount
++       endif
+        if-1  (LangDir = 'left') 
++           if-2 (LangDirOf)  
++              ObjectX = SearchX - ObjectCX - 20
++              ObjectY = SearchY
++           else-2
++              ObjectX -= LangAmount
++       endif
+        if  (LangDir = 'up') ObjectY -= LangAmount
+        if  (LangDir = 'down') ObjectY += LangAmount
+        if  (LangDir = 'above') or (LangDir = 'over')
++           ObjectY = SearchY - 40
++           ObjectX = SearchX
++       endif
+        if  (LangDir = 'below') or (LangDir = 'under')
++           ObjectY = SearchY + SearchCY + 20
++           ObjectX = SearchX
++       endif
+        if (HoldControlType = 'Bitmap')
++          Newline = '@HoldLeft@,@ObjectX@,@ObjectY@,@HoldRight@'
++       else
++          Newline = '@HoldLeft@,@ObjectX@,@ObjectY@,@ObjectCX@,@ObjectCY@,@HoldRight@'
++       endif
+        r:/@Newline@/
+        //message = Newline window message info ok
+
+!d110_move_next_paint
+        file PaintFile
+        f;1
+    until (eof)
+    if  (LangDir = 'front')
++       file FrontPaintFile error goto !d110_move_next_paint_pastfront
++       b
++       clear
++       copy;*
++       file PaintFile
++       b
++       d;*
++       paste
++   endif
+!d110_move_next_paint_pastfront
+    if  (ControlGroupType != null) and (ControlGroupType != 'text') goto !d110_done
+
+!d110_move_controls
+    if  (LangDir = 'front') or (LangDir = 'back') goto !d110_done
+    //**************************
+    //* Controls
+    //**************************
+    Newline = '@SystemName@_@WindowName@_@ControlNameWork@_'
+    //message = 'finding [@Newline@] ControlGroupType[@ControlGroupType@]' window message info ok
+    file Controls error open Controls null
+    //write Controls fgb.dat
+    if (LangAmount < 1)
++      LangAmount = 10
++   endif
+    b
+    do
+        //message = 'd110_move finding Newline[@Newline@] ControlGroupType[@ControlGroupType@]' window message info ok
+        fs:/@Newline@/
+        if (eof) goto !d110_move_next
+        scan:/@line/:/,/
+        scanr:/@left/:/_/
+
+        if  (ControlGroupType = 'text') and (right != 'STTXT') goto !d110_move_next
+        if  (ControlGroupType = 'button') and (right != 'PBOBJ') goto !d110_move_next
+        if  (ControlGroupType = 'entry') and (right != 'EFOBJ') and (right != 'MLOBJ') goto !d110_move_next
+        if  (ControlGroupType = 'radio') and (right != 'RBOBJ') goto !d110_move_next
+        if  (ControlGroupType = 'check') and (right != 'CBOBJ') goto !d110_move_next
+        if  (ControlGroupType = 'group') and (right != 'GBOBJ') goto !d110_move_next
+        if  (ControlGroupType = 'list') and (right != 'LBOBJ') and (right != "COOBJ") and (right != "COOBJ") goto !d110_move_next
+        scan:/@line/:/,/
+        ControlName = left
+        scan:/@right/:/,/
+        ControlType = left
+        split:/@ControlType@/;5
+        ControlType = left
+        ControlName = '@SystemName@_@WindowName@_@ControlNameWork@_@ControlType@'
+        //message = 'moving [@ControlName@] LangDir[@LangDir@]' window message info ok
+        //message = ControlName window message info ok
+        //message = ObjectX window message info ok
+        //message = ObjectY window message info ok
+        //message = ObjectCX window message info ok
+        //message = ObjectCY window message info ok
+        MacroCommand = |window windowpos @ControlName@ ObjectX ObjectY ObjectCX ObjectCY error|
+        //message = MacroCommand window message info ok
+        $MacroCommand
+        if-1  (LangDir = 'right') 
++           if-2 (LangDirOf)  
++              ObjectX = SearchX + SearchCX + 20
++              ObjectY = SearchY
++           else-2
++              ObjectX += LangAmount
++       endif
+        if-1  (LangDir = 'left') 
++           if-2 (LangDirOf)  
++              ObjectX = SearchX - ObjectCX - 20
++              ObjectY = SearchY
++           else-2
++              ObjectX -= LangAmount
++       endif
+        if  (LangDir = 'up') ObjectY -= LangAmount
+        if  (LangDir = 'down') ObjectY += LangAmount
+        if  (LangDir = 'above') or (LangDir = 'over')
++           ObjectY = SearchY - 40
++           ObjectX = SearchX
++       endif
+        if  (LangDir = 'below') or (LangDir = 'under')
++           ObjectY = SearchY + SearchCY + 20
++           ObjectX = SearchX
++       endif
+        MacroCommand = |window size @ControlName@ @ObjectX@ @ObjectY@ @ObjectCX@ @ObjectCY@|
+        $MacroCommand
+        //message = MacroCommand window message info ok
+!d110_move_next
+        f;1
+    until (eof)
+
+!d110_done
+    return
+
+//****************************************************
+//* Delete Controls
+//****************************************************
+!d200_delete
+    close LangControlFile error
+    open LangControlFile null
+
+!d200_delete_control_loop
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'text') or (Builder_Language_Commands_MLOBJ beginswith 'entry') or (Builder_Language_Commands_MLOBJ beginswith 'button') or (Builder_Language_Commands_MLOBJ beginswith 'radio') or (Builder_Language_Commands_MLOBJ beginswith 'list') or (Builder_Language_Commands_MLOBJ beginswith 'check') or (Builder_Language_Commands_MLOBJ beginswith 'group')
++       call !p100_parse
++       ControlGroupType = LangCommand
++       if-2 (ControlGroupType endswith 's')
++          splitr:/@ControlGroupType@/;1
++          ControlGroupType = left
++          goto !d200_delete_control_loop
++       else-2
++          goto !d200_delete_control_loop
++   endif
+    call !l200_check_command
+    if  (LangCmdFound) goto !d200_delete_control
+    call !p100_parse
+    if  (LangCommand = null) goto !d200_delete_control
+    Newline = LangCommand
+    //message = Newline window message info ok
+    file LangControlFile
+    i:/@Newline/
+    goto !d200_delete_control_loop
+
+//****************************************************
+//* Delete Controls in list
+//****************************************************
+!d200_delete_control
+    file LangControlFile
+    b
+    do
+       if  (!eof)
++          call !d210_delete_1_control
++          file LangControlFile
++          f;1
++      endif
+    until (eof)
+    close LangControlFile
+    file PaintFile
+    b
+    call BuilderConnect.bed!m100_update_connect window paint Builder_Control_WIN
+    return
+
+//****************************************************
+//* Walk the Controls file to find the controls to delete
+//****************************************************
+!d210_delete_1_control
+    ControlName = line
+    crush ControlName
+    mix ControlName
+    file Controls error open Controls null
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/_/
++           scan:/@right/:/_/
++           scan:/@right/:/_/
++           //message = 'checking ControlName[@ControlName@] line[@line@] left[@left@]' window message info ok
++           if-2 (ControlName = left)
++              call !d220_delete_it
++           else-2
++              f;1
++       endif
+    until (eof)
+
+    file PaintFile
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/,/
++           if-2  (left = 'Builder_Control_WIN')
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               //message = 'checking ControlName[@ControlName@] line[@line@] left[@left@]' window message info ok
++               if-3 (ControlName = left)
++                  d;1
++               else-3
++                  f;1
++           else-2
++               f;1
++       endif
+    until (eof)
+
+    //*****************************
+    //* Reload the Controls COOBJ
+    //*****************************
+    Builder_Control_ControlList_COOBJ = "ALL"
+    window delete Builder_Control_ControlList_COOBJ
+    file Controls error open Controls null
+    b
+    do
++       if (!eof)
++           scan:/@line/:/,/
++           Builder_Control_ControlList_COOBJ = left
++           window insert end default Builder_Control_ControlList_COOBJ
++           f;1
++       endif
+    until (eof)
+    file PaintFile
+    b
+    do
++       if (!eof)
++           scan:/@line/:/,/
++           if  (left = 'Builder_Control_WIN')
++               scan:/@right/:/,/
++               Builder_Control_ControlList_COOBJ = left
++               window insert end default Builder_Control_ControlList_COOBJ
++       endif
+        f;1
+    until (eof)
+    return
+
+//****************************************************
+//* Delete a Control
+//****************************************************
+!d220_delete_it
+    string DelControl error
+    scan:/@line/:/,/
+    DelControl = left
+    scan:/@line/:/,/
+    scanr:/@left/:/_/
+    if  (ControlGroupType = 'text') and (right != 'STTXT') f;1 return
+    if  (ControlGroupType = 'button') and (right != 'PBOBJ') f;1 return
+    if  (ControlGroupType = 'entry') and (right != 'EFOBJ') and (right != 'MLOBJ') f;1 return
+    if  (ControlGroupType = 'radio') and (right != 'RBOBJ') f;1 return
+    if  (ControlGroupType = 'check') and (right != 'CBOBJ') f;1 return
+    if  (ControlGroupType = 'group') and (right != 'GBOBJ') f;1 return
+    if  (ControlGroupType = 'list') and (right != 'LBOBJ') and (right != "COOBJ") and (right != "COOBJ") f;1 return
+    //message = 'deletecontrol DelControl[@DelControl@]' window message info ok
+    window deletecontrol @DelControl error
+    d;1
+    return
+
+//****************************************************
+//* Change Controls
+//****************************************************
+!d300_change
+    close LangControlFile error
+    open LangControlFile null
+
+!d300_change_control_loop
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'text') or (Builder_Language_Commands_MLOBJ beginswith 'entry') or (Builder_Language_Commands_MLOBJ beginswith 'button') or (Builder_Language_Commands_MLOBJ beginswith 'radio') or (Builder_Language_Commands_MLOBJ beginswith 'list') or (Builder_Language_Commands_MLOBJ beginswith 'check') or (Builder_Language_Commands_MLOBJ beginswith 'group')
++       call !p100_parse
++       ControlGroupType = LangCommand
++       if-2 (ControlGroupType endswith 's')
++          splitr:/@ControlGroupType@/;1
++          ControlGroupType = left
++          goto !d300_change_control_loop
++       else-2
++          goto !d300_change_control_loop
++   endif
+    if-1 (Builder_Language_Commands_MLOBJ beginswith 'to ') 
++      call !p100_parse
++      goto !d300_change_control
++   endif
+    call !p100_parse
+    if  (LangCommand = null) goto !d300_change_control
+    Newline = LangCommand
+    //message = Newline window message info ok
+    if  (LangCommand = 'all')
++       call !x100_all_controls
++       call !p100_parse
++       goto !d300_change_control
++   endif
+    file LangControlFile
+    i:/@Newline/
+    goto !d300_change_control_loop
+
+//****************************************************
+//* Change Controls in list
+//****************************************************
+!d300_change_control
+    call !p100_parse
+    file LangControlFile
+    b
+    do
+       if  (!eof)
++          call !d310_change_1_control
++          file LangControlFile
++          f;1
++      endif
+    until (eof)
+    close LangControlFile
+    return
+
+//****************************************************
+//* Walk the Controls file to find the controls to change
+//****************************************************
+!d310_change_1_control
+    ControlName = line
+    crush ControlName
+    mix ControlName
+    file Controls error open Controls null
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/_/
++           scan:/@right/:/_/
++           scan:/@right/:/_/
++           //message = 'checking ControlName[@ControlName@] line[@line@] left[@left@]' window message info ok
++           if-2 (ControlName = left)
++              call !d320_change_it
++       endif
+        f;1
+    until (eof)
+    return
+
+//****************************************************
+//* Change a Control
+//****************************************************
+!d320_change_it
+    string ChgControl error
+    scan:/@line/:/,/
+    ChgControl = left
+    scan:/@line/:/,/
+    scanr:/@left/:/_/
+    if  (ControlGroupType = 'text') and (right != 'STTXT') return
+    if  (ControlGroupType = 'button') and (right != 'PBOBJ') return
+    if  (ControlGroupType = 'entry') and (right != 'EFOBJ') and (right != 'MLOBJ') return
+    if  (ControlGroupType = 'radio') and (right != 'RBOBJ') return
+    if  (ControlGroupType = 'check') and (right != 'CBOBJ') return
+    if  (ControlGroupType = 'group') and (right != 'GBOBJ') return
+    if  (ControlGroupType = 'list') and (right != 'LBOBJ') and (right != "COOBJ") and (right != "COOBJ") return
+    //message = 'modify ChgControl[@ChgControl@]' window message info ok
+    MacroCommand = |@ChgControl@ = "@LangCommand@" window modify @ChgControl@|
+    $MacroCommand
+    scanr:/@line/:/,/
+    Newline = '@left@,@LangCommand@'
+    r:/@Newline@/
+    return
+
+//****************************************************
+//* Make current controls (size, edits, actions)
+//****************************************************
+!d400_make
+    close LangControlFile error
+    open LangControlFile null
+    MakeColor = 'n'
+    MakeType = null
+    SameType = null
+
+!d400_make_control_loop
+    if  (Builder_Language_Commands_MLOBJ beginswith 'all')
++       call !x100_all_controls
++       call !p100_parse
++       goto !d400_make_control_loop
++   endif
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'text') or (Builder_Language_Commands_MLOBJ beginswith 'entry') or (Builder_Language_Commands_MLOBJ beginswith 'button') or (Builder_Language_Commands_MLOBJ beginswith 'radio') or (Builder_Language_Commands_MLOBJ beginswith 'list') or (Builder_Language_Commands_MLOBJ beginswith 'check') or (Builder_Language_Commands_MLOBJ beginswith 'group') or (Builder_Language_Commands_MLOBJ beginswith 'circle') or (Builder_Language_Commands_MLOBJ beginswith 'ellipse') or (Builder_Language_Commands_MLOBJ beginswith 'diamond') or (Builder_Language_Commands_MLOBJ beginswith 'bitmap') or (Builder_Language_Commands_MLOBJ beginswith 'box')
++       call !p100_parse
++       ControlGroupType = LangCommand
++       if-2 (ControlGroupType endswith 's')
++          splitr:/@ControlGroupType@/;1
++          ControlGroupType = left
++          goto !d400_make_control_loop
++       else-2
++          goto !d400_make_control_loop
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'open') or (Builder_Language_Commands_MLOBJ beginswith 'close')
++      call !p100_parse
++      goto !d450_make_nav
++      return
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'same')
++      call !p100_parse
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'taller') or (Builder_Language_Commands_MLOBJ beginswith 'shorter')
++      call !p100_parse
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'thinner') or (Builder_Language_Commands_MLOBJ beginswith 'thicker') or (Builder_Language_Commands_MLOBJ beginswith 'wider')
++      call !p100_parse
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'bigger') or (Builder_Language_Commands_MLOBJ beginswith 'larger')
++      call !p100_parse
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'smaller')
++      call !p100_parse
++      goto !d400_make_control
++   endif
+
+    if (Builder_Language_Commands_MLOBJ beginswith 'red')
++      call !p100_parse
++      MakeColor = 'y'
++      Red = 255 Green = 0 Blue = 0
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'green')
++      call !p100_parse
++      MakeColor = 'y'
++      Red = 0 Green = 255 Blue = 0
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'blue')
++      call !p100_parse
++      MakeColor = 'y'
++      Red = 0 Green = 0 Blue = 255
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'black')
++      call !p100_parse
++      MakeColor = 'y'
++      Red = 0 Green = 0 Blue = 0
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'white')
++      call !p100_parse
++      MakeColor = 'y'
++      Red = 255 Green = 255 Blue = 255
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'gray') or (Builder_Language_Commands_MLOBJ beginswith 'grey')
++      call !p100_parse
++      MakeColor = 'y'
++      Red = 125 Green = 125 Blue = 125
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'orange')
++      call !p100_parse
++      MakeColor = 'y'
++      Red = 255 Green = 120 Blue = 0
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'brown')
++      call !p100_parse
++      MakeColor = 'y'
++      Red = 210 Green = 90 Blue = 0
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'yellow')
++      call !p100_parse
++      MakeColor = 'y'
++      Red = 255 Green = 255 Blue = 0
++      goto !d400_make_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'pink') or (Builder_Language_Commands_MLOBJ beginswith 'violet') or (Builder_Language_Commands_MLOBJ beginswith 'purple')
++      call !p100_parse
++      MakeColor = 'y'
++      Red = 255 Green = 0 Blue = 255
++      goto !d400_make_control
++   endif
+
+    call !p100_parse
+    if  (LangCommand = null) goto !d400_make_control
+    Newline = LangCommand
+    //message = Newline window message info ok
+    if  (LangCommand = 'all')
++       call !x100_all_controls
++       call !p100_parse
++       goto !d400_make_control
++   endif
+    file LangControlFile
+    mix Newline
+    i:/@Newline/
+    goto !d400_make_control_loop
+
+//****************************************************
+//* Make (Size) Controls in the list
+//****************************************************
+!d400_make_control
+    MakeSize = 20
+
+    MakeType = LangCommand
+
+    if  (Builder_Language_Commands_MLOBJ beginswith 'by')
++       call !p100_parse
++       call !p100_parse
++       MakeSize = LangCommand
++   endif
+
+    if  (Builder_Language_Commands_MLOBJ beginswith 'size') or (Builder_Language_Commands_MLOBJ beginswith 'height') or (Builder_Language_Commands_MLOBJ beginswith 'length') or (Builder_Language_Commands_MLOBJ beginswith 'width')
++       call !p100_parse
++       SameType = LangCommand
++       call !p100_parse
++       call !400_same_object
++   endif
+
+    if  (Builder_Language_Commands_MLOBJ beginswith 'color')
++       MakeColor = 'y'
++       call !p100_parse
++       SameType = LangCommand
++       call !p100_parse
++       call !400_same_object
++   endif
+
+    //write LangControlFile fgb.dat
+    file LangControlFile
+    b
+    do
+       if  (!eof)
++          call !d410_make_1_control
++          file LangControlFile
++          f;1
++      endif
+    until (eof)
+    close LangControlFile
+    b
+    call BuilderConnect.bed!m100_update_connect window paint Builder_Control_WIN
+    Builder_Language_Commands_MLOBJ = '@Builder_Language_Commands_MLOBJ@ size window'
+    return
+
+//*************************************
+//* Find the object that will have its
+//* size or color copied
+//*************************************
+!400_same_object
+    SameObjType = null
+    SameObj = LangCommand
+    if  (Builder_Language_Commands_MLOBJ beginswith 'entry')
++       call !p100_parse
++       SameObjType = 'EFOBJ'
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith 'text')
++       call !p100_parse
++       SameObjType = 'STTXT'
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith 'button')
++       call !p100_parse
++       SameObjType = 'PBOBJ'
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith 'checkbox')
++       call !p100_parse
++       SameObjType = 'CBOBJ'
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith 'radio')
++       call !p100_parse
++       SameObjType = 'RBOBJ'
++   endif
+  
+    file Controls error open Controls null
+    mix SameObj
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/_/
++           scan:/@right/:/_/
++           scan:/@right/:/_/
++           if-2 (left = SameObj)
++               if-3  (SameObjType != null)
++                   split:/@right/;5
++                   if-4  (left = SameObjType)
++                       scan:/@line/:/,/
++                       subs # 
++                       MacroCommand = 'window windowpos #left# SizeX SizeY SizeCX SizeCY' 
++                       subs @ 
++                       $MacroCommand
++                       Red = 240
++                       Green = 240
++                       Blue = 240
++                       f;*
++               else-3
++                   scan:/@line/:/,/
++                   subs # 
++                   MacroCommand = 'window windowpos #left# SizeX SizeY SizeCX SizeCY' 
++                   subs @ 
++                   $MacroCommand
++                   Red = 240
++                   Green = 240
++                   Blue = 240
++                   f;*
++       endif
+        file Controls error open Controls null
+        f;1
+    until (eof)
+
+    file PaintFile error open PaintFile null
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/,/
++           if  (left = 'Builder_Control_WIN')
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               if-2 (left = SameObj)
++                  scan:/@line/:/,/
++                  scan:/@right/:/,/
++                  scan:/@right/:/,/
++                  scan:/@right/:/,/ SizeX = left
++                  scan:/@right/:/,/ SizeY = left
++                  scan:/@right/:/,/ SizeCX = left
++                  scan:/@right/:/,/ SizeCY = left
++                  scan:/@right/:/,/ Red = left
++                  scan:/@right/:/,/ Green = left
++                  scan:/@right/:/,/ Blue = left
++                  f;*
++       endif
+        file PaintFile
+        f;1
+    until (eof)
+    return
+
+//****************************************************
+//* Walk the Controls file to find the controls to change
+//****************************************************
+!d410_make_1_control
+    ControlName = line
+    crush ControlName
+    mix ControlName
+
+    if  (MakeColor) goto !d410_make_1_control_paintfile
+
+    ObjectType = 'Controls'
+    file Controls error open Controls null
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/_/
++           scan:/@right/:/_/
++           scan:/@right/:/_/
++           //message = 'checking ControlName[@ControlName@] line[@line@] left[@left@]' window message info ok
++           if-2 (ControlName = left)
++              call !d420_make_it
++       endif
+        file Controls error open Controls null
+        f;1
+    until (eof)
+!d410_make_1_control_paintfile
+    ObjectType = 'PaintFile'
+    file PaintFile error open PaintFile null
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/,/
++           if  (left = 'Builder_Control_WIN')
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               if-2 (ControlName = left)
++                  scan:/@line/:/,/
++                  scan:/@right/:/,/
++                  scanr:/@left/:/_/
++                  //message = 'Found ControlName[@ControlName@] CongrolGroupType[@ControlGroupType@] right[@right@]' window message info ok
++                  call !d420_make_it_printfile
++       endif
+        file PaintFile
+        f;1
+    until (eof)
+    return
+
+//****************************************************
+//* Change a Control
+//****************************************************
+!d420_make_it
+    string ChgControl error
+    scan:/@line/:/,/
+    ChgControl = left
+    scan:/@line/:/,/
+    scanr:/@left/:/_/
+
+!d420_make_it_printfile
+    //message = 'ControlGroupType[@ControlGroupType@] right[@right@]' window message info ok
+
+    if  (ControlGroupType = 'text')
++       if  (right != 'STTXT') and (right != 'Text') and (right != 'TextTilt') return
++   endif
+    if  (ControlGroupType = 'button') and (right != 'PBOBJ') return
+    if  (ControlGroupType = 'entry') and (right != 'EFOBJ') and (right != 'MLOBJ') return
+    if  (ControlGroupType = 'radio') and (right != 'RBOBJ') return
+    if  (ControlGroupType = 'check') and (right != 'CBOBJ') return
+    if  (ControlGroupType = 'group') and (right != 'GBOBJ') return
+    if  (ControlGroupType = 'list') and (right != 'LBOBJ') and (right != "COOBJ") and (right != "COOBJ") return
+    if  (ControlGroupType = 'box') and (right != 'Box') return
+    if  (ControlGroupType = 'box3d') and (right != 'Box3D') return
+    if  (ControlGroupType = 'ellipse') and (right != 'Ellipse') return
+    if  (ControlGroupType = 'ellipse3d') and (right != 'Ellipse3D') return
+    if  (ControlGroupType = 'circle') and (right != 'Circle') return
+    if  (ControlGroupType = 'diamond') and (right != 'Diamond') return
+    if  (ControlGroupType = 'bitmapfit') and (right != 'BitmapFit') return
+    if  (ControlGroupType = 'texttilt') and (right != 'TextTilt') return
+    //message = 'modify ChgControl[@ChgControl@]' window message info ok
+
+    if-1  (MakeColor)
++       if-2  (right = 'Bitmap') or (right = 'BitmapFit')
++           return
++       else-2
++           if-3  (right = 'Text') or (right = 'TextTilt')
++               scanr:/@line/:/,/
++               HoldRight = right
++               scanr:/@left/:/,/
++               HoldRight = '@right@,@HoldRight@'
++               scanr:/@left/:/,/
++               scanr:/@left/:/,/
++               scanr:/@left/:/,/
++               Newline = '@left@,@Red@,@Green@,@Blue@,@HoldRight@'
++               //message = 'COLOR line[@line@] Newline[@Newline@]' window message info ok
++               r:/@Newline/
++               return
++           else-3
++               scanr:/@line/:/,/
++               scanr:/@left/:/,/
++               scanr:/@left/:/,/
++               Newline = '@left@,@Red@,@Green@,@Blue@'
++               //message = 'COLOR line[@line@] Newline[@Newline@]' window message info ok
++               r:/@Newline/
++               return
++   endif
+
+
+    if  (ObjectType = 'PaintFile')
++       scan:/@line/:/,/
++       HoldLeft = left
++       scan:/@right/:/,/
++       HoldLeft = '@HoldLeft@,@left@'
++       scan:/@right/:/,/
++       HoldControlType = left
++       HoldLeft = '@HoldLeft@,@left@'
++       scan:/@right/:/,/ ObjectX = left
++       scan:/@right/:/,/ ObjectY = left
++       scan:/@right/:/,/ ObjectCX = left
++       scan:/@right/:/,/ ObjectCY = left
++       HoldRight = right
++   else
++       MacroCommand = |window windowpos @ChgControl@ ObjectX ObjectY ObjectCX ObjectCY| $MacroCommand
++   endif
+
+    if  (MakeType = 'bigger') or (MakeType = 'larger')
++       ObjectY -= MakeSize
++       ObjectCX += MakeSize
++       ObjectCY += MakeSize
++   endif
+    if  (MakeType = 'smaller') 
++       ObjectY += MakeSize
++       ObjectCX -= MakeSize
++       ObjectCY -= MakeSize
++   endif
+    if  (MakeType = 'taller') 
++       ObjectY -= MakeSize
++       ObjectCY += MakeSize
++   endif
+    if  (MakeType = 'shorter') 
++       ObjectY += MakeSize
++       ObjectCY -= MakeSize
++   endif
+    if  (MakeType = 'thinner')
++       ObjectCX -= MakeSize 
++   endif
+    if  (MakeType = 'thicker') or (MakeType = 'wider')
++       ObjectCX += MakeSize
++   endif
+    if  (MakeType = 'same') and (SameType = 'size')
++       ObjectCX = SizeCX
++       ObjectCY = SizeCY
++   endif
+    if  (MakeType = 'same') and (SameType = 'height')
++       ObjectCY = SizeCY
++   endif
+    if  (MakeType = 'same') and (SameType = 'width')
++       ObjectCX = SizeCX
++   endif
+    if  (MakeType = 'same') and (SameType = 'length')
++       ObjectCX = SizeCX
++   endif
+    if  (ObjectX < 10) ObjectX = 10
+    if  (ObjectY < 10) ObjectY = 10
+ 
+    if  (ObjectType = 'PaintFile')
++       Newline = '@HoldLeft@,@ObjectX@,@ObjectY@,@ObjectCX@,@ObjectCY@,@HoldRight@'
++       r:/@Newline/
++   else
++       MacroCommand = |window size @ChgControl@ @ObjectX@ @ObjectY@ @ObjectCX@ @ObjectCY@| $MacroCommand
++   endif
+    return
+
+!d400_make_find_paintfile
+    scan:/@line/:/,/
+    HoldLeft = left
+    scan:/@right/:/,/
+    HoldLeft = '@HoldLeft@,@left@'
+    scan:/@right/:/,/
+    HoldControlType = left
+    HoldLeft = '@HoldLeft@,@left@'
+    scan:/@right/:/,/ ObjectX = left
+    scan:/@right/:/,/ ObjectY = left
+    scan:/@right/:/,/ ObjectCX = left
+    scan:/@right/:/,/ ObjectCY = left
+    HoldRight = right
+    return
+
+//****************************************************
+//* Set Button/Window Navigation
+//****************************************************
+!d450_make_nav
+    string NavCommand   error
+    string TargetWindow error
+
+    NavCommand = LangCommand
+    call !p100_parse
+    TargetWindow = LangCommand
+    crush TargetWindow
+    mix TargetWindow
+    file LangControlFile
+    b
+    do
+        if (!eof)
++          ControlName = line
++          call !d460_make_nav_control
++          file LangControlFile
++          f;1
++       endif
+    until (eof)  
+    string NavFilename error
+    NavFilename = '@SystemName@.nav'
+    write WindowNav @NavFilename error  
+    return
+
+!d460_make_nav_control
+    crush ControlName
+    mix ControlName
+    file Controls error open Controls null
+    b
+    do
+        if  (!eof)
++           scan:/@line/:/_/
++           scan:/@right/:/_/
++           scan:/@right/:/_/
++           if  (ControlName = left)
++               scan:/@line/:/,/
++               call !d470_make_nav_set
++               file Controls error open Controls null
++               f;*
++       endif
+        file Controls error open Controls null
+        f;1
+    until (eof)
+    file PaintFile
+    b
+    do
+        if  (!eof)
++           scan:/@line/:/,/
++           if  (left = 'Builder_Control_WIN')
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               if  (ControlName = left)
++                   scan:/@line/:/,/
++                   scan:/@right/:/,/
++                   TestControl = left
++                   call !d470_make_nav_set_2
++                   file PaintFile
++                   f;*
++       endif
+        file PaintFile
+        f;1
+    until (eof)
+    return
+
+!d470_make_nav_set
+    TestControl = left
+    MacroCommand = |window hwnd @TestControl@ status error return| $MacroCommand
+!d470_make_nav_set_2
+    file WindowNav error return
+    Newline = '@TestControl@,@TargetWindow@,@NavCommand@'
+    b
+    fs:/@TestControl/
+    if (eof)
++      i:/@Newline@/
++   else
++      r:/@Newline/
++   endif
+    return
+
+//****************************************************
+//* Size the Window
+//****************************************************
+!d500_size
+    //message = 'd500 size' window message info ok
+    int SizeMinX    error
+    int SizeMinY    error
+    int SizeMaxCX   error
+    int SizeMaxCY   error
+    
+    SizeMinX = 9999
+    SizeMinY = 9999
+    SizeMaxCX = 1
+    SizeMaxCY = 1
+
+    if (Builder_Language_Commands_MLOBJ beginswith "window")
++      call !p100_parse
++   else
++      return
++   endif
+    file Controls error goto !d500_paintfile
+    //write Controls fgb.dat
+    b
+    do
+        if-1  (!eof)
++           //message = line window message info ok
++           scan:/@line/:/,/
++           ControlName = left
++           scanr:/@ControlName@/:/_/
++           MacroCommand = |window windowpos @ControlName@ ObjectX ObjectY ObjectCX ObjectCY error| $MacroCommand
++           call !d510_check_minmax
++           f;1
++       endif
+    until (eof)
+!d500_paintfile
+    file PaintFile error goto !d500_finish
+    //write PaintFile fgb.dat
+    b
+    do
+        if  (!eof)
++           scan:/@line/:/,/
++           if  (left = 'Builder_Control_WIN')
++               scan:/@line/:/,Connector,/
++               if (!found)
++                  scan:/@line/:/,GroupRectangle,/
++                  if (!found)
++                      scan:/@right/:/,/
++                      scan:/@right/:/,/ ControlName = left
++                      scan:/@right/:/,/
++                      ObjectX = left
++                      scan:/@right/:/,/
++                      ObjectY = left
++                      scan:/@right/:/,/
++                      ObjectCX = left
++                      scan:/@right/:/,/
++                      ObjectCY = left
++                      call !d510_check_minmax
++       endif
+        f;1
+    until (eof)
+
+!d500_finish
+    SizeMinX = SizeMinX - 35 if (SizeMinX < 1) SizeMinX = 1
+    //SizeMinX = SizeMinX + MinX
+    SizeMinY = SizeMinY - 25 if (SizeMinY < 1) SizeMinY = 1
+    //SizeMinY = SizeMinY + MinY
+
+    SizeMaxCX = SizeMaxCX - SizeMinX + 60
+    SizeMaxCY = SizeMaxCY - SizeMinY + 70
+    MacroCommand = 'window size Builder_Control_WindowSize_GBOBJ @SizeMinX@ @SizeMinY@ @SizeMaxCX@ @SizeMaxCY@' $MacroCommand
+    MinX = SizeMinX
+    MinY = SizeMinY
+    MaxX = SizeMinX + SizeMaxCX
+    MaxY = SizeMinY + SizeMaxCY
+    return
+
+//****************************************************
+//* Find the Min/Max 
+//****************************************************
+!d510_check_minmax
+    int HoldX  error
+    int HoldY  error
+    int HoldCX error
+    int HoldCY error
+    scanr:/@ControlName@/:/_/
+    if  (right = 'Ellipse') or (right = 'Ellipse3D') or (right = 'Circle')
++       HoldX = ObjectX
++       HoldY = ObjectY
++       HoldCX = ObjectCX
++       HoldCY = ObjectCY
++       TempWork = ObjectCX / 2
++       ObjectX -= TempWork
++       TempWork = ObjectCY / 2
++       ObjectY -= TempWork
++   endif
+
+    if  (ObjectX < SizeMinX) and (ObjectX > 0) SizeMinX = ObjectX
+    if  (ObjectY < SizeMinY) and (ObjectY > 0) SizeMinY = ObjectY
+
+    ObjectCX = ObjectX + ObjectCX
+    ObjectCY = ObjectY + ObjectCY
+    if  (ObjectCX > SizeMaxCX) SizeMaxCX = ObjectCX
+    if  (ObjectCY > SizeMaxCY) SizeMaxCY = ObjectCY
+
+    scanr:/@ControlName@/:/_/
+    if  (right = 'Ellipse') or (right = 'Ellipse3D') or (right = 'Circle')
++       ObjectX = HoldX
++       ObjectY = HoldY
++       ObjectCX = HoldCX
++       ObjectCY = HoldCY
++   endif
+
+    return
+
+//****************************************************
+//* Align Controls
+//****************************************************
+!d600_align
+    close LangControlFile error
+    open LangControlFile null
+
+!d600_align_control_loop
+    if  (Builder_Language_Commands_MLOBJ beginswith 'all')
++       call !x100_all_controls
++       call !p100_parse
++       goto !d600_align_control_loop
++   endif
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'text') or (Builder_Language_Commands_MLOBJ beginswith 'entry') or (Builder_Language_Commands_MLOBJ beginswith 'button') or (Builder_Language_Commands_MLOBJ beginswith 'radio') or (Builder_Language_Commands_MLOBJ beginswith 'list') or (Builder_Language_Commands_MLOBJ beginswith 'check') or (Builder_Language_Commands_MLOBJ beginswith 'group') or (Builder_Language_Commands_MLOBJ beginswith 'box') or (Builder_Language_Commands_MLOBJ beginswith 'ellipse') or (Builder_Language_Commands_MLOBJ beginswith 'circle') or (Builder_Language_Commands_MLOBJ beginswith 'bitmap') or (Builder_Language_Commands_MLOBJ beginswith 'diamond')
++       call !p100_parse
++       ControlGroupType = LangCommand
++       if-2 (ControlGroupType endswith 's')
++          splitr:/@ControlGroupType@/;1
++          ControlGroupType = left
++          goto !d600_align_control_loop
++       else-2
++          goto !d600_align_control_loop
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'left') or (Builder_Language_Commands_MLOBJ beginswith 'right')
++      call !p100_parse
++      goto !d600_align_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'top') or (Builder_Language_Commands_MLOBJ beginswith 'bottom')
++      call !p100_parse
++      goto !d600_align_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'horiz') or (Builder_Language_Commands_MLOBJ beginswith 'horizontally')
++      call !p100_parse
++      goto !d600_align_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'vert') or (Builder_Language_Commands_MLOBJ beginswith 'vertically')
++      call !p100_parse
++      goto !d600_align_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'mid') or (Builder_Language_Commands_MLOBJ beginswith 'middle')
++      call !p100_parse
++      goto !d600_align_control
++   endif
+    call !p100_parse
+    if  (LangCommand = null) goto !d600_align_control
+    Newline = LangCommand
+    //message = Newline window message info ok
+    if  (LangCommand = 'all')
++       call !x100_all_controls
++       call !p100_parse
++       goto !d600_align_control
++   endif
+    file LangControlFile
+    i:/@Newline/
+    goto !d600_align_control_loop
+
+//****************************************************
+//* Align Controls in the list
+//****************************************************
+!d600_align_control
+    AlignType = LangCommand
+    if (AlignType = 'right') LanguageReturn = 'call !a1100_Builder_Align_Right_PBOBJ'
+    if (AlignType = 'left') LanguageReturn = 'call !a1100_Builder_Align_Left_PBOBJ'
+    if (AlignType = 'top') LanguageReturn = 'call !a1100_Builder_Align_Top_PBOBJ'
+    if (AlignType = 'bottom') LanguageReturn = 'call !a1100_Builder_Align_Bottom_PBOBJ'
+    if (AlignType = 'horiz') LanguageReturn = 'call !a1100_Builder_Align_Midhoriz_PBOBJ'
+    if (AlignType = 'horizontally') LanguageReturn = 'call !a1100_Builder_Align_Midhoriz_PBOBJ'
+    if (AlignType = 'vert') LanguageReturn = 'call !a1100_Builder_Align_Midvert_PBOBJ'
+    if (AlignType = 'vertically') LanguageReturn = 'call !a1100_Builder_Align_Midvert_PBOBJ'
+    if (AlignType = 'mid') LanguageReturn = 'call !a1100_Builder_Align_Midvert_PBOBJ'
+    if (AlignType = 'middle') LanguageReturn = 'call !a1100_Builder_Align_Midvert_PBOBJ'
+
+    close GroupControls error
+    open GroupControls null
+
+    file LangControlFile
+    b
+    do
+       if  (!eof)
++          call !d610_align_1_control
++          file LangControlFile
++          f;1
++      endif
+    until (eof)
+    close LangControlFile
+    return
+
+//****************************************************
+//* Walk the Controls file to find the controls to change
+//****************************************************
+!d610_align_1_control
+    ControlName = line
+    crush ControlName
+    mix ControlName
+
+    //*************************
+    //* Controls
+    //*************************
+    ObjectType = 'Controls'
+    file Controls error open Controls null
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/_/
++           scan:/@right/:/_/
++           scan:/@right/:/_/
++           if-2 (ControlName = left)
++              call !d620_align_it
++       endif
+        file Controls error open Controls null
+        f;1
+    until (eof)
+    //*************************
+    //* PaintFile
+    //*************************
+    ObjectType = 'PaintFile'
+    file PaintFile
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/,/
++           if  (left = 'Builder_Control_WIN')
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               if-2 (ControlName = left)
++                  scan:/@line/:/,/
++                  scan:/@right/:/,/
++                  scanr:/@left/:/_/
++                  call !d620_align_it_paint
++       endif
+        file PaintFile
+        f;1
+    until (eof)
+    //write GroupControls fgb.dat
+    return
+
+//****************************************************
+//* setup align for 1 control
+//****************************************************
+!d620_align_it
+    string ChgControl error
+    scan:/@line/:/,/
+    ChgControl = left
+    scan:/@line/:/,/
+    scanr:/@left/:/_/
+!d620_align_it_paint
+    if  (ControlGroupType = 'text')
++       if  (right != 'STTXT') and (right != 'Text') and (right != 'TextTilt') return
++   endif
+    if  (ControlGroupType = 'button') and (right != 'PBOBJ') return
+    if  (ControlGroupType = 'entry') and (right != 'EFOBJ') and (right != 'MLOBJ') return
+    if  (ControlGroupType = 'radio') and (right != 'RBOBJ') return
+    if  (ControlGroupType = 'check') and (right != 'CBOBJ') return
+    if  (ControlGroupType = 'group') and (right != 'GBOBJ') return
+    if  (ControlGroupType = 'list') and (right != 'LBOBJ') and (right != "COOBJ") and (right != "COOBJ") return
+    if  (ControlGroupType = 'box') and (right != 'Box') return
+    if  (ControlGroupType = 'box3d') and (right != 'Box3D') return
+    if  (ControlGroupType = 'ellipse') and (right != 'Ellipse') return
+    if  (ControlGroupType = 'ellipse3d') and (right != 'Ellipse3D') return
+    if  (ControlGroupType = 'circle') and (right != 'Circle') return
+    if  (ControlGroupType = 'diamond') and (right != 'Diamond') return
+    if  (ControlGroupType = 'bitmapfit') and (right != 'BitmapFit') return
+    if  (ControlGroupType = 'texttilt') and (right != 'TextTilt') return
+
+    if  (ObjectType = 'PaintFile')
++       scan:/@line/:/,/
++       scan:/@right/:/,/
++       Newline = '@left@'
++       scanr:/@Newline/:/_/
++       Newline = '@Newline@,@right@,'
++    else
++       Newline = line
++   endif
+    file GroupControls
+    i:/@Newline/
+    write GroupControls fgb.dat
+    file Controls error open Controls null
+
+    return
+
+//****************************************************
+//* distribute Controls
+//****************************************************
+!d700_distribute
+    close LangControlFile error
+    open LangControlFile null
+
+!d700_distribute_control_loop
+    if  (Builder_Language_Commands_MLOBJ beginswith 'all')
++       call !x100_all_controls
++       call !p100_parse
++       goto !d700_distribute_control_loop
++   endif
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'text') or (Builder_Language_Commands_MLOBJ beginswith 'entry') or (Builder_Language_Commands_MLOBJ beginswith 'button') or (Builder_Language_Commands_MLOBJ beginswith 'radio') or (Builder_Language_Commands_MLOBJ beginswith 'list') or (Builder_Language_Commands_MLOBJ beginswith 'check') or (Builder_Language_Commands_MLOBJ beginswith 'group') or (Builder_Language_Commands_MLOBJ beginswith 'box') or (Builder_Language_Commands_MLOBJ beginswith 'ellipse') or (Builder_Language_Commands_MLOBJ beginswith 'circle') or (Builder_Language_Commands_MLOBJ beginswith 'bitmap') or (Builder_Language_Commands_MLOBJ beginswith 'diamond')
++       call !p100_parse
++       ControlGroupType = LangCommand
++       if-2 (ControlGroupType endswith 's')
++          splitr:/@ControlGroupType@/;1
++          ControlGroupType = left
++          goto !d700_distribute_control_loop
++       else-2
++          goto !d700_distribute_control_loop
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'vert') or (Builder_Language_Commands_MLOBJ beginswith 'vertically')
++      call !p100_parse
++      goto !d700_distribute_control
++   endif
+    if (Builder_Language_Commands_MLOBJ beginswith 'horiz') or (Builder_Language_Commands_MLOBJ beginswith 'horizontally')
++      call !p100_parse
++      goto !d700_distribute_control
++   endif
+    call !p100_parse
+    if  (LangCommand = null) goto !d700_distribute_control
+    Newline = LangCommand
+    //message = Newline window message info ok
+    if  (LangCommand = 'all')
++       call !x100_all_controls
++       call !p100_parse
++       goto !d700_distribute_control
++   endif
+    file LangControlFile
+    i:/@Newline/
+    goto !d700_distribute_control_loop
+
+//****************************************************
+//* distribute Controls in the list
+//****************************************************
+!d700_distribute_control
+    DistributeType = LangCommand
+
+    if (DistributeType = 'vert') LanguageReturn = 'call !a1100_Builder_Align_Distvert_PBOBJ'
+    if (DistributeType = 'vertically') LanguageReturn = 'call !a1100_Builder_Align_Distvert_PBOBJ'
+    if (DistributeType = 'horiz') LanguageReturn = 'call !a1100_Builder_Align_Disthoriz_PBOBJ'
+    if (DistributeType = 'horizontally') LanguageReturn = 'call !a1100_Builder_Align_Disthoriz_PBOBJ'
+
+
+    close GroupControls error
+    open GroupControls null
+
+    file LangControlFile
+    b
+    do
+       if  (!eof)
++          call !d710_distribute_1_control
++          file LangControlFile
++          f;1
++      endif
+    until (eof)
+    close LangControlFile
+    return
+
+//****************************************************
+//* Walk the Controls file to find the controls to change
+//****************************************************
+!d710_distribute_1_control
+    ControlName = line
+    crush ControlName
+    mix ControlName
+
+    //*************************
+    //* Controls
+    //*************************
+    file Controls error open Controls null
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/_/
++           scan:/@right/:/_/
++           scan:/@right/:/_/
++           if-2 (ControlName = left)
++              call !d720_distribute_it
++       endif
+        file Controls error open Controls null
+        f;1
+    until (eof)
+    //*************************
+    //* PaintFile
+    //*************************
+    file PaintFile
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/,/
++           if  (left = 'Builder_Control_WIN')
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               if-2 (ControlName = left)
++                  scan:/@line/:/,/
++                  scan:/@right/:/,/
++                  scanr:/@left/:/_/
++                  call !d720_distribute_it_paint
++       endif
+        file PaintFile
+        f;1
+    until (eof)
+    //write GroupControls fgb.dat
+    return
+
+//****************************************************
+//* setup distribute for 1 control
+//****************************************************
+!d720_distribute_it
+    string ChgControl error
+    scan:/@line/:/,/
+    ChgControl = left
+    scan:/@line/:/,/
+    scanr:/@left/:/_/
+!d720_distribute_it_paint
+    if  (ControlGroupType = 'text')
++       if  (right != 'STTXT') and (right != 'Text') and (right != 'TextTilt') return
++   endif
+    if  (ControlGroupType = 'button') and (right != 'PBOBJ') return
+    if  (ControlGroupType = 'entry') and (right != 'EFOBJ') and (right != 'MLOBJ') return
+    if  (ControlGroupType = 'radio') and (right != 'RBOBJ') return
+    if  (ControlGroupType = 'check') and (right != 'CBOBJ') return
+    if  (ControlGroupType = 'group') and (right != 'GBOBJ') return
+    if  (ControlGroupType = 'list') and (right != 'LBOBJ') and (right != "COOBJ") and (right != "COOBJ") return
+    if  (ControlGroupType = 'box') and (right != 'Box') return
+    if  (ControlGroupType = 'box3d') and (right != 'Box3D') return
+    if  (ControlGroupType = 'ellipse') and (right != 'Ellipse') return
+    if  (ControlGroupType = 'ellipse3d') and (right != 'Ellipse3D') return
+    if  (ControlGroupType = 'circle') and (right != 'Circle') return
+    if  (ControlGroupType = 'diamond') and (right != 'Diamond') return
+    if  (ControlGroupType = 'bitmapfit') and (right != 'BitmapFit') return
+    if  (ControlGroupType = 'texttilt') and (right != 'TextTilt') return
+
+    Newline = line
+    file GroupControls
+    i:/@Newline/
+    file Controls error open Controls null
+
+    return
+
+//****************************************************
+//* Duplicate controls
+//****************************************************
+!e100_duplicate
+    //message = 'e100_duplicate [@Builder_Language_Commands_MLOBJ@]' window message info ok
+    close LangControlFile error
+    open LangControlFile null
+
+!e100_duplicate_control_loop
+    if (Builder_Language_Commands_MLOBJ beginswith "text ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "entry ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "button ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "buttons ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "radio ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "list ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "group ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "box3d ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "ellipse ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "ellipse3d ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "boxcolor ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "circle ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "diamond ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "line ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "arrow ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "textfont ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "texttilt ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "bitmap ") goto !e100_duplicate_control
+    if (Builder_Language_Commands_MLOBJ beginswith "bitmapfit ") goto !e100_duplicate_control
+
+    call !p100_parse
+    if  (LangCommand = null) goto !e100_duplicate_control
+    Newline = LangCommand
+    //message = Newline window message info ok
+    if-1  (LangCommand beginswith 'text') or (LangCommand beginswith 'entry') or (LangCommand beginswith 'button') or (LangCommand beginswith 'radio') or (LangCommand beginswith 'list') or (LangCommand beginswith 'check') or (LangCommand beginswith 'group') or (LangCommand beginswith 'box') or (LangCommand beginswith 'ellipse') or (LangCommand beginswith 'diamond') or (LangCommand beginswith 'line') or (LangCommand beginswith 'arrow') or (LangCommand beginswith 'bitmap')
++       ControlGroupType = LangCommand
++       if-2 (ControlGroupType endswith 's')
++          splitr:/@ControlGroupType@/;1
++          ControlGroupType = left
++          goto !e100_duplicate_control_loop
++       else-2
++          goto !e100_duplicate_control_loop
++   endif
+    if  (LangCommand = 'all')
++       call !x100_all_controls
++       goto !e100_duplicate_control
++   endif
+    file LangControlFile
+    i:/@Newline/
+    goto !e100_duplicate_control_loop
+
+//****************************************************
+//* duplicate Controls
+//****************************************************
+!e100_duplicate_control
+    //write LangControlFile fgb.dat
+    //message = 'e100' window message info ok
+
+    call !p100_parse
+    //message = 'e100_duplicate_control LangCommand[@LangCommand@]' window message info ok
+    if-1  (LangCommand beginswith 'text') or (LangCommand beginswith 'entry') or (LangCommand beginswith 'button') or (LangCommand beginswith 'radio') or (LangCommand beginswith 'list') or (LangCommand beginswith 'check') or (LangCommand beginswith 'group') or (LangCommand beginswith 'box') or (LangCommand beginswith 'circle') or (LangCommand beginswith 'diamond') or (LangCommand beginswith 'ellipse') or (LangCommand beginswith 'line') or (LangCommand beginswith 'arrow') or (LangCommand beginswith 'bitmap')
++       ControlGroupType = LangCommand
++       if-2 (ControlGroupType endswith 's')
++          splitr:/@ControlGroupType@/;1
++          ControlGroupType = left
++          call !p100_parse
++       else-2
++          call !p100_parse
++   endif
+    LangDir = LangCommand
+    call !p100_parse
+
+    //message = 'e100_duplicate_control LangDir[@LangDir@]' window message info ok
+
+    //write LangControlFile fgb.dat message = 'written to fgb.dat' window message info ok
+    file LangControlFile
+    b
+    do
+    if  (!eof)
++       call !e110_duplicate
++       file LangControlFile
++       f;1
++   endif
+    until (eof)
+    close LangControlFile
+    return
+
+//****************************************************
+//* duplicate 1 Control
+//****************************************************
+!e110_duplicate
+    ControlNameWork = line
+    crush ControlNameWork
+    mix ControlNameWork
+
+    if  (ControlGroupType = 'button') or (ControlGroupType = 'entry') or (ControlGroupType = 'radio') or (ControlGroupType = 'check') or (ControlGroupType = 'group') or (ControlGroupType = 'list')
++       goto !e110_duplicate_controls
++   endif
+
+    //**************************
+    //* PaintFile
+    //**************************
+    Newline = 'Builder_Control_WIN,@SystemName@_@WindowName@_@ControlNameWork@_'
+    //message = 'finding [@Newline@] ControlGroupType[@ControlGroupType@]' window message info ok
+    file PaintFile error open PaintFile null
+    //write PaintFile fgb.dat
+    b
+    do
+        fs:/@Newline@/
+        if  (eof) goto !e110_duplicate_next_paint
+        scan:/@line/:/,/	
+        scan:/@right/:/,/
+        scan:/@right/:/,/
+        scanr:/@left@/:/_/
+        if  (ControlGroupType = 'box3d') and (right != 'Box3D') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'box') and (right != 'Box') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'circle') and (right != 'Circle') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'ellipse') and (right != 'Ellipse') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'ellipse3d') and (right != 'Ellipse3D') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'diamond') and (right != 'Diamond') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'arrow') and (right != 'Arrow') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'line') and (right != 'Line') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'text') and (right != 'Text') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'texttilt') and (right != 'TextTilt') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'bitmap') and (right != 'Bitmap') goto !e110_duplicate_next_paint
+        if  (ControlGroupType = 'bitmapfit') and (right != 'BitmapFit') goto !e110_duplicate_next_paint
+        scan:/@line/:/,/
+        scan:/@right/:/_/ HoldSystemName = left
+        scan:/@right/:/_/ HoldWindowName = left
+        scan:/@right/:/_/ HoldControlName = left
+        scan:/@right/:/,/ HoldType = left
+        scan:/@right/:/,/
+        HoldControlType = left
+        scan:/@right/:/,/ ObjectX = left
+        scan:/@right/:/,/ ObjectY = left
+        HoldRight = right
+        ObjectX += 5
+        ObjectY += 5
+        NameNumber = 1
+        PaintPos = line
+!e110_duplicate_newname_loop_paint
+        NewControlName = '@HoldSystemName@_@HoldWindowName@_@HoldControlName@.@NameNumber@_@HoldType@'
+        NameNumber ++
+        b
+        SearchString = 'Builder_Control_WIN,@NewControlName@,'
+        fs:/@SearchString@/
+        if (!eof) goto !e110_duplicate_newname_loop_paint
+        b
+        fs:/@PaintPos/
+        
+        Newline = 'Builder_Control_WIN,@NewControlName@,@HoldControlType@,@ObjectX@,@ObjectY@,@HoldRight@'
+        i:/@Newline@/
+        Builder_Control_ControlList_COOBJ = NewControlName
+        window insert end default Builder_Control_ControlList_COOBJ
+
+!e110_duplicate_next_paint
+        f;1
+    until (eof)
+    b
+    call BuilderConnect.bed!m100_update_connect window paint Builder_Control_WIN
+    if  (ControlGroupType != null) and (ControlGroupType != 'text') goto !e110_done
+
+!e110_duplicate_controls
+    //**************************
+    //* Controls
+    //**************************
+    SearchString = '@SystemName@_@WindowName@_@ControlNameWork@_'
+    //message = 'finding [@SearchString@] ControlGroupType[@ControlGroupType@]' window message info ok
+    file Controls error open Controls null
+    //write Controls fgb.dat
+    if (LangAmount < 1)
++      LangAmount = 10
++   endif
+    b
+    do
+        //message = 'e110_duplicate finding Newline[@Newline@] ControlGroupType[@ControlGroupType@]' window message info ok
+        fs:/@SearchString@/
+        if (eof) goto !e110_duplicate_next
+        scan:/@line/:/,/
+        scanr:/@left/:/_/
+
+        if  (ControlGroupType = 'text') and (right != 'STTXT') goto !e110_duplicate_next
+        if  (ControlGroupType = 'button') and (right != 'PBOBJ') goto !e110_duplicate_next
+        if  (ControlGroupType = 'entry') and (right != 'EFOBJ') and (right != 'MLOBJ') goto !e110_duplicate_next
+        if  (ControlGroupType = 'radio') and (right != 'RBOBJ') goto !e110_duplicate_next
+        if  (ControlGroupType = 'check') and (right != 'CBOBJ') goto !e110_duplicate_next
+        if  (ControlGroupType = 'group') and (right != 'GBOBJ') goto !e110_duplicate_next
+        if  (ControlGroupType = 'list') and (right != 'LBOBJ') and (right != "COOBJ") and (right != "COOBJ") goto !e110_duplicate_next
+        scan:/@line/:/,/
+        ControlName = left
+        scan:/@right/:/,/
+        ControlType = left
+        ControlText = right
+
+       scan:/@ControlName@/:/_/ HoldSystemName = left
+       scan:/@right@/:/_/ HoldWindowName = left
+       scan:/@right@/:/_/ HoldControlName = left
+       scan:/@right@/:/_/ HoldType = left
+
+        MacroCommand = |window windowpos @ControlName@ ObjectX ObjectY ObjectCX ObjectCY error goto !e110_duplicate_next|
+        $MacroCommand
+        ObjectX += 5
+        ObjectY += 5
+        NameNumber = 1
+        ControlPos = line
+!e110_duplicate_newname_loop_control
+        NewControlName = '@HoldSystemName@_@HoldWindowName@_@HoldControlName@.@NameNumber@_@HoldType@'
+        NameNumber ++
+        b
+        fs:/@NewControlName/
+        if (!eof) goto !e110_duplicate_newname_loop_control
+        b
+        fs:/@ControlPos/
+        Newline = '@NewControlName@,@ControlType@,@ControlText@'
+        i:/@Newline@/
+        //message = 'dup control Newline[@Newline@] NewControlName[@NewControlName@] ObjectX[@ObjectX@] ObjectY[@ObjectY@] ObjectCX[@ObjectCX@] ObjectCY[@ObjectCY@] ControlType[@ControlType@] ControlText[@ControlText@]' window message info ok
+        window createcontrol Builder_Control_WIN @NewControlName @ObjectX @ObjectY @ObjectCX @ObjectCY @ControlType @ControlText error 
+        Builder_Control_ControlList_COOBJ = NewControlName
+        window insert end default Builder_Control_ControlList_COOBJ
+       //*********************
+       //* Add close to Nav
+       //*********************
+       if  (ControlType = 'PBOBJ1')
++          NavAction = 'close'
++          file WindowNav
++          b
++          fs:/@NewControlName@/
++          Newline = "@NewControlName@,@HoldWindowName@,@NavAction@"
++          if  (eof)
++              i:/@Newline@/
++      endif
+
+!e110_duplicate_next
+        file Controls error open Controls null
+        f;1
+    until (eof)
+    write Controls fgb.dat
+!e110_done
+    return
+
+//****************************************************
+//* Connect 1 object to another
+//****************************************************
+!f100_connect
+    //message = 'f100 Builder_Language_Commands_MLOBJ[@Builder_Language_Commands_MLOBJ@]' window message info ok
+    //***************************
+    //* Connect From Object
+    //***************************
+    call !p100_parse
+    ConnectObjname = LangCommand  
+    mix ConnectObjname
+    ConnectType = null
+    if  (Builder_Language_Commands_MLOBJ beginswith 'button') call !p100_parse ConnectType = 'PBOBJ'     
+    if  (Builder_Language_Commands_MLOBJ beginswith 'entry') call !p100_parse ConnectType = 'EFOBJ'
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'textfont') 
++       call !p100_parse ConnectType = 'Text'
++   else-1
++       if-2  (Builder_Language_Commands_MLOBJ beginswith 'text') 
++          call !p100_parse ConnectType = 'STTXT'
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith 'radio') call !p100_parse ConnectType = 'RBOBJ'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'boxcolor') call !p100_parse ConnectType = 'Box'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'box3d') call !p100_parse ConnectType = 'Box3D'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'ellipse') call !p100_parse ConnectType = 'Ellipse'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'ellipse3d') call !p100_parse ConnectType = 'Ellipse3D'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'circle') call !p100_parse ConnectType = 'Circle'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'diamond') call !p100_parse ConnectType = 'Diamond'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'line') call !p100_parse ConnectType = 'Line'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'arrow') call !p100_parse ConnectType = 'Arrow'
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'bitmapfit') 
++       call !p100_parse ConnectType = 'Bitmapfit'
++   else-1
++       if-2  (Builder_Language_Commands_MLOBJ beginswith 'bitmap') 
++          call !p100_parse ConnectType = 'Bitmap'
++   endif
+
+    call !f110_find_object
+    ConnectObj1 = ConnectObj
+    //message = 'ConnectObj1[@ConnectObj1@]' window message info ok
+
+    //***************************
+    //* Connect To Object
+    //***************************
+    call !p100_parse        
+    call !p100_parse    
+    ConnectObjname = LangCommand  
+    mix ConnectObjname
+    ConnectType = null
+    //message = 'f100-2 Builder_Language_Commands_MLOBJ[@Builder_Language_Commands_MLOBJ@]' window message info ok
+    if  (Builder_Language_Commands_MLOBJ beginswith 'button') call !p100_parse ConnectType = 'PBOBJ'     
+    if  (Builder_Language_Commands_MLOBJ beginswith 'entry') call !p100_parse ConnectType = 'EFOBJ'
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'textfont') 
++       call !p100_parse ConnectType = 'Text'
++   else-1
++       if-2  (Builder_Language_Commands_MLOBJ beginswith 'text') 
++          call !p100_parse ConnectType = 'STTXT'
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith 'radio') call !p100_parse ConnectType = 'RBOBJ'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'boxcolor') call !p100_parse ConnectType = 'Box'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'box3d') call !p100_parse ConnectType = 'Box3D'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'ellipse') call !p100_parse ConnectType = 'Ellipse'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'ellipse3d') call !p100_parse ConnectType = 'Ellipse3D'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'circle') call !p100_parse ConnectType = 'Circle'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'diamond') call !p100_parse ConnectType = 'Diamond'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'line') call !p100_parse ConnectType = 'Line'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'arrow') call !p100_parse ConnectType = 'Arrow'
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'bitmapfit') 
++       call !p100_parse ConnectType = 'Bitmapfit'
++   else-1
++       if-2  (Builder_Language_Commands_MLOBJ beginswith 'bitmap') 
++          call !p100_parse ConnectType = 'Bitmap'
++   endif
+    call !f110_find_object
+    ConnectObj2 = ConnectObj
+    //message = 'ConnectObj2[@ConnectObj2@]' window message info ok
+    ConnectLineType = 'Straight'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'straight1') call !p100_parse ConnectLineType = 'Straight1' 
+    if  (Builder_Language_Commands_MLOBJ beginswith 'straight2') call !p100_parse ConnectLineType = 'Straight2'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'straight3') call !p100_parse ConnectLineType = 'Straight3'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'straight4') call !p100_parse ConnectLineType = 'Straight4'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'bent') call !p100_parse ConnectLineType = LangCommand 
+    if  (Builder_Language_Commands_MLOBJ beginswith 'angle') call !p100_parse ConnectLineType = 'Bent'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'corner') call !p100_parse ConnectLineType = 'Bent'
+    mix ConnectLineType
+
+    if  (ConnectObj1 = ConnectObj2) return
+
+    //***************************
+    //* Save the connection
+    //***************************
+    if  (ConnectObj1 = null) or (ConnectObj2 = null) return
+    Newline = '@ConnectObj1@,@ConnectObj2@,@ConnectLineType@'
+    ConnectFilename = '@Builder_System_Systemname_EFOBJ@.con'
+    close ConnectFile error
+    open ConnectFile @ConnectFilename error open ConnectFile null
+    b
+    fs:/@Newline/
+    if (eof) i:/@Newline/ 
+
+    write ConnectFile @ConnectFilename
+    close ConnectFile
+    return
+
+//****************************************************
+//* Find the Object to Connect
+//****************************************************
+!f110_find_object
+    ConnectObj = null
+    //message = 'finding [@ConnectObjname@] ConnectType[@ConnectType@]' window message info ok
+    //*************************
+    //* Controls
+    //*************************
+    file Controls error open Controls null
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/_/
++           scan:/@right/:/_/
++           scan:/@right/:/_/
++           if-2 (left = ConnectObjname)
++              if-3 (ConnectType != null)
++                  split:/@right/;5
++                  if-4 (ConnectType = left)
++                      scan:/@line/:/,/
++                      ConnectObj = left
++                      return
++              else-3
++                  scan:/@line/:/,/
++                  ConnectObj = left
++                  return
++       endif
+        file Controls error open Controls null
+        f;1
+    until (eof)
+    //*************************
+    //* PaintFile
+    //*************************
+    file PaintFile error open PaintFile null
+    b
+    do
+        if-1 (!eof)
++           scan:/@line/:/,/
++           if-2  (left = 'Builder_Control_WIN')
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               scan:/@right/:/_/
++               if-3 (left = ConnectObjname)
++                   if-4  (ConnectType != null)
++                       scan:/@line/:/,/
++                       scan:/@right/:/,/
++                       scan:/@right/:/,/
++                       if-5 (left = ConnectType)
++                           scan:/@line/:/,/
++                           scan:/@right/:/,/
++                           ConnectObj = left
++                           return
++                   else-4
++                       scan:/@line/:/,/
++                       scan:/@right/:/,/
++                       ConnectObj = left
++                       return
++       endif
+        file PaintFile
+        f;1
+    until (eof)
+    return
+
+//****************************************************
+//* Disconnect objects
+//****************************************************
+!f200_disconnect
+    //***************************
+    //* Connect From Object
+    //***************************
+    call !p100_parse
+    ConnectObjname = LangCommand  
+    mix ConnectObjname
+    ConnectType = null
+    if  (Builder_Language_Commands_MLOBJ beginswith 'button') call !p100_parse ConnectType = 'PBOBJ'     
+    if  (Builder_Language_Commands_MLOBJ beginswith 'entry') call !p100_parse ConnectType = 'EFOBJ'
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'textfont') 
++       call !p100_parse ConnectType = 'Text'
++   else-1
++       if-2  (Builder_Language_Commands_MLOBJ beginswith 'text') 
++          call !p100_parse ConnectType = 'STTXT'
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith 'radio') call !p100_parse ConnectType = 'RBOBJ'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'boxcolor') call !p100_parse ConnectType = 'Box'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'box3d') call !p100_parse ConnectType = 'Box3D'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'ellipse') call !p100_parse ConnectType = 'Ellipse'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'ellipse3d') call !p100_parse ConnectType = 'Ellipse3D'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'circle') call !p100_parse ConnectType = 'Circle'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'diamond') call !p100_parse ConnectType = 'Diamond'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'line') call !p100_parse ConnectType = 'Line'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'arrow') call !p100_parse ConnectType = 'Arrow'
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'bitmapfit') 
++       call !p100_parse ConnectType = 'Bitmapfit'
++   else-1
++       if-2  (Builder_Language_Commands_MLOBJ beginswith 'bitmap') 
++          call !p100_parse ConnectType = 'Bitmap'
++   endif
+
+    ConnectObj1 = '@SystemName@_@WindowName@_@ConnectObjname@_'
+
+    //***************************
+    //* Connect To Object
+    //***************************
+    call !p100_parse        
+    call !p100_parse    
+    ConnectObjname = LangCommand  
+    mix ConnectObjname
+    ConnectType = null
+    if  (Builder_Language_Commands_MLOBJ beginswith 'button') call !p100_parse ConnectType = 'PBOBJ'     
+    if  (Builder_Language_Commands_MLOBJ beginswith 'entry') call !p100_parse ConnectType = 'EFOBJ'
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'textfont') 
++       call !p100_parse ConnectType = 'Text'
++   else-1
++       if-2  (Builder_Language_Commands_MLOBJ beginswith 'text') 
++          call !p100_parse ConnectType = 'STTXT'
++   endif
+    if  (Builder_Language_Commands_MLOBJ beginswith 'radio') call !p100_parse ConnectType = 'RBOBJ'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'boxcolor') call !p100_parse ConnectType = 'Box'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'box3d') call !p100_parse ConnectType = 'Box3D'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'ellipse') call !p100_parse ConnectType = 'Ellipse'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'ellipse3d') call !p100_parse ConnectType = 'Ellipse3D'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'circle') call !p100_parse ConnectType = 'Circle'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'diamond') call !p100_parse ConnectType = 'Diamond'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'line') call !p100_parse ConnectType = 'Line'
+    if  (Builder_Language_Commands_MLOBJ beginswith 'arrow') call !p100_parse ConnectType = 'Arrow'
+    if-1  (Builder_Language_Commands_MLOBJ beginswith 'bitmapfit') 
++       call !p100_parse ConnectType = 'Bitmapfit'
++   else-1
++       if-2  (Builder_Language_Commands_MLOBJ beginswith 'bitmap') 
++          call !p100_parse ConnectType = 'Bitmap'
++   endif
+    ConnectObj2 = '@SystemName@_@WindowName@_@ConnectObjname@_'
+
+    //***************************
+    //* Remove the connection
+    //***************************
+    ConnectFilename = '@Builder_System_Systemname_EFOBJ@.con'
+    close ConnectFile error
+    open ConnectFile @ConnectFilename error open ConnectFile null
+    b
+    do
+        fs:/@ConnectObj1@/
+        if (!eof)
++           scan:/@line/:/@ConnectObj2/
++           if (found)
++               d;1
++               f;*
++       endif
+        f;1
+    until (eof)
+    write ConnectFile @ConnectFilename
+    close ConnectFile
+    return
+
+//****************************************************
+//* Create and load the Language Commands File
+//****************************************************
+!L100_language_commands
+    open LanguageCommandsFile null
+    i:/create /
+    i:/delete /
+    i:/del /
+    i:/erase /
+    i:/change /
+    i:/make /
+    i:/size /
+    i:/move /
+    i:/make /
+    i:/group /
+    i:/ungroup /
+    i:/close /
+    i:/exit /
+    i:/done /
+    i:/exit /
+    i:/quit /
+    i:/bye /
+    //write LanguageCommandsFile fgb2.dat
+    return
+
+//****************************************************
+//* Check to see if Builder_Language_Commands_MLOBJ
+//* begins with a command in the LanguageCommandsFile
+//****************************************************
+!l200_check_command
+    LangCmdFound = 'n'
+    file LanguageCommandsFile
+    //write LanguageCommandsFile fgb.dat
+    b
+    do
+        if (!eof)
++          MacroCommand = |if (Builder_Language_Commands_MLOBJ beginswith '@line@') LangCmdFound = 'y' return|
++          $MacroCommand
++       endif
+        f;1
+    until (eof)
+    return
+
+//****************************************************
+//* Parse the Commands
+//****************************************************
+!p100_parse
+    if (Builder_Language_Commands_MLOBJ beginswith |'|) or (Builder_Language_Commands_MLOBJ beginswith |"|)
++      split:/@Builder_Language_Commands_MLOBJ/;1
++      scan:/@right/:/@left@/
++      LangCommand = left
++      Builder_Language_Commands_MLOBJ = right
++      leftjust Builder_Language_Commands_MLOBJ
++      return
++   endif
+    scan:/@Builder_Language_Commands_MLOBJ/:word
+    Builder_Language_Commands_MLOBJ = right
+    LangCommand = left
+
+    //***************************************
+    //* Skip these commands
+    //***************************************
+    if (LangCommand = 'and') goto !p100_parse
+    if (LangCommand = 'or') goto !p100_parse
+    if (LangCommand = 'boxes') goto !p100_parse
+    if (LangCommand = 'fields') goto !p100_parse
+    if (LangCommand = 'push') goto !p100_parse
+
+    return
+
+//****************************************************
+//* Run a BEDIT Program
+//****************************************************
+!r100_run
+    string RunCommand error
+    RunCommand = 'system:/start bedit call @CheckFile@/'
+    scan:/@CheckFile@/:/./
+    string CheckWin error
+    CheckWin = '@left@.win'
+    MacroCommand = |if (exists @CheckWin@) RunCommand = 'system:/start beditwin call @CheckFile@/'| $MacroCommand
+    $RunCommand 
+    return
+
+//****************************************************
+//* Find a control in the control list
+//****************************************************
+!s100_search_control
+    SearchX = MinX + 10
+    SearchY = MinY + 10
+    SearchCX = 20
+    SearchCY = 100
+    crush SearchControl
+    mix SearchControl
+
+    if  (SearchPos = 'last') and (SearchGroupType = null)
++       direction up
++   endif
+    //message = 'search SearchControl[@SearchControl@] SearchGroupType[@SearchGroupType@] SearchPos[@SearchPos@]' window message info ok
+    //*************************************
+    //* Check for object in Controls
+    //*************************************
+    file Controls error open Controls null
+    b
+    do
+       scan:/@line/:/_/
+       scan:/@right/:/_/
+       scan:/@right/:/_/
+       //message = 'checking SearchControl[@SearchControl@] left[@left@] line[@line@]' window message info ok
+       if  (SearchControl = left)
++          scan:/@line/:/,/
++          //SearchControl = left
++          MacroCommand = |window windowpos @left@ SearchX SearchY SearchCX SearchCY error|
++          $MacroCommand
++          call !s100_check_type
++          if (TypeDone)
++             goto !s100_done
++      endif
+       f;1
+    until (eof) or (lineno = 1)
+    //*************************************
+    //* Check for object in PaintFile
+    //*************************************
+    file PaintFile error open PaintFile null
+    PaintPos = line
+    b
+    do
+        scan:/@line/:/,/
+        if  (left = 'Builder_Control_WIN')
++           scan:/@right/:/_/
++           scan:/@right/:/_/
++           scan:/@right/:/_/
++           if (SearchControl = left)
++              scan:/@right/:/,/
++              scan:/@right/:/,/
++              scan:/@right/:/,/ SearchX = left
++              scan:/@right/:/,/ SearchY = left
++              scan:/@right/:/,/ SearchCX = left
++              scan:/@right/:/,/ SearchCY = left
++              call !s100_check_type
++              if (TypeDone)
++                 //message = 'found line[@line@]' window message info ok
++                 b fs:/@PaintPos/
++                 goto !s100_done
++       endif
+        f;1
+    until (eof) or (lineno = 1)
+    b fs:/@PaintPos/
+    SearchControl = null
+!s100_done
+    //message = 's100_done SearchControl[@SearchControl@] SearchX[@SearchX@] SearchY[@SearchY@] SearchCX[@SearchCX@] SearchCY[@SearchCY@]' window message info ok
+    direction down
+    return
+
+//****************************************************
+//* Check to see if the SearchGroupType is correct to stop search
+//****************************************************
+!s100_check_type
+    string TypeDone error
+    //message = 's100_check_type SearchGroupType[@SearchGroupType@]' window message info ok
+    if  (SearchGroupType = null) TypeDone = 'y' return
+
+    scan:/@line/:/,/
+    scan:/@right/:/,/
+    //message = 's100 checking SearchGroupType[@SearchGroupType@] left[@left@] line[@line@]' window message info ok
+    if  (SearchGroupType = 'text') and (left = 'STTXT1') TypeDone = 'y' return
+    if  (SearchGroupType = 'button') and (left = 'PBOBJ1') TypeDone = 'y' return
+    if  (SearchGroupType = 'check') and (left = 'CBOBJ1') TypeDone = 'y' return
+    if  (SearchGroupType = 'group') and (left = 'GBOBJ1') TypeDone = 'y' return
+    if  (SearchGroupType = 'entry')
++       if (left = 'EFOBJL') or (left = 'MLOBJ1') TypeDone = 'y' return
++   endif
+    if  (SearchGroupType = 'radio') and (left = 'RBOBJ1') TypeDone = 'y' return
+    if  (SearchGroupType = 'list')
++       if  (left = 'LBOBJ1') or (left = "COOBJL") or (left = "COOBJS") TypeDone = 'y' return
++   endif
+    if  (left = SearchGroupType) TypeDone = 'y' return
+
+    //message = 's100 not done' window message info ok
+    TypeDone = 'n'
+    return
+
+//****************************************************
+//* Process All Controls
+//****************************************************
+!x100_all_controls
+    AllControls = 'y'
+    close LangControlFile
+    open LangControlFile null
+    file Controls error open Controls null
+    b
+    do
+       if  (!eof)
++          scan:/@line/:/_/
++          scan:/@right/:/_/
++          scan:/@right/:/_/
++          ControlName = left
++          file LangControlFile
++          i:/@ControlName@/
++      endif
+       file Controls error open Controls null
+       f;1
+    until (eof)
+
+    file PaintFile error open PaintFile null
+    b
+    do
+       if  (!eof)
++          scan:/@line/:/,/
++          if  (left = 'Builder_Control_WIN')
++              scan:/@right/:/_/
++              scan:/@right/:/_/
++              scan:/@right/:/_/
++              ControlName = left
++              file LangControlFile
++              i:/@ControlName@/
++      endif
+       file PaintFile
+       f;1
+    until (eof)
+
+    //**************************
+    //* Remove Duplicates
+    //**************************
+    string PrevLine error
+    file LangControlFile
+    b
+    do
+        PrevLine = line
+        f;1
+        if-1 (!eof)
++          if-2  (line = PrevLine)
++              d;1
++          else-2
++              f;1
++       endif
+    until (eof)
+
+    //write LangControlFile fgb2.dat message = 'written to fgb2.dat' window message info ok
+    return
+ 
+//********************************************************************************
+//* End of program Builderlang.bed
+//********************************************************************************

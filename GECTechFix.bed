@@ -1,0 +1,23 @@
+    string Newline
+    int    Count = 0
+    string sCount
+  
+    open DataFile GECTechnology.dat
+    b
+    Newline = 'Key|@line@'
+    r:/@Newline/
+    f;1
+    do
+        if  (!eof)
++           //Newline = "20@date[7-8]@@date[1-2]@@date[4-5]@@time[1-2]@@time[4-5]@@time[7-8]@|@line@"
++           Count ++
++           sCount = "000000@Count@"
++           splitr:/@sCount@/;6
++           Newline = "20@date[7-8]@@date[1-2]@@date[4-5]@@right@|@line@" 
++           r:/@Newline/
++       endif
+        f;1
+    until (eof)
+    write DataFile GECTechnology.fgb
+    close DataFile
+    exit

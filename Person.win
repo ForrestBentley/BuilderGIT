@@ -1,0 +1,56 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Person_Address_WIN,215,45,666,402,Address
+STTXT1,Person_Address_First_STTXT,35,25,100,20,first
+EFOBJL,Person_Address_First_EFOBJ,165,25,100,20,
+STTXT1,Person_Address_Middle_STTXT,35,55,100,20,middle
+EFOBJL,Person_Address_Middle_EFOBJ,165,55,100,20,
+STTXT1,Person_Address_Last_STTXT,35,85,100,20,last
+EFOBJL,Person_Address_Last_EFOBJ,165,85,100,20,
+STTXT1,Person_Address_Address_STTXT,35,115,100,20,address
+EFOBJL,Person_Address_Address_EFOBJ,165,115,100,20,
+STTXT1,Person_Address_City_STTXT,35,145,100,20,city
+EFOBJL,Person_Address_City_EFOBJ,165,145,100,20,
+STTXT1,Person_Address_State_STTXT,35,175,100,20,state
+EFOBJL,Person_Address_State_EFOBJ,165,175,100,20,
+STTXT1,Person_Address_Zip_STTXT,35,205,100,20,zip
+EFOBJL,Person_Address_Zip_EFOBJ,165,205,100,20,
+PBOBJ1,Person_Address_Ok_PBOBJ,35,235,100,20,&ok
+PBOBJ1,Person_Address_Cancel_PBOBJ,155,235,100,20,&cancel
+PBOBJ1,Person_Address_Phone_PBOBJ,275,235,100,20,&phone
+RBOBJ1,Person_Address_Male_RBOBJ,310,33,40,24,M
+RBOBJ1,Person_Address_Female_RBOBJ,310,70,40,24,F
+CBOBJ1,Person_Address_Check1_CBOBJ,310,114,100,24,Check One
+CBOBJ1,Person_Address_Check2_CBOBJ,310,151,100,24,Check Two
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Person_Phone_WIN,220,60,325,264,Phone
+STTXT1,Person_Phone_Business_STTXT,35,25,100,20,business
+EFOBJL,Person_Phone_Business_EFOBJ,165,25,100,20,
+STTXT1,Person_Phone_Mobile_STTXT,35,55,100,20,mobile
+EFOBJL,Person_Phone_Mobile_EFOBJ,165,55,100,20,
+STTXT1,Person_Phone_Home_STTXT,35,85,100,20,home
+EFOBJL,Person_Phone_Home_EFOBJ,165,85,100,20,
+PBOBJ1,Person_Phone_Ok_PBOBJ,35,115,100,20,&ok
+PBOBJ1,Person_Phone_Cancel_PBOBJ,155,115,100,20,&cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Person_Test_WIN,270,50,698,477,Test Window
+STTXT1,Person_Test_First_STTXT,35,25,100,20,First
+EFOBJL,Person_Test_First_EFOBJ,165,25,150,20,
+STTXT1,Person_Test_Middle_STTXT,35,55,100,20,Middle
+EFOBJL,Person_Test_Middle_EFOBJ,165,55,150,20,
+STTXT1,Person_Test_Last_STTXT,35,85,100,20,Last
+EFOBJL,Person_Test_Last_EFOBJ,165,85,150,20,
+STTXT1,Person_Test_City_STTXT,35,115,100,20,City
+EFOBJL,Person_Test_City_EFOBJ,165,115,150,20,
+STTXT1,Person_Test_State_STTXT,35,145,100,20,State
+EFOBJL,Person_Test_State_EFOBJ,165,145,150,20,
+STTXT1,Person_Test_Zip_STTXT,35,175,100,20,Zip
+EFOBJL,Person_Test_Zip_EFOBJ,165,175,150,20,
+PBOBJ1,Person_Test_Ok_PBOBJ,35,235,100,20,&OK
+PBOBJ1,Person_Test_Cancel_PBOBJ,155,235,100,20,&Cancel
+STTXTR,Person_Test_B1_STTXT,284,219,100,24,

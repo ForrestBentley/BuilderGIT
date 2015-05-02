@@ -1,0 +1,167 @@
+//*********************************************************
+//* Program: BuilderDirList.BED
+//* Author : Forrest Bentley
+//* Date   : 01/28/2014
+//* Desc   : This program should be called by other B-Edit
+//*          programs to return a list of file names located
+//*          in the input Directory (including sub-directories).
+//*          The output will be returned in the file DirFileList.
+//*
+//* Input  : string Directory : Contains the location of the
+//*                             directory to search.
+//*          string Extension : If created, and set, then only
+//*                             filenames with a matching Extension
+//*                             will be returned.
+//*********************************************************
+    string  Newline        error
+    string  Dirname        error
+    string  Systemcmd      error
+    string  Currentdir     error
+    integer Splitsize      error
+    float   Filecount = 0  error Filecount = 0
+    float   Dircount = 0   error Dircount = 0
+    string  Displaycount   error
+    string  Printcount     error
+    int     Lencount       error
+    string  sFilecount     error
+    string  sDircount      error
+    string  Directory      error
+    string  CheckExtension error
+
+    CheckExtension = null
+    string  Extension      error CheckExtension = Extension //Extension is being passed in
+    upper CheckExtension
+
+//*********************************************************
+//* Create a Directory List of Files
+//*********************************************************
+!x100_dirlist
+    call !x200_init
+    call !x300_proc
+    call !x400_wrap
+    return
+
+//*********************************************************
+//* Initialization
+//*********************************************************
+!x200_init
+    Dirname = Directory
+
+    //if (Dirname = null) goto !x200_init
+    close Dirfile error
+    open Dirfile null
+    i:/@Dirname@/
+    close DirFileList error
+    open DirFileList null
+    return
+
+//*********************************************************
+//* Process the directory
+//*********************************************************
+!x300_proc
+    file Dirfile
+    b
+    if (eof) goto !x300_done
+    Currentdir = line
+    d
+    Systemcmd = "dir @Currentdir@ >tempdir.dat"
+    system:"@Systemcmd@"
+    open tempdir tempdir.dat
+    b
+    fs:/<DIR>/
+    scan:/@line/:/<DIR>/
+    if (!found) goto !x300_proc
+    scanr:/@line/:word
+    Splitsize = lleft + 1
+    b   
+    fs:/../
+    f;1
+    copy;*
+    b d;*
+    b paste
+    Dircount = Dircount + 1
+    f;*
+    b;1
+    d;*
+    b
+!x300_loop
+    if (eof)
++      close tempdir
++      goto !x300_proc
++   endif
+    scan:/@line/:/<DIR>/
+    if (!found) goto !x300_file
+    split:/@line/;@Splitsize
+    Newline = "@Currentdir@\@right@"
+    file Dirfile
+    f;*
+    i:/@Newline@/
+    file tempdir
+    goto !x300_next
+    
+!x300_file
+    split:/@line/;@Splitsize
+    Newline = "@Currentdir@\@right@"
+    scanr:/@Newline@/:/./
+    if  (found)
++       pack right
++       upper right
++       if (CheckExtension != null)
++          if (CheckExtension != right)
++             goto !x300_next
++   endif
+    file DirFileList
+    i:/@Newline/
+    Filecount  = Filecount + 1
+    goto !x300_next
+
+!x300_next
+    file tempdir
+    f;1
+    goto !x300_loop
+!x300_done
+    return
+
+//*********************************************************
+//* Wrapup
+//*********************************************************
+!x400_wrap
+    close Dirfile
+    write DirFileList dirfilelist.dat
+
+    Displaycount = Filecount
+    call !x450_comma
+    sFilecount = Printcount
+    if (Printcount = 0) sFilecount = '0'
+
+    Displaycount = Dircount
+    call !x450_comma
+    sDircount = Printcount
+    if (Printcount = 0) sDircount = '0'
+    
+    return
+
+//*********************************************************
+//* Convert number to display with commas
+//********************************************************* 
+!x450_comma
+    scan:/@Displaycount/:/./
+    Displaycount = left
+    Printcount = null
+    
+!x450_comma_loop
+    Lencount = len(Displaycount)
+    if  (Lencount < 4) 
++       Printcount = "@Displaycount@@Printcount@"
++       goto !x450_done
++   endif
+    splitr:/@Displaycount/;3
+    Printcount = /,@right@/
+    Displaycount = left
+    goto !x450_comma_loop
+!x450_done
+    return
+
+//*********************************************************
+//* End of program BuilderDirList.BED
+//*********************************************************

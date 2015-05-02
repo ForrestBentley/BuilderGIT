@@ -1,0 +1,22 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Assist Demo
+MENU,~Test
+ITEM,Assist_Window1_MSOBJ,Assist_Window1_WIN
+ITEM,Assist_Browse_MSOBJ,Assist_Browse_WIN
+ITEM,Assist_Newdir_MSOBJ,Assist_Newdir_WIN
+ITEM,Assist_Test_MSOBJ,Assist_Test_WIN
+--------------------
+ITEM,Assist_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Assist_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Assist_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Assist_Main_About_MSOBJ,~About Assist System

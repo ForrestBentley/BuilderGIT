@@ -1,0 +1,152 @@
+**********************************************************************************************************
+*                                             GE Fleet Services                              Date:09/17/14
+*                                         Java Standards Code Scan                     Start Time:13:14:44
+*                                            System:Javamail                             End Time:13:14:50
+*                                       Code Check Version:V2007.04.20
+**********************************************************************************************************
+c:\JavaMail\Contact.java
+   Lines:33    Code:28        Comments:0     Comment%:0.00             ***Error   (Comments 0.00%)
+                                                                       ***Misc Error : import sun.net.smtp.SmtpClient;
+                                                                       ***Misc Error : import java.io.*;
+c:\JavaMail\EMail.java
+   Lines:71    Code:59        Comments:32    Comment%:54.24           
+                                                                       ***Error (system.Out.Println's 1)
+                                                                       ***Warning IP:(Line 30)
+                                                                       ***Warning IP:(Line 35)
+                                                                       ***Misc Error : import sun.net.smtp.SmtpClient; 
+                                                                       ***Misc Error : import java.io.*; 
+                                                                       ***Misc Error : 			e.printStackTrace();
+c:\JavaMail\JavaMail.java
+   Lines:105   Code:84        Comments:33    Comment%:39.29           
+                                                                       ***Error (system.Out.Println's 8)
+                                                                       ***Misc Error : import java.sql.*;
+                                                                       ***Misc Error : import java.util.*;
+                                                                       ***Misc Error : import java.text.*;
+                                                                       ***Misc Error : import java.io.*;
+                                                                       ***Misc Error : 			ex.printStackTrace();
+                                                                       ***Misc Error : 			e.printStackTrace();
+c:\JavaMail\Backup\EMail.java
+   Lines:70    Code:58        Comments:31    Comment%:53.45           
+                                                                       ***Error (system.Out.Println's 1)
+                                                                       ***Warning IP:(Line 29)
+                                                                       ***Warning IP:(Line 34)
+                                                                       ***Misc Error : import sun.net.smtp.SmtpClient; 
+                                                                       ***Misc Error : import java.io.*; 
+                                                                       ***Misc Error : 			e.printStackTrace();
+c:\JavaMail\Backup\JavaMail.java
+   Lines:96    Code:79        Comments:34    Comment%:43.04           
+                                                                       ***Error (system.Out.Println's 6)
+                                                                       ***Misc Error : import java.sql.*;
+                                                                       ***Misc Error : import java.util.*;
+                                                                       ***Misc Error : import java.text.*;
+                                                                       ***Misc Error : import java.io.*;
+                                                                       ***Misc Error : 			ex.printStackTrace();
+                                                                       ***Misc Error : 			e.printStackTrace();
+c:\JavaMail\Backup\JavaMailer.java
+   Lines:156   Code:134       Comments:57    Comment%:42.54           
+                                                                       ***Error (system.Out.Println's 14)
+                                                                       ***Warning IP:(Line 110)
+                                                                       ***Warning IP:(Line 114)
+                                                                       ***Misc Error : import sun.net.smtp.SmtpClient; 
+                                                                       ***Misc Error : import java.sql.*;
+                                                                       ***Misc Error : import java.util.*;
+                                                                       ***Misc Error : import java.text.*;
+                                                                       ***Misc Error : import java.io.*;
+                                                                       ***Misc Error : 			ex.printStackTrace();
+                                                                       ***Misc Error : 			e.printStackTrace();
+                                                                       ***Misc Error : 			e.printStackTrace();
+c:\JavaMail\Backup\Test.java
+   Lines:38    Code:31        Comments:18    Comment%:58.06           
+                                                                       ***Error (system.Out.Println's 1)
+                                                                       ***Misc Error : import java.sql.*;
+                                                                       ***Misc Error : import java.util.*;
+                                                                       ***Misc Error : import java.text.*;
+                                                                       ***Misc Error : import java.io.*;
+c:\JavaMail\Backup\Testing.java
+   Lines:9     Code:5         Comments:0     Comment%:0.00             ***Error   (Comments 0.00%)
+                                                                       ***Error (system.Out.Println's 1)
+c:\JavaMail\GenericSource\EMail.java
+   Lines:70    Code:57        Comments:30    Comment%:52.63           
+                                                                       ***Warning IP:(Line 30)
+                                                                       ***Warning IP:(Line 35)
+                                                                       ***Misc Error : import sun.net.smtp.SmtpClient; 
+                                                                       ***Misc Error : import java.io.*; 
+                                                                       ***Misc Error : 			e.printStackTrace();
+c:\JavaMail\GenericSource\JavaMail.java
+   Lines:87    Code:70        Comments:25    Comment%:35.71           
+                                                                       ***Error (system.Out.Println's 6)
+                                                                       ***Misc Error : import java.sql.*;
+                                                                       ***Misc Error : import java.util.*;
+                                                                       ***Misc Error : import java.text.*;
+                                                                       ***Misc Error : import java.io.*;
+                                                                       ***Misc Error : 			ex.printStackTrace();
+                                                                       ***Misc Error : 			e.printStackTrace();
+c:\JavaMail\Old\EMail.java
+   Lines:70    Code:57        Comments:30    Comment%:52.63           
+                                                                       ***Warning IP:(Line 30)
+                                                                       ***Warning IP:(Line 35)
+                                                                       ***Misc Error : import sun.net.smtp.SmtpClient; 
+                                                                       ***Misc Error : import java.io.*; 
+                                                                       ***Misc Error : 			e.printStackTrace();
+c:\JavaMail\Old\JavaMail.java
+   Lines:119   Code:96        Comments:30    Comment%:31.25           
+                                                                       ***Error (system.Out.Println's 8)
+                                                                       ***Misc Error : import sun.net.smtp.SmtpClient; 
+                                                                       ***Misc Error : import java.sql.*;
+                                                                       ***Misc Error : import java.util.*;
+                                                                       ***Misc Error : import java.text.*;
+                                                                       ***Misc Error : import java.io.*; 
+                                                                       ***Misc Error : 			ex.printStackTrace();
+                                                                       ***Misc Error : 				e.printStackTrace();
+                                                                       ***Misc Error : 			e.printStackTrace();
+ 
+Misc Error : Java Applications must use Log4j! (Include log4j.xml in source directories & package)
+ 
+**********************************************************************************************************
+Code Scan Summary
+ 
+Java  Files Scanned : 12
+JSP   Files Scanned : 0
+HTML  Files Scanned : 0
+JS    Files Scanned : 0
+CPP/C Files Scanned : 0
+H     Files Scanned : 0
+RC    Files Scanned : 0
+GIF   Files Scanned : 0
+JPG   Files Scanned : 0
+SQL   Files Scanned : 0
+Tibco Files Scanned : 0
+ 
+Total SRC'd Files  : 0
+Total JS Functions : 0
+Total Code Lines   : 758
+ 
+Conditions Checked            Warnings    Errors
+----------------------------  --------    ------
+Code Lines per File                  0         0
+JSP <!-- --> Comments                          0
+Code Line length                     0         0
+Comment Line low %                   0         2
+Presentation not in JSP              0
+Java in JSP Code %                   0         0
+Java in JSP Code Lines               0         0
+File Usage                           0
+Active Displays (println)                      9
+Hardcoded URL's                      0
+Hardcoded IP's                      10         0
+HTML/JS/GIF/JPG File Size            0         0
+SRC= Lines                           0         0
+JS Functions                         0         0
+JS Function Size                     0         0
+SQL                                  0         0
+Misc                                 0        53
+                              --------    ------
+Totals                              10        64
+ 
+DPMO = 5277
+ 
+Sigma = 4.0
+ 
+Notes:
+====================================================================================================================================
+For a complete listing of standards please review GlobalApplicationFrameworkArchitecture.doc

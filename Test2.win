@@ -1,0 +1,30 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Test2_Win1_WIN,199,31,972,398,Win1
+STTXT1,Test2_Win1_Middle_STTXT,41,29,100,20,Middle
+EFOBJL,Test2_Win1_Middle_EFOBJ,171,29,300,20,
+STTXT1,Test2_Win1_Last_STTXT,41,59,100,20,Last
+EFOBJL,Test2_Win1_Last_EFOBJ,171,59,300,20,
+STTXT1,Test2_Win1_Address_STTXT,41,89,100,20,Address
+EFOBJL,Test2_Win1_Address_EFOBJ,171,89,300,20,
+STTXT1,Test2_Win1_City_STTXT,41,119,100,20,City
+EFOBJL,Test2_Win1_City_EFOBJ,171,119,300,20,
+STTXT1,Test2_Win1_State_STTXT,41,149,100,20,State
+EFOBJL,Test2_Win1_State_EFOBJ,171,149,300,20,
+STTXT1,Test2_Win1_Zip_STTXT,41,179,100,20,Zip
+EFOBJL,Test2_Win1_Zip_EFOBJ,171,179,300,20,
+PBOBJ1,Test2_Win1_Ok_PBOBJ,35,222,100,20,&OK
+PBOBJ1,Test2_Win1_Cancel_PBOBJ,155,222,100,20,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Test2_Win2_WIN,210,30,325,205,Window Two
+STTXT1,Test2_Win2_Business_STTXT,35,25,100,20,Business
+EFOBJL,Test2_Win2_Business_EFOBJ,165,25,100,20,
+STTXT1,Test2_Win2_Mobile_STTXT,35,55,100,20,Mobile
+EFOBJL,Test2_Win2_Mobile_EFOBJ,165,55,100,20,
+STTXT1,Test2_Win2_Home_STTXT,35,85,100,20,Home
+EFOBJL,Test2_Win2_Home_EFOBJ,165,85,100,20,
+PBOBJ1,Test2_Win2_Ok_PBOBJ,35,115,100,20,&OK
+PBOBJ1,Test2_Win2_Cancel_PBOBJ,155,115,100,20,&Cancel

@@ -1,0 +1,91 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,T1_Win1_WIN,71,62,1126,472,Window One
+STTXT1,T1_Win1_First_STTXT,69,58,80,20,First
+EFOBJL,T1_Win1_First_EFOBJ,199,68,230,20,
+STTXT1,T1_Win1_Middle_STTXT,69,98,80,20,Middle
+EFOBJL,T1_Win1_Middle_EFOBJ,199,108,230,20,
+STTXT1,T1_Win1_Last_STTXT,69,128,80,20,Last
+EFOBJL,T1_Win1_Last_EFOBJ,199,138,230,20,
+STTXT1,T1_Win1_Address_STTXT,69,158,80,20,Address
+EFOBJL,T1_Win1_Address_EFOBJ,199,168,230,20,
+STTXT1,T1_Win1_City_STTXT,69,188,80,20,City
+EFOBJL,T1_Win1_City_EFOBJ,199,198,230,20,
+STTXT1,T1_Win1_State_STTXT,69,218,80,20,State
+EFOBJL,T1_Win1_State_EFOBJ,199,228,230,20,
+STTXT1,T1_Win1_Zip_STTXT,69,248,80,20,Zip
+EFOBJL,T1_Win1_Zip_EFOBJ,199,258,230,20,
+PBOBJ1,T1_Win1_Ok_PBOBJ,219,328,100,20,&OK
+PBOBJ1,T1_Win1_Cancel_PBOBJ,359,338,100,20,&Cancel
+PBOBJ1,T1_Win1_Forrest_PBOBJ,219,378,100,24,FORREST
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,T1_Win2_WIN,110,130,325,205,Window Two
+STTXT1,T1_Win2_Business_STTXT,35,25,100,20,Business
+EFOBJL,T1_Win2_Business_EFOBJ,165,25,100,20,
+STTXT1,T1_Win2_Mobile_STTXT,35,55,100,20,Mobile
+EFOBJL,T1_Win2_Mobile_EFOBJ,165,55,100,20,
+STTXT1,T1_Win2_Home_STTXT,35,85,100,20,Home
+EFOBJL,T1_Win2_Home_EFOBJ,165,85,100,20,
+PBOBJ1,T1_Win2_Ok_PBOBJ,35,115,100,20,&OK
+PBOBJ1,T1_Win2_Cancel_PBOBJ,155,115,100,20,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,T1_Win3_WIN,5,15,325,335,Window three
+STTXT1,T1_Win3_First_STTXT,35,25,100,20,first
+EFOBJL,T1_Win3_First_EFOBJ,165,25,100,20,
+STTXT1,T1_Win3_Middle_STTXT,35,55,100,20,middle
+EFOBJL,T1_Win3_Middle_EFOBJ,165,55,100,20,
+STTXT1,T1_Win3_Last_STTXT,35,85,100,20,last
+EFOBJL,T1_Win3_Last_EFOBJ,165,85,100,20,
+STTXT1,T1_Win3_Address_STTXT,35,115,100,20,address
+EFOBJL,T1_Win3_Address_EFOBJ,165,115,100,20,
+STTXT1,T1_Win3_City_STTXT,35,145,100,20,city
+EFOBJL,T1_Win3_City_EFOBJ,165,145,100,20,
+STTXT1,T1_Win3_State_STTXT,35,175,100,20,state
+EFOBJL,T1_Win3_State_EFOBJ,165,175,100,20,
+STTXT1,T1_Win3_Zip_STTXT,35,205,100,20,zip
+EFOBJL,T1_Win3_Zip_EFOBJ,165,205,100,20,
+PBOBJ1,T1_Win3_Ok_PBOBJ,35,245,100,20,&ok
+PBOBJ1,T1_Win3_Cancel_PBOBJ,155,245,100,20,&cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,T1_Win4_WIN,5,15,325,305,Window Four
+STTXT1,T1_Win4_First_STTXT,35,25,100,20,first
+EFOBJL,T1_Win4_First_EFOBJ,165,25,100,20,
+STTXT1,T1_Win4_Last_STTXT,35,55,100,20,last
+EFOBJL,T1_Win4_Last_EFOBJ,165,55,100,20,
+STTXT1,T1_Win4_Address_STTXT,35,85,100,20,address
+EFOBJL,T1_Win4_Address_EFOBJ,165,85,100,20,
+STTXT1,T1_Win4_City_STTXT,35,115,100,20,city
+EFOBJL,T1_Win4_City_EFOBJ,165,115,100,20,
+STTXT1,T1_Win4_State_STTXT,35,145,100,20,state
+EFOBJL,T1_Win4_State_EFOBJ,165,145,100,20,
+STTXT1,T1_Win4_Zip_STTXT,35,175,100,20,zip
+EFOBJL,T1_Win4_Zip_EFOBJ,165,175,100,20,
+PBOBJ1,T1_Win4_Ok_PBOBJ,35,215,100,20,&ok
+PBOBJ1,T1_Win4_Cancel_PBOBJ,155,215,100,20,&cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,T1_Win5_WIN,376,77,625,335,Window five
+STTXT1,T1_Win5_First_STTXT,35,25,100,20,first
+EFOBJL,T1_Win5_First_EFOBJ,165,25,400,20,
+STTXT1,T1_Win5_Middle_STTXT,35,55,100,20,middle
+EFOBJL,T1_Win5_Middle_EFOBJ,165,55,30,20,
+STTXT1,T1_Win5_Last_STTXT,35,85,100,20,last
+EFOBJL,T1_Win5_Last_EFOBJ,165,85,400,20,
+STTXT1,T1_Win5_Address_STTXT,35,115,100,20,address
+EFOBJL,T1_Win5_Address_EFOBJ,165,115,400,20,
+STTXT1,T1_Win5_City_STTXT,35,145,100,20,city
+EFOBJL,T1_Win5_City_EFOBJ,165,145,400,20,
+STTXT1,T1_Win5_State_STTXT,35,175,100,20,state
+EFOBJL,T1_Win5_State_EFOBJ,165,175,30,20,
+STTXT1,T1_Win5_Zip_STTXT,35,205,100,20,zip
+EFOBJL,T1_Win5_Zip_EFOBJ,165,205,100,20,
+PBOBJ1,T1_Win5_Ok_PBOBJ,35,245,100,20,&ok
+PBOBJ1,T1_Win5_Cancel_PBOBJ,165,245,100,20,&cancel

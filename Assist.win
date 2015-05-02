@@ -1,0 +1,46 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Assist_Window1_WIN,100,20,560,475,Window 1 Title
+STTXT1,Assist_Window1_Source_STTXT,43,34,54,24,Source
+LBOBJ1,Assist_Window1_Source_LBOBJ,43,115,480,270,
+STTXT1,Assist_Window1_File_STTXT,108,69,64,24,File
+EFOBJL,Assist_Window1_File_EFOBJ,178,68,344,24,
+PBOBJ1,Assist_Window1_Cancel_PBOBJ,47,380,114,24,&Cancel
+PBOBJ1,Assist_Window1_Directory_PBOBJ,106,34,64,24,&Directory
+EFOBJL,Assist_Window1_Directory_EFOBJ,178,34,344,24,
+PBOBJ1,Assist_Window1_List_PBOBJ,180,380,114,24,List
+PBOBJ1,Assist_Window1_Thisisaverylongwindownamethatshouldtestthehlimitsofsizing_PBOBJ,326,381,114,24,Size
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Assist_Browse_WIN,10,100,650,335,Browse
+STTXT1,Assist_Browse_Directory_STTXT,41,25,65,24,Directory
+PBOBJ1,Assist_Browse_Back_PBOBJ,112,25,44,24,<<
+EFOBJL,Assist_Browse_Directory_EFOBJ,164,25,444,24,
+PBOBJ1,Assist_Browse_Newdir_PBOBJ,156,57,114,24,&New Directory
+STTXT1,Assist_Browse_Extension_STTXT,366,57,69,24,Extension
+EFOBJL,Assist_Browse_Extension_EFOBJ,445,57,44,24,
+PBOBJ1,Assist_Browse_Refresh_PBOBJ,500,57,64,24,&Refresh
+STTXT1,Assist_Browse_Subdir_STTXT,41,57,104,24,Sub-Directories
+LBOBJ1,Assist_Browse_Subdir_LBOBJ,42,86,250,160,
+STTXT1,Assist_Browse_Files_STTXT,307,57,34,24,Files
+LBOBJ1,Assist_Browse_Files_LBOBJ,305,86,260,161,
+PBOBJ1,Assist_Browse_Ok_PBOBJ,45,255,114,24,&OK
+PBOBJ1,Assist_Browse_Cancel_PBOBJ,174,255,114,24,&Cancel
+PBOBJ1,Assist_Browse_Open_PBOBJ,375,255,114,24,&Open
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Assist_Newdir_WIN,80,80,360,135,New Directory
+STTXT1,Assist_Newdir_Name_STTXT,11,17,44,24,Name
+EFOBJL,Assist_Newdir_Name_EFOBJ,64,17,264,24,
+PBOBJ1,Assist_Newdir_Ok_PBOBJ,64,52,114,24,&OK
+PBOBJ1,Assist_Newdir_Cancel_PBOBJ,189,52,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Assist_Test_WIN,100,20,560,475,test
+EFOBJL,Assist_Test_test1_EFOBJL,100,112,114,24,
+EFOBJL,Assist_Test_testing2_EFOBJL,100,174,114,24,
+EFOBJL,Assist_Test_testing3_EFOBJL,101,236,114,24,

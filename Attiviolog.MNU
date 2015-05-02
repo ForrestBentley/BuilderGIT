@@ -1,0 +1,20 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Attivio Log File Analysis System
+MENU,~File
+ITEM,Attiviolog_Vehicleperson_MSOBJ,~Vehicle/Person Analysis
+ITEM,Attiviolog_Connectors_MSOBJ,~Connectors Analysis
+--------------------
+ITEM,Attiviolog_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Attiviolog_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Attiviolog_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Attiviolog_Main_About_MSOBJ,~About Attivio Log File Analysis System

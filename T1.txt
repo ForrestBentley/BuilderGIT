@@ -1,0 +1,3 @@
+T1_Win1_WIN,T1_Win1_Asddf,10,25
+T1_Win1_WIN,Left10T1_Win1_Asddf,0,0
+T1_Win1_WIN,T1_Win1_Test,-20,-10

@@ -1,0 +1,436 @@
+//****************************************************************
+//* Program : XSiteScript.BED
+//* Author  : Forrest Bentley
+//* Date    : 12/13/2013
+//* Desc    : This B-Edit program will process all files in a
+//*           directory, and sub-directories, and fix all cross-site
+//*           scripting c:out vulnerabilities in JSP files.
+//*
+//****************************************************************
+//*                     Change Log
+//*
+//* Date       Author       Desc
+//* ---------- ------------ ------------------------------------  
+//* 12/13/2013 F.Bentley    Original Program
+//*
+//**************************************************************** 
+
+    string DirectoryName
+    string FileName
+    string Newline
+    int    JSPFiles
+    int    JSPChangedFiles
+    int    JSPChangedLines
+    int    JSPAddedLines
+    string SearchString
+    string JSPValue
+    string HoldLeft
+    int    LengthLeft
+    string MacroCommand
+    string AuditRec
+    string ProdRun
+
+//**************************************************************** 
+//* Main Controller
+//**************************************************************** 
+!a100_main
+    call !b100_init
+    call !b200_proc
+    call !b300_wrap
+    exit
+
+//**************************************************************** 
+//* Initialization
+//****************************************************************
+!b100_init
+    system:"cls"
+    print:"*******************************************************"
+    print:"*                  XSiteScript.BED"
+    print:"* This B-Edit program will read all files in a directory"
+    print:"* and sub-directories, and fix all cross-site scripting"
+    print:"* vunerabilities."
+    print:"*"
+    print:"* Warning: All files modified will be written back to"
+    print:"*          to their current location, so you may want"
+    print:"*          to make a backup of the directory prior to"
+    print:"*          running this program."
+    print:"*"
+    print:"*******************************************************"
+    printx:"Please enter the directory to correct:"
+    input DirectoryName
+    if (DirectoryName = null)
++      exit
++   endif
+    MacroCommand = |if (!exists @DirectoryName@) print:"@DirectoryName@ doesn't exist" wait goto !b100_init|
+    $MacroCommand
+
+    printx:"Do you want to apply the changes (y=Update Source, n=No Changes applied and Audit Created)?"
+    input ProdRun
+
+    //*****************************
+    //* Open the output Audit file
+    //*****************************
+    open AuditFile null    //* Contains the update audit information
+
+    //*****************************
+    //* Build the list of files to process
+    //*****************************
+    string Dirname = DirectoryName
+    call !x100_dirlist
+    file DirFileList
+    b
+    return
+
+//**************************************************************** 
+//* Walk all JSP files and fix
+//****************************************************************
+!b200_proc
+    if (eof) return
+    FileName = line
+    //**************************
+    //* Scan 1 JSP File
+    //**************************
+    call !b210_scan_jsp
+
+    file DirFileList
+    f;1
+    goto !b200_proc
+    return
+
+//**************************************************************** 
+//* Scan 1 JSP File
+//****************************************************************
+!b210_scan_jsp
+    AuditRec = '******* Processing @FileName@ *********************'
+    call !m100_audit
+
+    open JSPSource @FileName error Newline = "Unable to open @FileName@" print:"@Newline@" AuditRec = Newline call !m100_audit return
+    JSPFiles ++
+
+    b
+    fs:/c:out/
+    if (eof) goto !b210_done2
+    JSPChangedFiles ++
+
+    //******************************
+    //* Find the "form" taglib
+    //******************************
+    b
+    fs:/taglib prefix="form"/
+    if (eof) 
++      b
++      subs &
++      Newline = |<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>|
++      subs @
++      i:/@Newline@/
++      JSPAddedLines ++
++      AuditRec = "    Added: @Newline@"
++      call !m100_audit
++      file JSPSource
++   endif
+
+    //******************************
+    //* Find the "esapi" taglib
+    //* and if not present, create it
+    //******************************
+    b
+    fs:/taglib prefix="esapi"/
+    if (eof)
++      b
++      fs:/taglib prefix="form"/
++      subs &
++      Newline = |<%@ taglib prefix="esapi" uri="/WEB-INF/esapi.tld" %>|
++      subs @
++      i:/@Newline@/
++      JSPAddedLines ++
++      AuditRec = '    Added: @Newline@'
++      call !m100_audit
++      file JSPSource
++   endif
+
+    //************************************
+    //* Process c:out for Variables
+    //************************************
+    b
+    do
+        if (eof) goto !b210_style1_done
+        fs:/c:out/
+        if (eof) goto !b210_style1_done
+        //******************************************
+        //* Look left for HTML, if found then skip
+        //******************************************
+        scan:/@line/:/c:out/
+        HoldLeft = left
+        scan:/@HoldLeft@/:/</
+        scan:/@right@/:/</
+        if (found) goto !b210_style1_next
+        //******************************************
+        //* Look left for value=, if found then skip
+        //******************************************
+        scan:/@line/:/c:out/
+        HoldLeft = left
+        pattern on
+        scan:/@HoldLeft@/:/value*=/
+        pattern off
+        if (found) goto !b210_style1_next
+        //******************************************
+        //* Look right for HTML, if found then skip
+        //******************************************
+        scan:/@line/:/c:out/
+        scan:/@right@/:/>/
+        if (found) goto !b210_style1_next
+
+        //******************************************
+        //* Find Variable Assignment
+        //******************************************
+        scan:/@line/:/c:out/
+        scan:/@left@/:/=/
+        if (!found) goto !b210_style1_next
+        HoldLeft = '@left@= '
+        scan:/@line/:/c:out/
+        scan:/@right/:/"/
+        JSPValue = left
+
+        Newline = |@HoldLeft@"<esapi:encodeForJavaScript>@JSPValue@</esapi:encodeForJavaScript>";|
+        AuditRec = '    Changed: @line@'
+        call !m100_audit
+        AuditRec = '         to: @Newline@'
+        call !m100_audit
+        file JSPSource    
+        r:/@Newline/
+        JSPChangedLines ++
+!b210_style1_next
+        f;1
+    until (eof)
+!b210_style1_done
+    //************************************
+    //* Process c:out for HTML
+    //************************************
+    b
+    do
+        pattern on
+        fs:/<*c:out/
+        pattern off
+        if (eof) goto !b210_done
+        scan:/@line/:/<c:out/
+        if (!found) goto !b210_html_next
+        HoldLeft = left
+        scan:/@right/:/"/
+        if (!found) 
++          AuditRec = '    Changed: @line@'
++          call !m100_audit
++          AuditRec = '         to: @HoldLeft@'
++          call !m100_audit
++          file JSPSource 
++          r:/@HoldLeft@/
++          f;1
++          scan:/@line/:/value/
++          HoldLeft = left
++          scan:/@right/:/"/
++          if (!found)
++             AuditRec = '    *** Error - No c:out value on next line [@line@]'
++             call !m100_audit
++             goto !b210_html_next
++       endif
+        scan:/@right/:/"/
+        if (!found) goto !b210_html_next
+        JSPValue = left
+        scan:/@right/:/>/
+        Newline = |@HoldLeft@<esapi:encodeForHTML>@JSPValue@</esapi:encodeForHTML>@right@|
+        AuditRec = '    Changed: @line@'
+        call !m100_audit
+        AuditRec = '         to: @Newline@'
+        call !m100_audit
+        file JSPSource    
+        r:/@Newline/
+        JSPChangedLines ++
+        goto !b210_html_next_same_line
+!b210_html_next
+        file JSPSource
+        f;1
+!b210_html_next_same_line
+        file JSPSource
+    until (eof)
+    
+!b210_done
+    if  (ProdRun) write JSPSource @FileName
+!b210_done2
+    close JSPSource error
+    return
+
+//**************************************************************** 
+//* Wrapup Processing
+//****************************************************************
+!b300_wrap
+    //*****************************
+    //* Write Wrapup Audit Data
+    //*****************************
+    AuditRec = '=================================================' call !m100_audit   
+    AuditRec = "JSP Files         = @JSPFiles@" call !m100_audit
+    AuditRec = "JSP Files Changed = @JSPChangedFiles@" call !m100_audit
+    AuditRec = "JSP Lines Changed = @JSPChangedLines@" call !m100_audit
+    AuditRec = "JSP Lines Added   = @JSPAddedLines@" call !m100_audit
+    AuditRec = " " call !m100_audit
+    AuditRec = "End of program XSiteScript.BED" call !m100_audit
+
+    //*****************************
+    //* Write output files
+    //*****************************
+    write AuditFile XSiteAudit.dat
+    close AuditFile
+
+    //*****************************
+    //* Show the Audit File
+    //*****************************
+    system:"notepad XSiteAudit.dat"
+    return
+
+/*********************************************
+//* Write to the Audit File
+//*********************************************
+!m100_audit
+    file AuditFile
+    i:/@AuditRec@/
+    print:"@AuditRec@"
+    return
+
+/*********************************************
+//* Create a Directory List of Files
+//*********************************************
+!x100_dirlist
+    call !x200_init
+    call !x300_proc
+    call !x400_wrap
+    return
+
+//*********************************************************
+//* Initialization
+//*********************************************************
+!x200_init
+    string  Newline        error
+    string  Dirname        error
+    string  Systemcmd      error
+    string  Currentdir     error
+    integer Splitsize      error
+    float   Filecount = 0  error Filecount = 0
+    float   Dircount = 0   error Dircount = 0
+    string  Displaycount   error
+    string  Printcount     error
+    int     Lencount       error
+    string  sFilecount     error
+    string  sDircount      error
+
+    close Dirfile error
+    open Dirfile null
+    i:/@Dirname@/
+    close DirFileList error
+    open DirFileList null
+    return
+
+//*********************************************************
+//* Process the directory
+//*********************************************************
+!x300_proc
+    file Dirfile
+    b
+    if (eof) goto !x300_done
+    Currentdir = line
+    d
+    //Systemcmd = "dir @Currentdir@\*.jsp >tempdir.dat"
+    Systemcmd = "dir @Currentdir@ >tempdir.dat"
+    system:"@Systemcmd@"
+    open tempdir tempdir.dat
+    b
+    fs:/<DIR>/
+    scan:/@line/:/<DIR>/
+    if (!found) goto !x300_proc
+    scanr:/@line/:word
+    Splitsize = lleft + 1
+    b   
+    fs:/../
+    f;1
+    copy;*
+    b d;*
+    b paste
+    Dircount = Dircount + 1
+    f;*
+    b;1
+    d;*
+    b
+!x300_loop
+    if (eof)
++      close tempdir
++      goto !x300_proc
++   endif
+    scan:/@line/:/<DIR>/
+    if (!found) goto !x300_file
+    split:/@line/;@Splitsize
+    Newline = "@Currentdir@\@right@"
+    file Dirfile
+    f;*
+    i:/@Newline@/
+    file tempdir
+    goto !x300_next
+    
+!x300_file
+    split:/@line/;@Splitsize
+    Newline = "@Currentdir@\@right@"
+    file DirFileList
+    splitr:/@Newline@/;4
+    if  (right = '.jsp') or (right = '.JSP')
++       i:/@Newline/
++       Filecount  = Filecount + 1
++   endif
+    goto !x300_next
+
+!x300_next
+    file tempdir
+    f;1
+    goto !x300_loop
+!x300_done
+    return
+
+//*********************************************************
+//* Wrapup
+//*********************************************************
+!x400_wrap
+    close Dirfile
+    write DirFileList dirfilelist.dat
+
+    Displaycount = Filecount
+    call !x450_comma
+    sFilecount = Printcount
+    if (Printcount = 0) sFilecount = '0'
+
+    Displaycount = Dircount
+    call !x450_comma
+    sDircount = Printcount
+    if (Printcount = 0) sDircount = '0'
+    
+    return
+
+//*********************************************************
+//* Convert number to display with commas
+//********************************************************* 
+!x450_comma
+    scan:/@Displaycount/:/./
+    Displaycount = left
+    Printcount = null
+    
+!x450_comma_loop
+    Lencount = len(Displaycount)
+    if  (Lencount < 4) 
++       Printcount = "@Displaycount@@Printcount@"
++       goto !x450_done
++   endif
+    splitr:/@Displaycount/;3
+    Printcount = /,@right@/
+    Displaycount = left
+    goto !x450_comma_loop
+!x450_done
+    return
+
+//**************************************************************** 
+//* End of program XSiteScript.BED
+//****************************************************************
+

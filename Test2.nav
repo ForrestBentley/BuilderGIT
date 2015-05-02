@@ -1,0 +1,7 @@
+Test2_Win1_Ok_PBOBJ,Win2,open
+Test2_Win1_Ok.1_PBOBJ,Win1,close
+Test2_Win1_Cancel_PBOBJ,Win1,close
+Test2_Win2_Ok_PBOBJ,Win2,close
+Test2_Win2_Cancel_PBOBJ,Win2,close
+Test2_Win1_Test_Ellipse,Win1,close
+Test2_Win1_E1.3_Ellipse,www.yahoo.com,start

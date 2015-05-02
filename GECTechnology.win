@@ -1,0 +1,196 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,GECTechnology_Techview_WIN,1,24,1350,685,GEC Technology
+PBOBJ1,GECTechnology_Techview_Filter_PBOBJ,30,25,60,24,&Filter
+PBOBJ1,GECTechnology_Techview_Close_PBOBJ,100,25,60,24,&Close
+GBOBJ1,GECTechnology_Techview_Filter_GBOBJ,44,28,325,448,View Filter
+STTXT1,GECTechnology_Techview_Type_STTXT,57,50,94,24,Type
+STTXT1,GECTechnology_Techview_Name_STTXT,57,80,94,24,Name
+STTXT1,GECTechnology_Techview_Vendor_STTXT,57,110,94,24,Vendor
+STTXT1,GECTechnology_Techview_Version_STTXT,57,140,94,24,Version
+PBOBJ1,GECTechnology_Techview_Archlayers_PBOBJ,57,170,94,24,Arch Layers
+PBOBJ1,GECTechnology_Techview_Techstacks_PBOBJ,57,200,94,24,Tech Stacks
+STTXT1,GECTechnology_Techview_Process_STTXT,57,230,94,24,Process
+STTXT1,GECTechnology_Techview_Business_STTXT,57,260,94,24,Business
+STTXT1,GECTechnology_Techview_Application_STTXT,57,290,94,24,Application
+STTXT1,GECTechnology_Techview_Status_STTXT,57,320,94,24,Status
+STTXT1,GECTechnology_Techview_Strategy_STTXT,57,350,94,24,Strategy
+STTXT1,GECTechnology_Techview_Description_STTXT,57,380,94,24,Search For
+STTXT1,GECTechnology_Techview_Update_STTXT,55,410,94,24,Last Update
+COOBJL,GECTechnology_Techview_Type_COOBJ,158,50,200,200,
+COOBJL,GECTechnology_Techview_Name_COOBJ,158,80,200,550,
+COOBJL,GECTechnology_Techview_Vendor_COOBJ,158,110,200,500,
+COOBJL,GECTechnology_Techview_Version_COOBJ,158,140,200,450,
+EFOBJL,GECTechnology_Techview_Archlayers_EFOBJ,158,170,199,24,
+EFOBJL,GECTechnology_Techview_Techstacks_EFOBJ,158,200,199,24,
+COOBJL,GECTechnology_Techview_Process_COOBJ,158,230,200,200,
+COOBJL,GECTechnology_Techview_Business_COOBJ,158,260,200,200,
+COOBJL,GECTechnology_Techview_Application_COOBJ,158,290,200,200,
+COOBJL,GECTechnology_Techview_Status_COOBJ,158,320,200,200,
+COOBJL,GECTechnology_Techview_Strategy_COOBJ,158,350,200,200,
+EFOBJL,GECTechnology_Techview_Description_EFOBJ,158,380,199,24,
+EFOBJL,GECTechnology_Techview_Update_EFOBJ,158,410,134,24,
+CBOBJ1,GECTechnology_Techview_Followup_CBOBJ,55,440,94,24,Follow-Up
+PBOBJ1,GECTechnology_Techview_View_PBOBJ,70,486,114,24,&View
+PBOBJ1,GECTechnology_Techview_Clear_PBOBJ,217,486,114,24,&Clear
+STTXTR,GECTechnology_Techview_XAxis_PBOBJ,25,600,1400,10,
+STTXTR,GECTechnology_Techview_YAxis_PBOBJ,25,60,10,550,
+STTXTR,GECTechnology_Techview_Separator1_STTXT,155,60,2,538,
+STTXTR,GECTechnology_Techview_Separator2_STTXT,315,60,2,538,
+STTXTR,GECTechnology_Techview_Separator3_STTXT,905,60,2,538,
+STTXTR,GECTechnology_Techview_Separator4_STTXT,1165,60,2,538,
+STTXT1,GECTechnology_Techview_Age1_STTXT,10,25,10,15,A
+STTXT1,GECTechnology_Techview_Age2_STTXT,10,40,10,15,G
+STTXT1,GECTechnology_Techview_Age3_STTXT,10,55,10,15,E
+STTXT1,GECTechnology_Techview_Age-10Plus_STTXT,2,85,20,15, +
+STTXT1,GECTechnology_Techview_Age-10+_STTXT,2,100,20,15,10
+STTXT1,GECTechnology_Techview_Age-6-9_STTXT,2,200,20,15,7-9
+STTXT1,GECTechnology_Techview_Age-4-6_STTXT,2,300,20,15,4-6
+STTXT1,GECTechnology_Techview_Age-2-3_STTXT,2,400,20,15,2-3
+STTXT1,GECTechnology_Techview_Age-0-1_STTXT,2,500,20,15,0-1
+STTXT1,GECTechnology_Techview_Assess_STTXT,70,620,50,20,Assess
+STTXT1,GECTechnology_Techview_Trial_STTXT,220,620,35,20,Trial
+STTXT1,GECTechnology_Techview_Adopt_STTXT,600,620,40,20,Adopt
+STTXT1,GECTechnology_Techview_Hold_STTXT,1010,620,35,20,Hold
+STTXT1,GECTechnology_Techview_MoveOff_STTXT,1230,620,65,20,Move Off
+GBOBJ1,GECTechnology_Techview_History_GBOBJ,165,7,285,50,History
+PBOBJ1,GECTechnology_Techview_Play_PBOBJ,172,31,58,19,&Play
+PBOBJ1,GECTechnology_Techview_Pause_PBOBJ,234,31,54,19,&Pause
+PBOBJ1,GECTechnology_Techview_Stop_PBOBJ,292,31,54,19,&Stop
+PBOBJ1,GECTechnology_Techview_Slow_PBOBJ,351,31,19,19,-
+PBOBJ1,GECTechnology_Techview_Fast_PBOBJ,375,31,19,19,+
+PBOBJ1,GECTechnology_Techview_Backward_PBOBJ,399,31,19,19,<
+PBOBJ1,GECTechnology_Techview_Forward_PBOBJ,423,31,19,19,>
+CBOBJ1,GECTechnology_Techview_Labels_CBOBJ,636,1,76,15,Labels
+PBOBJ1,GECTechnology_Techview_Minus_PBOBJ,712,1,17,16,-
+PBOBJ1,GECTechnology_Techview_Plus_PBOBJ,730,1,17,16,+
+STTXT1,GECTechnology_Techview_Labelsize_EFOBJ,750,1,20,20,
+CBOBJ1,GECTechnology_Techview_Strategylines_CBOBJ,636,15,76,15,Strategy
+CBOBJ1,GECTechnology_Techview_Average_CBOBJ,636,30,76,15,Average
+CBOBJ1,GECTechnology_Techview_Background_CBOBJ,636,45,100,15,Background
+GBOBJ1,GECTechnology_Techview_Yaxis_GBOBJ,771,1,70,50,Y-Axis
+RBOBJ1,GECTechnology_Techview_Age_RBOBJ,779,16,49,14,~Age
+RBOBJ1,GECTechnology_Techview_Size_RBOBJ,779,30,55,14,~Size
+GBOBJ1,GECTechnology_Techview_Draw_GBOBJ,844,1,84,53,Draw
+RBOBJ1,GECTechnology_Techview_Across_RBOBJ,851,16,69,18,Across
+RBOBJ1,GECTechnology_Techview_Down_RBOBJ,851,31,69,18,Down
+GBOBJ1,GECTechnology_Techview_Size_GBOBJ,931,1,131,71,Size by
+RBOBJ1,GECTechnology_Techview_Lines_RBOBJ,938,16,114,12,Lines
+RBOBJ1,GECTechnology_Techview_Maintenance_RBOBJ,938,28,114,12,Maintenance
+RBOBJ1,GECTechnology_Techview_Support_RBOBJ,938,40,114,12,Support
+RBOBJ1,GECTechnology_Techview_Hits_RBOBJ,938,52,114,15,Hits/Usage
+GBOBJ1,GECTechnology_Techview_Style_GBOBJ,1064,1,84,71,View
+RBOBJ1,GECTechnology_Techview_Polar_RBOBJ,1071,16,69,18,Polar
+RBOBJ1,GECTechnology_Techview_XY_RBOBJ,1071,31,69,18,X-Y
+RBOBJ1,GECTechnology_Techview_List_RBOBJ,1071,49,69,18,List
+PBOBJ1,GECTechnology_Techview_Refresh_PBOBJ,1154,25,60,24,&Refresh
+GBOBJ1,GECTechnology_Techview_Zoom_GBOBJ,1150,1,66,99,Zoom
+PBOBJ1,GECTechnology_Techview_Zoomup_PBOBJ,1175,22,15,15,^
+PBOBJ1,GECTechnology_Techview_Zoomleft_PBOBJ,1157,48,15,15,<
+PBOBJ1,GECTechnology_Techview_Zoomout_PBOBJ,1175,39,15,15,-
+PBOBJ1,GECTechnology_Techview_Zoomin_PBOBJ,1175,56,15,15,+
+PBOBJ1,GECTechnology_Techview_Zoomright_PBOBJ,1193,48,15,15,>
+PBOBJ1,GECTechnology_Techview_Zoomdown_PBOBJ,1175,75,15,15,V
+PBOBJ1,GECTechnology_Techview_Prev_PBOBJ,100,610,60,20,&Prev
+PBOBJ1,GECTechnology_Techview_Next_PBOBJ,170,610,50,20,&Next
+PBOBJ1,GECTechnology_Techview_Legend_PBOBJ,1250,75,60,24,&Legend
+PBOBJ1,GECTechnology_Techview_Html_PBOBJ,1250,100,60,24,&HTML
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,GECTechnology_Details_WIN,10,15,719,674,Technology Details
+EFOBJL,GECTechnology_Details_Type_EFOBJ,156,25,164,24,
+STTXT1,GECTechnology_Details_Name_STTXT,37,58,114,24,Name
+EFOBJL,GECTechnology_Details_Name_EFOBJ,156,58,289,24,
+STTXT1,GECTechnology_Details_Version_STTXT,455,58,114,24,Version
+EFOBJL,GECTechnology_Details_Version_EFOBJ,574,58,74,24,
+STTXT1,GECTechnology_Details_Description_STTXT,37,90,114,24,Description
+MLOBJ1,GECTechnology_Details_Description_MLOBJ,156,90,492,53,
+STTXT1,GECTechnology_Details_Vendor_STTXT,37,150,114,24,Vendor
+EFOBJL,GECTechnology_Details_Vendor_EFOBJ,156,150,214,24,
+STTXT1,GECTechnology_Details_Size_STTXT,35,208,114,24,Size
+STTXT1,GECTechnology_Details_Code_STTXT,156,178,114,24,Lines of Code
+EFOBJL,GECTechnology_Details_Size_EFOBJ,156,208,114,24,
+STTXT1,GECTechnology_Details_Maintenance_STTXT,283,178,114,24,Maintenance $
+EFOBJL,GECTechnology_Details_Maintenance_EFOBJ,283,208,114,24,
+STTXT1,GECTechnology_Details_Support_STTXT,409,178,114,24,Support $
+EFOBJL,GECTechnology_Details_Support_EFOBJ,409,208,114,24,
+STTXT1,GECTechnology_Details_Hits_STTXT,534,178,114,24,Hits/Usage
+EFOBJL,GECTechnology_Details_Hits_EFOBJ,534,208,114,24,
+EFOBJL,GECTechnology_Details_Archlayers_EFOBJ,156,241,492,24,
+EFOBJL,GECTechnology_Details_Techstacks_EFOBJ,156,270,492,24,
+STTXT1,GECTechnology_Details_Process_STTXT,35,300,114,24,Process
+EFOBJL,GECTechnology_Details_Process_EFOBJ,156,299,492,24,
+STTXT1,GECTechnology_Details_Business_STTXT,35,329,114,24,Business
+EFOBJL,GECTechnology_Details_Business_EFOBJ,156,329,492,24,
+EFOBJL,GECTechnology_Details_Status_EFOBJ,156,362,214,24,
+EFOBJL,GECTechnology_Details_Strategy_EFOBJ,156,395,214,24,
+STTXT1,GECTechnology_Details_Changed_STTXT,37,428,114,24,Changed
+EFOBJL,GECTechnology_Details_Changed_EFOBJ,156,428,114,24,
+STTXT1,GECTechnology_Details_Originated_STTXT,37,461,114,24,Originated
+EFOBJL,GECTechnology_Details_Originated_EFOBJ,156,461,114,24,
+CBOBJ1,GECTechnology_Details_Watch_CBOBJ,156,494,100,24,Follow-Up
+STTXT1,GECTechnology_Details_Comments_STTXT,38,526,114,24,Comments
+MLOBJ1,GECTechnology_Details_Comments_MLOBJ,156,526,454,52,
+PBOBJ1,GECTechnology_Details_Add_PBOBJ,38,590,114,24,&Add
+PBOBJ1,GECTechnology_Details_Change_PBOBJ,165,590,114,24,&Change
+PBOBJ1,GECTechnology_Details_Delete_PBOBJ,292,590,114,24,&Delete
+PBOBJ1,GECTechnology_Details_Applications_PBOBJ,420,590,114,24,&Applications
+PBOBJ1,GECTechnology_Details_Cancel_PBOBJ,545,590,114,24,&Cancel
+PBOBJ1,GECTechnology_Details_Type_PBOBJ,37,25,115,24,&Type
+PBOBJ1,GECTechnology_Details_Archlayers_PBOBJ,35,241,115,24,Arch &Layers
+PBOBJ1,GECTechnology_Details_Techstacks_PBOBJ,35,271,115,24,Tech &Stacks
+PBOBJ1,GECTechnology_Details_Status_PBOBJ,35,362,115,24,Status
+PBOBJ1,GECTechnology_Details_Strategy_PBOBJ,35,395,115,24,Strategy
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,GECTechnology_Multiselect_WIN,14,30,375,318,Multi-Select
+STTXT1,GECTechnology_Multiselect_Multiselect_STTXT,35,25,300,20,Multi-Select
+LBOBJM,GECTechnology_Multiselect_Multiselect_LBOBJ,35,48,300,200,
+PBOBJ1,GECTechnology_Multiselect_Ok_PBOBJ,33,256,100,20,&OK
+PBOBJ1,GECTechnology_Multiselect_Cancel_PBOBJ,153,256,100,20,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,GECTechnology_Applications_WIN,11,15,678,517,Technology Applications
+STTXT1,GECTechnology_Applications_Type_STTXT,36,25,114,24,Type
+EFOBJL,GECTechnology_Applications_Type_EFOBJ,155,25,164,24,
+STTXT1,GECTechnology_Applications_Name_STTXT,36,58,114,24,Name
+EFOBJL,GECTechnology_Applications_Name_EFOBJ,155,58,264,24,
+STTXT1,GECTechnology_Applications_Version_STTXT,425,58,114,24,Version
+EFOBJL,GECTechnology_Applications_Version_EFOBJ,544,58,74,24,
+STTXT1,GECTechnology_Applications_Description_STTXT,36,90,114,24,Description
+MLOBJ1,GECTechnology_Applications_Description_MLOBJ,156,90,462,53,
+STTXT1,GECTechnology_Applications_Business_STTXT,35,150,114,24,Business
+COOBJL,GECTechnology_Applications_Business_COOBJ,155,150,254,100,
+STTXT1,GECTechnology_Applications_Application_STTXT,35,180,114,24,Application
+EFOBJL,GECTechnology_Applications_Application_EFOBJ,155,180,254,24,
+LBOBJ1,GECTechnology_Applications_Applications_LBOBJ,155,213,253,200,
+PBOBJ1,GECTechnology_Applications_Add_PBOBJ,40,265,94,24,&Add
+PBOBJ1,GECTechnology_Applications_Delete_PBOBJ,40,316,94,24,&Delete
+PBOBJ1,GECTechnology_Applications_Ok_PBOBJ,156,423,114,24,&OK
+PBOBJ1,GECTechnology_Applications_Cancel_PBOBJ,290,423,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,GECTechnology_Login_WIN,5,15,477,187,Login
+STTXT1,GECTechnology_Login_Userid_STTXT,35,25,114,24,Userid
+EFOBJL,GECTechnology_Login_Userid_EFOBJ,165,25,114,24,
+STTXT1,GECTechnology_Login_Password_STTXT,35,59,114,24,Password
+EFOBJL,GECTechnology_Login_Password_EFOBJ,165,59,114,24,
+PBOBJ1,GECTechnology_Login_Ok_PBOBJ,35,93,114,24,&OK
+PBOBJ1,GECTechnology_Login_Cancel_PBOBJ,169,93,114,24,&Cancel
+PBOBJ1,GECTechnology_Login_Guest_PBOBJ,303,93,114,24,&Read Only
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,GECTechnology_Progress_WIN,110,90,400,100,Progress
+STTXTF,GECTechnology_Progress_Progressframe_STTXT,10,20,350,20,
+PBOBJ1,GECTechnology_Progress_Ok_PBOBJ,2000,2000,10,10,&OK
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,GECTechnology_Legend_WIN,50,1,900,300,GEC Technology Legend
+PBOBJ1,GECTechnology_Legend_Close_PBOBJ,350,225,114,24,&Close

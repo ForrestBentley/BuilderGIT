@@ -1,0 +1,31 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Asa_Selection_WIN,101,175,743,271,Selection
+STTXT1,Asa_Selection_Directory_STTXT,35,25,114,24,Directory
+EFOBJL,Asa_Selection_Directory_EFOBJ,169,25,514,24,
+EFOBJL,Asa_Selection_Chrome_EFOBJ,169,65,514,24,
+EFOBJL,Asa_Selection_Firefox_EFOBJ,169,99,514,24,
+EFOBJL,Asa_Selection_Ie_EFOBJ,169,133,514,24,
+PBOBJ1,Asa_Selection_Chrome_PBOBJ,35,65,114,24,&Chrome
+PBOBJ1,Asa_Selection_Firefox_PBOBJ,35,99,114,24,&Firefox
+PBOBJ1,Asa_Selection_Ie_PBOBJ,35,133,114,24,&IE
+PBOBJ1,Asa_Selection_Ok_PBOBJ,35,177,114,24,&OK
+PBOBJ1,Asa_Selection_Cancel_PBOBJ,169,177,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Asa_Browse_WIN,10,100,650,335,Browse
+STTXT1,Asa_Browse_Directory_STTXT,41,25,65,24,Directory
+PBOBJ1,Asa_Browse_Back_PBOBJ,112,25,44,24,<<
+EFOBJL,Asa_Browse_Directory_EFOBJ,164,25,444,24,
+STTXT1,Asa_Browse_Extension_STTXT,366,57,69,24,Extension
+EFOBJL,Asa_Browse_Extension_EFOBJ,445,57,44,24,
+PBOBJ1,Asa_Browse_Refresh_PBOBJ,500,57,64,24,&Refresh
+STTXT1,Asa_Browse_Subdir_STTXT,41,57,104,24,Sub-Directories
+LBOBJ1,Asa_Browse_Subdir_LBOBJ,42,86,250,160,
+STTXT1,Asa_Browse_Files_STTXT,307,57,34,24,Files
+LBOBJ1,Asa_Browse_Files_LBOBJ,305,86,260,161,
+PBOBJ1,Asa_Browse_Ok_PBOBJ,45,255,114,24,&OK
+PBOBJ1,Asa_Browse_Cancel_PBOBJ,174,255,114,24,&Cancel
+PBOBJ1,Asa_Browse_Open_PBOBJ,375,255,114,24,&Open

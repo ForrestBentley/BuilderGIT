@@ -1,0 +1,104 @@
+**************************************
+*              M E N U               *
+**************************************
+TITLE,B-Edit - Analysis System - v2.1
+MENU,~Development
+ITEM,Builder_Main_Bedit_MSOBJ,~B-Edit Interactive
+ITEM,Builder_Main_Batch_MSOBJ,~B-Edit Batch Development
+ITEM,Builder_Main_Build_MSOBJ,~B-Edit Windows Development
+--------------------
+ITEM,Builder_Main_Eclipse_MSOBJ,~Eclipse - Luna
+ITEM,Builder_Main_Rumba_MSOBJ,~3090 Rumba
+ITEM,Builder_Main_Xampp_MSOBJ,X~AMPP
+--------------------
+ITEM,Builder_Main_Windows_MSOBJ,~Windows
+ITEM,Builder_Main_Html_MSOBJ,~HTML
+--------------------
+ITEM,Builder_Main_Exit_MSOBJ,E~xit
+**************************************
+*              M E N U               *
+**************************************
+MENU,~Analysis
+ITEM,Builder_Main_CodeCheck_MSOBJ,~Code Checker
+ITEM,Builder_Main_3090Check_MSOBJ,~3090 Checker
+--------------------
+ITEM,Builder_Main_Import_MSOBJ,~View Program Flow
+ITEM,Builder_Main_COBOLCall_MSOBJ,~View COBOL Call Flow
+ITEM,Builder_Main_POM_MSOBJ,~POM Dependency Viewer
+--------------------
+ITEM,Builder_Main_Download_MSOBJ,~Download 3090 Files 
+--------------------
+ITEM,Builder_Main_Searchdir_MSOBJ,~Search Directory for String
+**************************************
+*              M E N U               *
+**************************************
+MENU,~Tools
+ITEM,Builder_Main_Convert_MSOBJ,~Convert CICS to DC-COBOL
+--------------------
+ITEM,Builder_Main_Soap_MSOBJ,~SOAP UI
+ITEM,Builder_Main_Toad_MSOBJ,~Toad
+ITEM,Builder_Main_Fiddler_MSOBJ,~Fiddler
+--------------------
+ITEM,Builder_Main_Taskmanager_MSOBJ,~Task Manager
+ITEM,Builder_Main_Performance_MSOBJ,~Performance Monitor
+--------------------
+ITEM,Builder_Main_Calc_MSOBJ,~Calculator
+***ITEM,Builder_Main_Magnify_MSOBJ,~Magnify
+ITEM,Builder_Main_Notepad_MSOBJ,~Notepad
+***ITEM,Builder_Main_Paint_MSOBJ,~Paint
+--------------------
+ITEM,Builder_Main_Search_MSOBJ,~Search - Commercial
+ITEM,Builder_Main_Directory_MSOBJ,~Directory Explorer
+ITEM,Builder_Main_Dos_MSOBJ,~DOS CMD Window
+ITEM,Builder_Main_Webex_MSOBJ,~Webex
+--------------------
+ITEM,Builder_Main_Tasktrack_MSOBJ,~Task Tracking
+**************************************
+*              M E N U               *
+**************************************
+MENU,~Continuous Delivery
+ITEM,Builder_Main_SDLC_MSOBJ,~SDLC Analytics Dashboard
+ITEM,Builder_Main_CD_MSOBJ,~Continuous Delivery Wiki
+ITEM,Builder_Main_Jenkins_MSOBJ,~Jenkins
+ITEM,Builder_Main_Nola_MSOBJ,~NOLA Tech Center Software COE
+--------------------
+ITEM,Builder_Main_Governance_MSOBJ,~Governance
+ITEM,Builder_Main_Gectechnology_MSOBJ,GEC ~Technology
+**************************************
+*              M E N U               *
+**************************************
+MENU,~GE Documentation
+ITEM,Builder_Main_BPM_MSOBJ,~BPM Tools
+**************************************
+*              M E N U               *
+**************************************
+MENU,~GE Fleet
+ITEM,Builder_Main_Bachmannet_MSOBJ,~Bachman on Net
+ITEM,Builder_Main_Bachman_MSOBJ,Bachman ~Visual
+--------------------
+ITEM,Builder_Main_Gateway_MSOBJ,~IT Knowledge Gateway
+ITEM,Builder_Main_MFO2_MSOBJ,~MFO2 Architecture
+**************************************
+*              M E N U               *
+**************************************
+MENU,~Misc
+ITEM,Builder_Main_Banneron_MSOBJ,Banner ~On
+ITEM,Builder_Main_Banneroff_MSOBJ,Banner O~ff
+--------------------
+ITEM,Builder_Main_FutureTimeline_MSOBJ,Future Timeline
+ITEM,Builder_Main_ExplainingFuture_MSOBJ,Explaining the Future
+ITEM,Builder_Main_Tutorials_MSOBJ,IT ~Tutorials
+--------------------
+ITEM,Builder_Main_Pacman_MSOBJ,~Pacman
+ITEM,Builder_Main_Life_MSOBJ,~Life
+**************************************
+*              M E N U               *
+**************************************
+MENU,~Help
+ITEM,Builder_Main_Overview_MSOBJ,B-Edit ~Overview
+ITEM,Builder_Main_ControlManual_MSOBJ,B-Edit Analysis System User's Guide
+ITEM,Builder_Main_Manual_MSOBJ,B-Edit ~User's Guide/Language Reference
+--------------------
+ITEM,Builder_Main_About_MSOBJ,~About B-Edit Analysis System
+--------------------
+ITEM,Builder_Main_AboutSystem_MSOBJ,&Local System Information

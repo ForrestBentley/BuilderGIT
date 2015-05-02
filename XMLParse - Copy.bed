@@ -1,0 +1,160 @@
+    string Xpath     error
+    string Tag       error
+    string TagDone   error
+    string ValueDone error
+    string Newline   error
+
+    Xpath = null
+   
+    open XMLFile C:\BEdit\BEDITWIN\Builder\RPM-data\Josh\jbossTicketCacheReplicationConfig.xml
+    //open XMLFile C:\BEdit\BEDITWIN\Builder\RPM-data\Josh\ticketGrantingTicketCookieGenerator.xml
+    //open XMLFile C:\BEdit\BEDITWIN\Builder\RPM-data\Josh\server.xml
+    b rs:/@tab@/:/ /;*
+
+    close TagFile error
+    open TagFile null
+    file XMLFile
+    b
+    do
+
+        //************************************
+        //* Check for Comments & Unwanted Tags
+        //************************************
+        if  (!eof)
++           scan:/@line/:/<!/
++           if  (found) call !x100_comments 
++       endif
+        //************************************
+        //* Find Tag Start
+        //************************************
+        if  (!eof)
++           scan:/@line/:/</
++           if (found)
++              call !x200_tag
++              if  (!TagDone)
++                  ValueDone = 'n'
++                  call !x300_values
++       endif
+        //************************************
+        //* Find Tag End
+        //************************************
+        if  (!eof)
++           scan:/@line/:'</'
++           if (found)
++              call !x400_tag_done
++       endif
+        f;1
+    until (eof)
+    write TagFile fgb.dat
+    system:"start fgb.dat"
+    return
+
+//****************************************
+//* Bypass Comments
+//****************************************
+!x100_comments
+    Newline = right
+    r:/@right@/
+    fs:/->/
+    if (!eof) 
++      scan:/@line/:/->/
++      Newline = right
++      r:/@Newline/
++   endif
+    return
+
+//****************************************
+//* Start a Tag
+//****************************************
+!x200_tag
+    scan:/@right/:word
+    Tag = left
+    r:/@right@/
+    split:/@Tag@/;1
+    if (left = '/')
++      TagDone = 'y'
++      scanr:/@Xpath@/:/</
++      Xpath = left
++      return
++   endif
+    scan:/@Tag/:'/>'
+    if  (found) return
+    scan:/@Tag/:/>/
+    if (found)
++      Newline = '@right@@line@'
++      r:/@Newline@/
++      Xpath = '@Xpath@<@left@>'
++      TagDone = 'y'
++      return
++   endif
+    TagDone = 'n'
+    Xpath = '@Xpath@<@Tag@>'
+    return
+
+//****************************************
+//* Get the Tag Values
+//****************************************
+!x300_values
+    if-1  (line = null) 
++       f;1
++       if-2 (eof)
++          return
++       else-2
++          scan:/@line/:/<!/
++          if-3  (found) 
++              call !x100_comments 
++              if-4 (eof)
++                 return
++       endif
++   endif
+    scan:/@line/:word
+    Tag = left
+    r:/@right/
+    scan:/@Tag/:'/>'
+    if (found)
++      Tag = left
++      TagDone = 'y'
++   endif
+    scan:/@Tag/:'?>'
+    if (found)
++      Tag = left
++      TagDone = 'y'
++   endif
+    scan:/@Tag/:/>/
+    if (found)
++      Tag = left
++      r:/@right@/
++      ValueDone = 'y'
++   endif
+    scan:/@Tag@/:'</'
+    if (found)
++      TagDone = 'y'
++      goto !x300_value_tag_done
++   endif
+    pack Tag
+    if (Tag != null) 
++      Newline = '@Xpath@:@Tag@'
++      file TagFile
++      i:/@Newline@/
++   endif
+    file XMLFile
+!x300_value_tag_done
+    if-1 (TagDone)
++      scanr:/@Xpath@/:/</
++      Xpath = left
++   else-1
++       if-2  (!ValueDone)
++           goto !x300_values
++   endif
+    return
+
+//****************************************
+//* Tag is Closing
+//****************************************
+!x400_tag_done
+    scan:/@right/:/>/
+    r:/@right@/
+    scanr:/@Xpath@/:/</
+    Xpath = left
+    return
+    

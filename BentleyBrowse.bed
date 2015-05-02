@@ -1,0 +1,301 @@
+//***********************************************************************
+//* Browse Directory Functions
+//***********************************************************************
+//******************************
+//* Setup the Fields
+//******************************
+!a1600_Browse_Setup
+    perm BentleyBrowse.bed
+
+    string Directory = 'c:\'   error
+    string Extension           error
+    string MacroCommand        error
+    string DirField            error
+    string FileField           error
+
+    string Bentley_Browse_Refresh_PBOBJ           = "call BentleyBrowse.bed!a1600_Bentley_Browse_Refresh_PBOBJ" error return
+    string Bentley_Browse_Back_PBOBJ              = "call BentleyBrowse.bed!a1600_Bentley_Browse_Back_PBOBJ"
+    string Bentley_Browse_Ok_PBOBJ                = "call BentleyBrowse.bed!a1600_Bentley_Browse_Ok_PBOBJ"
+    string Bentley_Browse_Cancel_PBOBJ            = "call BentleyBrowse.bed!a1600_Bentley_Browse_Cancel_PBOBJ"
+    string Bentley_Browse_Newdir_PBOBJ            = "call BentleyBrowse.bed!a1600_Bentley_Browse_Newdir_PBOBJ"
+    string Bentley_Browse_Open_PBOBJ              = "call BentleyBrowse.bed!a1600_Bentley_Browse_Open_PBOBJ"
+    string Bentley_Browse_Subdir_LBOBJ            = "call BentleyBrowse.bed!a1600_Bentley_Browse_Subdir_LBOBJ"
+    window action Bentley_Browse_Subdir_LBOBJ
+    string Bentley_Browse_Files_LBOBJ             = "call BentleyBrowse.bed!a1600_Bentley_Browse_Files_LBOBJ"
+    window action Bentley_Browse_Files_LBOBJ
+    return
+
+//******************************
+//* Double-click Browse Sub-dir List
+//******************************
+!a1600_Bentley_Browse_Subdir_LBOBJ
+    window obtain Bentley_Browse_Directory_EFOBJ
+    window obtain Bentley_Browse_Extension_EFOBJ
+    crush Bentley_Browse_Extension_EFOBJ
+    upper Bentley_Browse_Extension_EFOBJ
+    window modify Bentley_Browse_Extension_EFOBJ
+    Extension = Bentley_Browse_Extension_EFOBJ
+    window obtain Bentley_Browse_Subdir_LBOBJ
+    leftjust Bentley_Browse_Directory_EFOBJ
+    pack Bentley_Browse_Directory_EFOBJ
+    splitr:/@Bentley_Browse_Directory_EFOBJ@/;1
+    if (right = '\')
++      Bentley_Browse_Directory_EFOBJ = '@Bentley_Browse_Directory_EFOBJ@@Bentley_Browse_Subdir_LBOBJ@'
++   else  
++      Bentley_Browse_Directory_EFOBJ = '@Bentley_Browse_Directory_EFOBJ@\@Bentley_Browse_Subdir_LBOBJ@'
++   endif
+    window modify Bentley_Browse_Directory_EFOBJ
+    call !s200_show_dir
+    return
+
+//******************************
+//* Double-click Browse Files List
+//******************************
+!a1600_Bentley_Browse_Files_LBOBJ
+    if  (FileField = null)
++       return
++   endif
+
+    window obtain Bentley_Browse_WIN
+    MacroCommand = '@FileField@ = "@Bentley_Browse_Directory_EFOBJ@\@Bentley_Browse_Files_LBOBJ@"' $MacroCommand 
+    MacroCommand = 'window modify @FileField@' $MacroCommand 
+    scanr:/@Bentley_Browse_Files_LBOBJ@/:/./
+    if (found)
++      Bentley_Browse_Extension_EFOBJ = right
++      window modify Bentley_Browse_Extension_EFOBJ
++   endif
+    call !a1600_Bentley_Browse_Ok_PBOBJ
+    return
+
+//******************************
+//* Refresh the Browse
+//******************************
+!a1600_Bentley_Browse_Refresh_PBOBJ
+    window obtain Bentley_Browse_Extension_EFOBJ
+    crush Bentley_Browse_Extension_EFOBJ
+    upper Bentley_Browse_Extension_EFOBJ
+    window modify Bentley_Browse_Extension_EFOBJ
+    Extension = Bentley_Browse_Extension_EFOBJ
+    call !s200_show_dir
+    return
+
+//******************************
+//* Back up 1 browse directory
+//******************************
+!a1600_Bentley_Browse_Back_PBOBJ
+    window obtain Bentley_Browse_Directory_EFOBJ
+    window obtain Bentley_Browse_Extension_EFOBJ
+    crush Bentley_Browse_Extension_EFOBJ
+    upper Bentley_Browse_Extension_EFOBJ
+    window modify Bentley_Browse_Extension_EFOBJ
+    Extension = Bentley_Browse_Extension_EFOBJ
+    scanr:/@Bentley_Browse_Directory_EFOBJ@/:"\"
+    if (found)
++      Bentley_Browse_Directory_EFOBJ = left
++      window modify Bentley_Browse_Directory_EFOBJ
++      call !s200_show_dir
++   endif
+    return
+
+//******************************
+//* Accept the current browse dir
+//******************************
+!a1600_Bentley_Browse_Ok_PBOBJ
+    window obtain Bentley_Browse_Directory_EFOBJ
+    Directory = Bentley_Browse_Directory_EFOBJ
+    //**********************************************
+    //* Pass directory to calling window dir field
+    //**********************************************
+    if (DirField != null)
++      MacroCommand = '@DirField@ = Bentley_Browse_Directory_EFOBJ' $MacroCommand 
++      MacroCommand = 'window modify @DirField@' $MacroCommand 
++   endif
+    window obtain Bentley_Browse_Extension_EFOBJ
+    Extension = Bentley_Browse_Extension_EFOBJ
+    window close Bentley_Browse_WIN
+    return
+
+//******************************
+//* Close the browse window
+//******************************
+!a1600_Bentley_Browse_Cancel_PBOBJ
+    window close Bentley_Browse_WIN
+    return
+
+//******************************
+//* Open a file on the Browse Window
+//******************************
+!a1600_Bentley_Browse_Open_PBOBJ
+    string FileOpenName error
+    window obtain Bentley_Browse_WIN
+    if (Bentley_Browse_Files_LBOBJ = null)
++      message = "Please select a file"
++      window message error ok
++      window setfocus Bentley_Browse_Files_LBOBJ
++      return
++   endif
+    split:/@Bentley_Browse_Directory_EFOBJ@/;3
+    FileOpenName = '@left@"@right@\@Bentley_Browse_Files_LBOBJ@"'
+    MacroCommand = |system:"start @FileOpenName@"| message = MacroCommand window message info ok
+    $MacroCommand
+    return
+
+//******************************
+//* Open the new directory window
+//******************************
+!a1600_Bentley_Browse_Newdir_PBOBJ
+    window obtain Bentley_Browse_WIN
+    window open Bentley_Newdir_WIN shade
+    window clear Bentley_Newdir_WIN
+    window center Bentley_Newdir_WIN
+    window unshade Bentley_Newdir_WIN
+    return
+
+//******************************
+//* Create a new directory
+//******************************
+!a1650_Bentley_Newdir_Ok_PBOBJ
+    window obtain Bentley_Newdir_Name_EFOBJ
+    crush Bentley_Newdir_Name_EFOBJ
+    if (Bentley_Newdir_Name_EFOBJ = null)
++      message = "Please enter a Name"
++      window message error ok
++      window setfocus Bentley_Newdir_Name_EFOBJ
++      return
++   endif
+    MacroCommand = |system:"md @Bentley_Browse_Directory_EFOBJ@\@Bentley_Newdir_Name_EFOBJ@"|
+    $MacroCommand
+    Bentley_Browse_Directory_EFOBJ = "@Bentley_Browse_Directory_EFOBJ@\@Bentley_Newdir_Name_EFOBJ@"
+    window modify Bentley_Browse_Directory_EFOBJ
+    window close Bentley_Newdir_WIN
+    window push Bentley_Browse_Refresh_PBOBJ
+    return
+
+//******************************
+//* Close the new directory window
+//******************************
+!a1650_Bentley_Newdir_Cancel_PBOBJ
+    window close Bentley_Newdir_WIN
+    return
+
+//******************************
+//* Show Directory Screen
+//*     DirField:  should be set to the EFOBJ to update when the Browse OK button is pressed
+//*     Directory: Should be set prior to calling s100 to setup the initial directory
+//*     Extension: Should be set prior to calling s100 to setup if you want to limit the files selectable
+//******************************
+!s100_directory
+    window pointer wait
+    window open Bentley_Browse_WIN shade
+    window center Bentley_Browse_WIN
+    window clear Bentley_Browse_WIN
+
+    if  (Directory = null)
++       Directory = 'c:\'
++   endif
+
+    Bentley_Browse_Directory_EFOBJ = Directory
+    window modify Bentley_Browse_Directory_EFOBJ
+    Bentley_Browse_Extension_EFOBJ = Extension
+    window modify Bentley_Browse_Extension_EFOBJ
+
+    if  (FileField = null)
++       window disable Bentley_Browse_Files_STTXT
++       window disable Bentley_Browse_Extension_STTXT
++       window disable Bentley_Browse_Extension_EFOBJ
++       window disable Bentley_Browse_Refresh_PBOBJ
++   else
++       window enable Bentley_Browse_Files_STTXT
++       window enable Bentley_Browse_Extension_STTXT
++       window enable Bentley_Browse_Extension_EFOBJ
++       window enable Bentley_Browse_Refresh_PBOBJ
++   endif
+
+    call !a1600_Bentley_Browse_Refresh_PBOBJ
+    
+    window unshade Bentley_Browse_WIN
+    window pointer arrow
+    return
+
+//******************************
+//* Show the Browsed Dir
+//******************************
+!s200_show_dir
+    close Directory error
+    open Directory null
+
+    window obtain Bentley_Browse_Directory_EFOBJ
+    pack Bentley_Browse_Directory_EFOBJ
+    if  (Bentley_Browse_Directory_EFOBJ != null)
++       scan:/@Bentley_Browse_Directory_EFOBJ@/:/\/
++       if (!found) 
++          Bentley_Browse_Directory_EFOBJ = '@Bentley_Browse_Directory_EFOBJ@\'
++   endif
+    window modify Bentley_Browse_Directory_EFOBJ
+
+    pack Bentley_Browse_Extension_EFOBJ
+
+    //********************************************
+    //* Directory in Quotes to allow for spaces
+    //********************************************
+    MacroCommand = |dir "@Bentley_Browse_Directory_EFOBJ@"|
+    systemcurr:"@MacroCommand@"
+
+    b
+    fs:/Directory of/
+    scan:/@line/:/Directory of/
+    //scan:/@right/:word
+    //window clear Bentley_Browse_WIN
+    Bentley_Browse_Subdir_LBOBJ = 'ALL'
+    window delete Bentley_Browse_Subdir_LBOBJ
+    Bentley_Browse_Files_LBOBJ = 'ALL'
+    window delete Bentley_Browse_Files_LBOBJ
+    Bentley_Browse_Subdir_LBOBJ = null
+    window modify Bentley_Browse_Subdir_LBOBJ
+    Bentley_Browse_Directory_EFOBJ = right
+    leftjust Bentley_Browse_Directory_EFOBJ
+    pack Bentley_Browse_Directory_EFOBJ
+    window modify Bentley_Browse_Directory_EFOBJ
+    b
+    //*********************************************
+    //* remove top and bottom of directory listing
+    //*********************************************
+    d;5
+    f;*
+    b;1 d;*
+    b
+    //*********************************************
+    //* Find all Sub-directories and files
+    //*********************************************
+    do 
+        if-eof (!eof)
++          scan:/@line/:/<DIR>/
++          if-dir (found)
++             //scan:/@right/:word
++             Bentley_Browse_Subdir_LBOBJ = right
++             leftjust Bentley_Browse_Subdir_LBOBJ
++             pack Bentley_Browse_Subdir_LBOBJ
++             if-dots  (Bentley_Browse_Subdir_LBOBJ != '.') and (Bentley_Browse_Subdir_LBOBJ != '..')
++                 //Bentley_Browse_Subdir_LBOBJ = left
++                 window insert end default Bentley_Browse_Subdir_LBOBJ
++          else-dir
++             scan:/@line/:word
++             scan:/@right/:word  
++             scan:/@right/:word
++             scan:/@right/:word
++             Bentley_Browse_Files_LBOBJ = right
++             leftjust Bentley_Browse_Files_LBOBJ
++             if-extension (Bentley_Browse_Extension_EFOBJ != null)
++                scanr:/@Bentley_Browse_Files_LBOBJ@/:/./
++                upper right
++                if-found (found) and (Bentley_Browse_Extension_EFOBJ = right)
++                   window insert end default Bentley_Browse_Files_LBOBJ
++             else-extension
++                window insert end default Bentley_Browse_Files_LBOBJ
++       endif
+        f;1
+    until (eof)
+    window paint Bentley_Browse_Subdir_LBOBJ
+    window hide Bentley_Browse_Subdir_LBOBJ
+    window show Bentley_Browse_Subdir_LBOBJ
+    return

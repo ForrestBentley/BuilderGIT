@@ -1,0 +1,38 @@
+******************************************************************
+* Begin Jsparms.bed    02/16/14 - 12:36:29
+* This program will read all JS files in an input directory
+* (and all sub-directories) and identify functions that don't
+* contain JSDoc comments.
+******************************************************************
+Processing c:\bedit\jsparms\logger.js
+    function mv.log
+    function determineType
+    function addToLog
+    function persistLog
+    function objectToString
+Processing c:\bedit\jsparms\logger2.js
+    function mv.log
+        *** Error: Missing Comments Parm newParam - Line 12
+    function determineType
+    function addToLog
+        *** Error: Missing Comments Parm logType - Line 54
+    function persistLog
+        *** Error: Return not set
+    function objectToString
+Processing c:\bedit\jsparms\logger3.js
+    function mv.log
+    function determineType
+    function addToLog
+    function persistLog
+    function objectToString
+******************************************************************
+* Jsparms Processing Complete    02/16/14 - 12:36:35
+* Output located at JSParms.rpt
+******************************************************************
+Directory        c:\bedit\jsparms
+JS Files         3
+File Errors      1
+Function Errors  3
+Parameter Errors 2
+Return Errors    1
+******************************************************************

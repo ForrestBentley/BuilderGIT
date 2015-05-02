@@ -1,0 +1,110 @@
+//********************************************************************************
+//* Program : Bentley.bed
+//* Author  : Forrest Bentley
+//* Date    : 02/07/14
+//* Desc    : This is a test
+//* 
+//********************************************************************************
+//*              M A I N T E N A N C E       L O G
+//*
+//* Date       Author           Description
+//* ---------- ---------------- --------------------------------------------------
+//********************************************************************************
+    string testing123 = '12345'
+ 
+//****************************************************
+//* Main Procesing
+//****************************************************
+!a100_main
+    string a
+    string c
+    int    i1
+    dollar d1
+    float  f1
+
+    print:"This is a new line entered"
+    string BoolTest = 'n'
+    testing123 = 'Forrest'
+    call !b100_init
+    d1 = 1.23
+    call !b200_proc
+    i1 = 5
+    i1 = 6
+    i1 = 7
+
+    BoolTest = 'ok'
+    f1 = 2.2
+    f1 = 3
+    f1 = 3.21
+    print:"@f1@"
+
+    call !b300_wrap
+    exit
+ 
+//****************************************************
+//* Initialization
+//****************************************************
+!b100_init
+    system:"cls"
+    print:"******************************************************************"
+    print:"* Begin Bentley.bed    @date@ - @time@"
+    print:"* This is a test"
+    print:"******************************************************************"
+    print:"This is a new line entered"
+    return
+ 
+//****************************************************
+//* Process
+//****************************************************
+!b200_proc
+    //**********************************************
+    //* Directory List Processing 
+    //*     Input : Directory string initialized 
+    //*     Output: DirFileList file of files in Directory 
+    //**********************************************
+    open Encrypt c:\bedit\encrypt.bed
+    fs:/Forrest/
+    open file1 null
+    i:/test file 1/
+    open file2 null
+    i:/file 2 line 1/
+    i:/file 2 line 2/
+    i:/file 2 line 3/
+    open TestFile null
+    i:/Testing 123/
+    i:/Line2/
+    i:/line3/
+    b;1
+    b;1
+    file file2
+    i:/line4/
+    file TestFile
+    b
+    
+    int Count1
+    do
+        Count1 ++
+        p
+        f;1
+    until (eof)
+    return
+ 
+//****************************************************
+//* Wrapup
+//****************************************************
+!b300_wrap
+    print:"******************************************************************"
+    print:"* Bentley Processing Complete    @date@ - @time@"
+    print:"******************************************************************"
+    wait
+    return
+ 
+//****************************************************
+//* End of Program
+//****************************************************
+!z999_end_of_program
+    return
+ 
+//********************************************************************************
+//* End of program Bentley.bed
+//********************************************************************************

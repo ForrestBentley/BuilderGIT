@@ -1,0 +1,19 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Person Maintenance
+MENU,~Test
+ITEM,Person_Address_MSOBJ,Person_Address_WIN
+--------------------
+ITEM,Person_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Person_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Person_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Person_Main_About_MSOBJ,~About Person System

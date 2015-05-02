@@ -1,0 +1,55 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Forrest_Details_WIN,10,15,719,674,Technology Details
+EFOBJL,Forrest_Details_Type_EFOBJ,156,25,164,24,
+STTXT1,Forrest_Details_Name_STTXT,37,58,114,24,Name
+EFOBJL,Forrest_Details_Name_EFOBJ,156,58,289,24,
+STTXT1,Forrest_Details_Version_STTXT,455,58,114,24,Version
+EFOBJL,Forrest_Details_Version_EFOBJ,574,58,74,24,
+STTXT1,Forrest_Details_Description_STTXT,37,90,114,24,Description
+MLOBJ1,Forrest_Details_Description_MLOBJ,156,90,492,53,
+STTXT1,Forrest_Details_Vendor_STTXT,37,150,114,24,Vendor
+EFOBJL,Forrest_Details_Vendor_EFOBJ,156,150,214,24,
+STTXT1,Forrest_Details_Size_STTXT,35,208,114,24,Size
+STTXT1,Forrest_Details_Code_STTXT,156,178,114,24,Lines of Code
+EFOBJL,Forrest_Details_Size_EFOBJ,156,208,114,24,
+STTXT1,Forrest_Details_Maintenance_STTXT,283,178,114,24,Maintenance $
+EFOBJL,Forrest_Details_Maintenance_EFOBJ,283,208,114,24,
+STTXT1,Forrest_Details_Support_STTXT,409,178,114,24,Support $
+EFOBJL,Forrest_Details_Support_EFOBJ,409,208,114,24,
+STTXT1,Forrest_Details_Hits_STTXT,534,178,114,24,Hits/Usage
+EFOBJL,Forrest_Details_Hits_EFOBJ,534,208,114,24,
+EFOBJL,Forrest_Details_Archlayers_EFOBJ,156,241,492,24,
+EFOBJL,Forrest_Details_Techstacks_EFOBJ,156,270,492,24,
+STTXT1,Forrest_Details_Process_STTXT,35,300,114,24,Process
+EFOBJL,Forrest_Details_Process_EFOBJ,156,299,492,24,
+STTXT1,Forrest_Details_Business_STTXT,35,329,114,24,Business
+EFOBJL,Forrest_Details_Business_EFOBJ,156,329,492,24,
+EFOBJL,Forrest_Details_Status_EFOBJ,156,362,214,24,
+EFOBJL,Forrest_Details_Strategy_EFOBJ,156,395,214,24,
+STTXT1,Forrest_Details_Changed_STTXT,37,428,114,24,Changed
+EFOBJL,Forrest_Details_Changed_EFOBJ,156,428,114,24,
+STTXT1,Forrest_Details_Originated_STTXT,37,461,114,24,Originated
+EFOBJL,Forrest_Details_Originated_EFOBJ,156,461,114,24,
+CBOBJ1,Forrest_Details_Watch_CBOBJ,156,494,100,24,Follow-Up
+STTXT1,Forrest_Details_Comments_STTXT,38,526,114,24,Comments
+MLOBJ1,Forrest_Details_Comments_MLOBJ,156,526,454,52,
+PBOBJ1,Forrest_Details_Add_PBOBJ,38,590,114,24,&Add
+PBOBJ1,Forrest_Details_Change_PBOBJ,165,590,114,24,&Change
+PBOBJ1,Forrest_Details_Delete_PBOBJ,292,590,114,24,&Delete
+PBOBJ1,Forrest_Details_Applications_PBOBJ,420,590,114,24,&Applications
+PBOBJ1,Forrest_Details_Cancel_PBOBJ,545,590,114,24,&Cancel
+PBOBJ1,Forrest_Details_Type_PBOBJ,37,25,115,24,&Type
+PBOBJ1,Forrest_Details_Archlayers_PBOBJ,35,241,115,24,Arch &Layers
+PBOBJ1,Forrest_Details_Techstacks_PBOBJ,35,271,115,24,Tech &Stacks
+PBOBJ1,Forrest_Details_Status_PBOBJ,35,362,115,24,Status
+PBOBJ1,Forrest_Details_Strategy_PBOBJ,35,395,115,24,Strategy
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Forrest_Multiselect_WIN,14,30,321,318,Multi-Select
+STTXT1,Forrest_Multiselect_Multiselect_STTXT,36,25,100,20,multiselect
+LBOBJ1,Forrest_Multiselect_Multiselect_LBOBJ,35,48,200,200,
+PBOBJ1,Forrest_Multiselect_Ok_PBOBJ,33,256,100,20,&OK
+PBOBJ1,Forrest_Multiselect_Cancel_PBOBJ,153,256,100,20,&Cancel

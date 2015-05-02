@@ -1,0 +1,24 @@
+Person_Test_WIN,Connector,Arrow3,545,272,360,356,0,0,0
+Person_Test_WIN,Connector,Arrow3,497,144,545,248,0,0,0
+Person_Test_WIN,Connector,Arrow3,497,144,360,356,0,0,0
+Person_Test_WIN,Connector,Line,267,442,119,417,0,0,0
+Person_Test_WIN,Connector,Line,126,334,360,368,0,0,0
+Person_Test_WIN,Connector,Line,360,368,267,442,0,0,0
+Person_Phone_WIN,Person_Phone_Ball_Ellipse,Ellipse,143,175,50,50,255,0,0
+Person_Phone_WIN,Person_Phone_23rsa_BitmapFit,BitmapFit,188,142,100,0,c:\bedit\beditwin\builder\GECTechBallBlue.bmp
+Person_Address_WIN,Person_Address_Ball1_Ellipse,Ellipse,332,320,50,50,0,0,255
+Person_Address_WIN,Person_Address_S1_Line,Line,496,46,614,136,0,0,255
+Person_Address_WIN,Person_Address_S2_Ellipse3D,Ellipse3D,404,324,50,50,0,255,0
+Person_Address_WIN,Person_Address_S4_BitmapFit,BitmapFit,106,270,184,114,c:\bedit\beditwin\builder\BuilderEarth.bmp
+Person_Address_WIN,Person_Address_S23_Ellipse,Ellipse,489,324,50,50,250,150,0
+Person_Address_WIN,Person_Address_Asdfwer_BitmapFit,BitmapFit,552,284,86,60,c:\bedit\beditwin\builder\BuilderFile.bmp
+Person_Address_WIN,Person_Address_Asdfasdf3_BitmapFit,BitmapFit,480,145,100,0,c:\bedit\beditwin\builder\GECTechGELogo.bmp
+Person_Address_WIN,Person_Address_Bbb3_Box3D,Box3D,388,240,100,24,255,0,0
+Person_Address_WIN,Person_Address_Bbb3.Text_Text,TextTilt,398,241,20,0,255,255,0,Times New Roman,Testing
+Person_Test_WIN,Person_Test_B2_Rectangle,Rectangle,495,248,100,24,0,0,0
+Person_Test_WIN,Person_Test_B3_Box,Box,447,120,100,24,255,0,0
+Person_Test_WIN,Person_Test_B4_Box3D,Box3D,310,356,100,24,0,0,255
+Person_Test_WIN,Person_Test_B5_Boxround,Boxround,217,430,100,24,255,255,0
+Person_Test_WIN,Person_Test_C234_Circle,Circle,126,334,50,50,255,0,255
+Person_Test_WIN,Person_Test_Bb2_Ellipse,Ellipse,119,417,50,50,0,255,0
+Person_Test_WIN,Person_Test_Testtext_Text,Text,373,62,40,20,0,150,0,Times New Roman,This is a test

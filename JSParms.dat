@@ -1,0 +1,39 @@
+******************************************************************
+* Begin Jsparms.bed    02/25/14 - 14:49:04
+* This program will read all JS files in an input directory
+* (and all sub-directories) and identify functions that don't
+* contain proper JSDoc comments.
+******************************************************************
+Processing c:\bedit\jsparms\large\assignmentSearchMediator.js
+Processing c:\bedit\jsparms\large\core.js
+    function Backbone.Model.prototype._super
+        *** Error: Missing Comments Parm funcName - Line 12
+        *** Error: Return not set
+    function Backbone.Model.prototype.toJSON
+        *** Error: Missing Comments Parm recursive - Line 19
+        *** Error: Return not set
+    function Backbone.View.prototype.close
+        *** Error: Missing Comments Parm  - Line 25
+Processing c:\bedit\jsparms\large\searchMediator.js
+        *** Unable to Open / lines too large to process
+Processing c:\bedit\jsparms\small\logger2.js
+    function mv.log
+        *** Error: Missing Comments Parm newParam - Line 12
+    function determineType
+    function addToLog
+        *** Error: Missing Comments Parm logType - Line 54
+    function persistLog
+        *** Error: Return not set
+    function objectToString
+******************************************************************
+* Jsparms Processing Complete    02/25/14 - 14:49:08
+* Output located at JSParms.dat
+******************************************************************
+Directory        c:\bedit\jsparms\small
+JS Files         4
+File Errors      2
+Files Too Large  1
+Function Errors  6
+Parameter Errors 5
+Return Errors    3
+******************************************************************

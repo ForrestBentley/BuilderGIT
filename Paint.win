@@ -1,0 +1,48 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Paint_Paintwin_WIN,1,24,1350,680,Test Paint Window
+PBOBJ1,Paint_Paintwin_Close_PBOBJ,18,429,114,24,&Close
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Paint_Colors_WIN,1,1,360,345,Color Selection
+STTXTF,Paint_Colors_Border_STTXT,8,8,261,261,
+STTXT1,Paint_Colors_Red_STTXT,275,74,14,24,R
+EFOBJL,Paint_Colors_Red_EFOBJ,296,74,34,24,
+STTXT1,Paint_Colors_Green_STTXT,275,105,14,24,G
+EFOBJL,Paint_Colors_Green_EFOBJ,296,105,34,24,
+STTXT1,Paint_Colors_Blue_STTXT,275,136,14,24,B
+EFOBJL,Paint_Colors_Blue_EFOBJ,296,136,34,24,
+PBOBJ1,Paint_Colors_Bluedown_PBOBJ,296,162,16,24,<
+PBOBJ1,Paint_Colors_Blueup_PBOBJ,314,162,16,24,>
+PBOBJ1,Paint_Colors_Ok_PBOBJ,10,276,100,24,&OK
+PBOBJ1,Paint_Colors_Cancel_PBOBJ,120,276,100,24,&Cancel
+PBOBJ1,Paint_Colors_Refresh_PBOBJ,230,276,100,24,&Refresh
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Paint_Stdcolors_WIN,1,1,190,230,Colors
+PBOBJ1,Paint_Stdcolors_Ok_PBOBJ,10,160,45,20,&OK
+PBOBJ1,Paint_Stdcolors_Cancel_PBOBJ,62,160,55,20,&Cancel
+PBOBJ1,Paint_Stdcolors_More_PBOBJ,125,160,45,20,&More
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Paint_Testwindow_WIN,315,85,325,325,Test Window
+STTXT1,Paint_Testwindow_First_STTXT,35,25,100,20,First
+EFOBJL,Paint_Testwindow_First_EFOBJ,165,25,100,20,
+STTXT1,Paint_Testwindow_Middle_STTXT,35,55,100,20,Middle
+EFOBJL,Paint_Testwindow_Middle_EFOBJ,165,55,100,20,
+STTXT1,Paint_Testwindow_Last_STTXT,35,85,100,20,Last
+EFOBJL,Paint_Testwindow_Last_EFOBJ,165,85,100,20,
+STTXT1,Paint_Testwindow_Address_STTXT,35,115,100,20,Address
+EFOBJL,Paint_Testwindow_Address_EFOBJ,165,115,100,20,
+STTXT1,Paint_Testwindow_City_STTXT,35,145,100,20,City
+EFOBJL,Paint_Testwindow_City_EFOBJ,165,145,100,20,
+STTXT1,Paint_Testwindow_State_STTXT,35,175,100,20,State
+EFOBJL,Paint_Testwindow_State_EFOBJ,165,175,100,20,
+STTXT1,Paint_Testwindow_Zip_STTXT,35,205,100,20,Zip
+EFOBJL,Paint_Testwindow_Zip_EFOBJ,165,205,100,20,
+PBOBJ1,Paint_Testwindow_Ok_PBOBJ,35,235,100,20,&OK
+PBOBJ1,Paint_Testwindow_Cancel_PBOBJ,155,235,100,20,&Cancel

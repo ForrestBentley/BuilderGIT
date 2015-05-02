@@ -1,0 +1,35 @@
+    string Newline
+    string Key
+    string Type
+    string Name
+    string Desc
+    string Vendor
+    string Version
+
+    open GECTech GECTechnology.csv
+    b
+    do
+        if  (!eof)
++           scan:/@line/:/,/ Key = left
++           scan:/@right/:/,/ Type = left
++           scan:/@right/:/,/ Name = left
++           scan:/@right/:/,/ Desc = left
++           scan:/@right/:/,/ Vendor = left
++           scan:/@right/:/,/ Version = left
++           call !a100_replace
++           f;1
++       endif
+    until (eof)
+
+    write GECTech GECTechnology.new
+    close GECTech
+    exit
+
+!a100_replace
+    if  (Key = 'Key')
++       Newline = "@Key@,@Type@,@Name@,@Desc@,@Vendor@,@Version@,Architecure Layers,Tech Stacks,@right@"
++   else
++       Newline = "@Key@,@Type@,@Name@,@Desc@,@Vendor@,@Version@,,,@right@"
++   endif
+    r:/@Newline/
+    return

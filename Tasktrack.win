@@ -1,0 +1,125 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Tasktrack_Tasks_WIN,5,40,914,378,Task Tracker
+LBOBJ1,Tasktrack_Tasks_Tasklist_LBOBJ,35,50,670,200,
+STTXT1,Tasktrack_Tasks_Heading_STTXT,35,25,343,19,    Date            Time    Type   Priority    Description
+EFOBJL,Tasktrack_Tasks_Search_EFOBJ,382,23,254,24,
+PBOBJ1,Tasktrack_Tasks_Search_PBOBJ,639,23,64,24,Search
+GBOBJ1,Tasktrack_Tasks_Grptoday_GBOBJ,720,34,134,211,Filter
+RBOBJ1,Tasktrack_Tasks_Today_RBOBJ,730,54,114,24,&Today
+RBOBJ1,Tasktrack_Tasks_All_RBOBJ,730,78,114,24,&All
+RBOBJ1,Tasktrack_Tasks_Overdue_RBOBJ,730,102,114,24,&Overdue
+RBOBJ1,Tasktrack_Tasks_Future_RBOBJ,730,126,114,24,&Future
+CBOBJ1,Tasktrack_Tasks_Business_CBOBJ,730,156,114,24,&Business
+CBOBJ1,Tasktrack_Tasks_Personal_CBOBJ,730,180,114,24,&Personal
+PBOBJ1,Tasktrack_Tasks_Exit_PBOBJ,35,250,114,24,E&xit
+PBOBJ1,Tasktrack_Tasks_Add_PBOBJ,175,250,94,24,&Add
+PBOBJ1,Tasktrack_Tasks_Change_PBOBJ,275,250,94,24,&Change
+PBOBJ1,Tasktrack_Tasks_Delete_PBOBJ,375,250,94,24,&Delete
+PBOBJ1,Tasktrack_Tasks_Complete_PBOBJ,475,250,94,24,&Finish Task
+PBOBJ1,Tasktrack_Tasks_Report_PBOBJ,730,250,144,24,&Report Finished
+PBOBJ1,Tasktrack_Tasks_Refresh_PBOBJ,730,212,114,24,&Refresh
+PBOBJ1,Tasktrack_Tasks_Sleep_PBOBJ,35,284,114,24,&Remind Later
+PBOBJ1,Tasktrack_Tasks_Clear_PBOBJ,730,284,144,24,&Clear Backups
+PBOBJ1,Tasktrack_Tasks_Daily_PBOBJ,175,284,94,24,&Recurring
+PBOBJ1,Tasktrack_Tasks_View_PBOBJ,610,250,94,24,&View
+PBOBJ1,Tasktrack_Tasks_Help_PBOBJ,610,284,94,24,&Help
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Tasktrack_Taskdtls_WIN,20,34,838,387,Task Details
+STTXT1,Tasktrack_Taskdtls_Date_STTXT,35,63,120,24,Date
+STTXT1,Tasktrack_Taskdtls_Date_EFOBJ,165,63,114,24,
+STTXT1,Tasktrack_Taskdtls_Time_STTXT,35,105,120,24,Time
+STTXT1,Tasktrack_Taskdtls_Time_EFOBJ,165,105,114,24,
+GBOBJ1,Tasktrack_Taskdtls_Type_GBOBJ,35,136,253,54,Type
+RBOBJ1,Tasktrack_Taskdtls_Business_RBOBJ,45,157,114,24,&Business
+RBOBJ1,Tasktrack_Taskdtls_Personal_RBOBJ,164,157,114,24,&Personal
+STTXT1,Tasktrack_Taskdtls_Priority_STTXT,35,197,114,24,Priority
+EFOBJL,Tasktrack_Taskdtls_Priority_EFOBJ,165,197,34,24,
+STTXT1,Tasktrack_Taskdtls_Desc_STTXT,35,229,114,24,Description
+EFOBJL,Tasktrack_Taskdtls_Desc_EFOBJ,165,229,612,24,
+STTXT1,Tasktrack_Taskdtls_Contact_STTXT,35,261,114,24,Contact
+EFOBJL,Tasktrack_Taskdtls_Contact_EFOBJ,165,261,314,24,
+PBOBJ1,Tasktrack_Taskdtls_Ok_PBOBJ,35,293,114,24,&OK
+PBOBJ1,Tasktrack_Taskdtls_Cancel_PBOBJ,165,293,114,24,&Cancel
+GBOBJ1,Tasktrack_Taskdtls_Grpyear_GBOBJ,304,25,179,194,Change Date/Time
+RBOBJ1,Tasktrack_Taskdtls_Year_RBOBJ,396,49,69,24,&Year
+RBOBJ1,Tasktrack_Taskdtls_Month_RBOBJ,396,83,69,24,&Month
+RBOBJ1,Tasktrack_Taskdtls_Week_RBOBJ,396,117,69,24,&Week
+RBOBJ1,Tasktrack_Taskdtls_Day_RBOBJ,396,151,69,24,&Day
+RBOBJ1,Tasktrack_Taskdtls_Hour_RBOBJ,396,185,69,24,&Hour
+PBOBJ1,Tasktrack_Taskdtls_Plus_PBOBJ,358,68,29,29,+
+PBOBJ1,Tasktrack_Taskdtls_Minus_PBOBJ,318,68,29,29,-
+STTXT1,Tasktrack_Taskdtls_Created_STTXT,35,33,114,24,Created
+STTXT1,Tasktrack_Taskdtls_Due_STTXT,165,33,114,24,Due
+GBOBJ1,Tasktrack_Taskdtls_Month_GBOBJ,494,25,284,194,Month
+STTXT1,Tasktrack_Taskdtls_Su_STTXT,547,46,25,20,Su
+STTXT1,Tasktrack_Taskdtls_Mo_STTXT,573,46,25,20,Mo
+STTXT1,Tasktrack_Taskdtls_Tu_STTXT,599,46,25,20,Tu
+STTXT1,Tasktrack_Taskdtls_We_STTXT,625,46,25,20,We
+STTXT1,Tasktrack_Taskdtls_Th_STTXT,651,46,25,20,Th
+STTXT1,Tasktrack_Taskdtls_Fr_STTXT,677,46,25,20,Fr
+STTXT1,Tasktrack_Taskdtls_Sa_STTXT,703,46,25,20,Sa
+PBOBJ1,Tasktrack_Taskdtls_Prev_PBOBJ,509,119,19,24,<
+PBOBJ1,Tasktrack_Taskdtls_Next_PBOBJ,743,119,19,24,>
+PBOBJ1,Tasktrack_Taskdtls_Today_PBOBJ,315,117,74,24,&Today
+PBOBJ1,Tasktrack_Taskdtls_Tomorrow_PBOBJ,315,151,74,24,&Tomorrow
+PBOBJ1,Tasktrack_Taskdtls_Am_PBOBJ,314,185,34,24,&AM
+PBOBJ1,Tasktrack_Taskdtls_Pm_PBOBJ,355,185,34,24,&PM
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Tasktrack_Finish_WIN,21,1,592,429,Finish Task
+STTXT1,Tasktrack_Finish_Date_STTXT,18,55,120,24,Date
+EFOBJL,Tasktrack_Finish_Date_EFOBJ,148,55,114,24,
+STTXT1,Tasktrack_Finish_Time_STTXT,18,97,120,24,Time
+EFOBJL,Tasktrack_Finish_Time_EFOBJ,148,97,114,24,
+GBOBJ1,Tasktrack_Finish_Type_GBOBJ,20,128,253,54,Type
+RBOBJ1,Tasktrack_Finish_Business_RBOBJ,30,149,114,24,&Business
+RBOBJ1,Tasktrack_Finish_Personal_RBOBJ,149,149,114,24,&Personal
+STTXT1,Tasktrack_Finish_Priority_STTXT,18,193,114,24,Priority
+EFOBJL,Tasktrack_Finish_Priority_EFOBJ,148,193,34,24,
+STTXT1,Tasktrack_Finish_Desc_STTXT,18,231,114,24,Description
+EFOBJL,Tasktrack_Finish_Desc_EFOBJ,148,231,414,24,
+STTXT1,Tasktrack_Finish_Created_STTXT,18,25,114,24,Created
+STTXT1,Tasktrack_Finish_Due_STTXT,148,25,114,24,Due
+STTXT1,Tasktrack_Finish_Comments_STTXT,18,265,114,24,Comments
+MLOBJ1,Tasktrack_Finish_Comments_EFOBJ,148,265,414,64,
+PBOBJ1,Tasktrack_Finish_Finish_PBOBJ,15,345,114,24,&Finish
+PBOBJ1,Tasktrack_Finish_Cancel_PBOBJ,148,345,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Tasktrack_Recurring_WIN,30,75,700,462,Recurring Tasks
+STTXT1,Tasktrack_Recurring_Heading_STTXT,15,20,549,24,  Time      Type   Description
+LBOBJ1,Tasktrack_Recurring_Tasklist_LBOBJ,15,44,550,200,
+STTXT1,Tasktrack_Recurring_Task_STTXT,15,250,114,24,Description
+EFOBJL,Tasktrack_Recurring_Task_EFOBJ,145,250,419,24,
+STTXT1,Tasktrack_Recurring_Time_STTXT,15,284,114,24,Time
+EFOBJL,Tasktrack_Recurring_Time_EFOBJ,145,284,114,24,
+GBOBJ1,Tasktrack_Recurring_Grpdaily_GBOBJ,265,278,274,141,Type
+RBOBJ1,Tasktrack_Recurring_Daily_RBOBJ,273,300,79,24,&Daily
+RBOBJ1,Tasktrack_Recurring_Weekly_RBOBJ,273,329,79,24,&Weekly
+RBOBJ1,Tasktrack_Recurring_Monthly_RBOBJ,273,358,79,24,&Monthly
+RBOBJ1,Tasktrack_Recurring_Yearly_RBOBJ,273,387,79,24,&Yearly
+COOBJL,Tasktrack_Recurring_Dayofweek_COOBJ,372,329,150,200,
+COOBJL,Tasktrack_Recurring_Dayofmonth_COOBJ,372,358,50,600,
+COOBJL,Tasktrack_Recurring_Month_COOBJ,372,387,150,300,
+PBOBJ1,Tasktrack_Recurring_Add_PBOBJ,582,250,74,24,&Add
+PBOBJ1,Tasktrack_Recurring_Change_PBOBJ,582,94,74,24,&Change
+PBOBJ1,Tasktrack_Recurring_Delete_PBOBJ,582,138,74,24,&Delete
+PBOBJ1,Tasktrack_Recurring_Close_PBOBJ,583,342,74,24,&Close
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Tasktrack_View_WIN,1,1,1200,625,Task Viewer
+STTXT1,Tasktrack_View_Heading1_STTXT,150,10,1000,24,
+STTXT1,Tasktrack_View_Heading2_STTXT,150,34,1000,24,
+PBOBJ1,Tasktrack_View_Year_PBOBJ,20,10,90,24,&Year
+PBOBJ1,Tasktrack_View_Month_PBOBJ,20,40,90,24,&Month
+PBOBJ1,Tasktrack_View_Day_PBOBJ,20,70,90,24,&Day
+PBOBJ1,Tasktrack_View_Minus_PBOBJ,20,100,40,24,-
+PBOBJ1,Tasktrack_View_Plus_PBOBJ,70,100,40,24,+
+PBOBJ1,Tasktrack_View_Close_PBOBJ,20,130,90,24,&Close

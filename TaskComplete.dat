@@ -1,0 +1,365 @@
+2014/03/11|14:00:00|2014/03/11|14:00:00|B|1|B2B Architecture?|Lilian/Baga/Neil/Tim March||2014/03/12|09:48:42
+2014/03/11|14:00:00|2014/03/12|08:35:23|P|1|Josh Zelda?|Josh||2014/03/12|09:56:17
+2014/03/11|14:00:00|2014/03/12|08:35:30|P|1|Rock Image|||2014/03/12|10:12:04
+2014/03/11|14:00:00|2014/03/11|14:00:00|B|1|A-Jenkins Eclipse/Maven Setup|Igor||2014/03/13|09:11:36|Late
+2014/03/13|15:57:52|2014/03/14|09:30:00|B|1|EA Approval Cloud|Shawn/Chad/Leroy||2014/03/14|09:19:25|
+2014/03/13|09:11:37|2014/03/17|14:11:00|B|1|A-Jenkins Manual Testing|Mike|Going to run manually after attaching XMLParse to FortifyHandler code.|2014/03/18|16:55:34|Late
+2014/03/14|13:58:31|2014/03/18|18:00:00|B|2|B-Edit Review - Debug; English; Task Track - Michigan|Jose|Trip to Michigan planned for April 15/16.|2014/03/18|16:56:24|
+2014/03/14|07:35:15|2014/03/18|12:35:00|P|1|ATAT Rock Quote|Chris|May the Force be with you|2014/03/18|17:00:03|Late
+2014/03/11|14:00:00|2014/03/17|14:00:00|P|1|Get-in-Gear Payment|Fitness Center|Paid Jody $17.50 3/20/2014 at 12:00pm for the Get-in-Gear 10K |2014/03/20|13:57:07|Late
+2014/03/18|17:03:12|2014/03/19|14:00:00|B|1|Telematics Driver ESB Service Now ticket open|Baga/Neil|email to Baga/Lilian for Baga to fill out the Service Now 3/20/2014 at 2:07pm|2014/03/20|14:04:32|Late
+2014/03/18|17:07:14|2014/03/19|17:00:00|B|1|Michigan Trip Plan 3/15?|Neil|email sent to Neil 3/20/2014 at 2:14PM.|2014/03/20|14:14:27|Late
+2014/03/18|07:34:58|2014/03/21|07:00:00|P|2|Josh Taxes this Weekend|Josh|Text sent to Josh|2014/03/20|14:16:11|
+2014/03/18|17:01:09|2014/03/19|10:00:00|B|1|XMLParse code in FortifyHandler|Initial Coding Complete|Mike|2014/03/20|15:31:38|Late
+2014/03/20|15:31:40|2014/03/21|15:00:00|B|1|FortifyHandler merging 2 XML files|Mike|done|2014/03/21|11:49:29|
+2014/03/20|16:59:31|2014/03/21|16:00:00|B|2|Michigan Trip OK?|Neil|Neil response: It's up to you.  You are certainly welcome to go if you think it would help.|2014/03/21|11:50:18|
+2014/03/20|16:59:45|2014/03/21|16:00:00|B|2|Telematics ESB Work Depth?|Neil|Neil's response: The Telematics team and/or Jose's team should be able to handle that themselves.  There is nothing new or complex about ESB definitions. |2014/03/21|11:50:53|
+2014/03/20|17:01:44|2014/03/24|17:00:00|B|3|PCI Review|Olivier|SAC-A was the closest match to GEFS Paypal processing.|03/24/14|08:31:56|
+2014/03/24|11:57:56|2014/03/24|13:00:00|B|3|FortifyHandler regular expression search using '*'|Mike|Added '*' to GEString|03/24/14|11:58:41|
+2014/03/24|14:28:23|2014/03/24|16:00:00|B|3|Find all places that QTCNV119 (tc 40RA) is called|Sue Hjerpe|Found in VOS and MCC|03/24/14|14:29:17|
+2014/03/24|17:02:25|2014/03/25|07:00:00|B|3|FortifyHandler GEString "*> in Metadata doesn't work for merging data||Added Start field to GEString.contains method to bypass first " in the string|03/25/14|10:59:29|Late
+2014/03/24|13:05:12|2014/03/25|15:00:00|B|3|FortifyHandler code merged with rainbow-metrics project|Mike|Merged OK; check with Mike on Logger errors|03/25/14|11:00:52|
+2014/03/25|11:03:43|2014/03/25|15:00:00|B|3|FortifyParser unzip the fpr files passed in and process the audit.fvdl and audit.xml file pairs|Mike|Completed zip; need to test delete audit.fvdl and audit.xml|03/25/14|17:45:32|Late
+2014/03/25|17:45:41|2014/03/26|09:00:00|B|3|FortifyParser: test delete files audit.fvdl and audit.xml|Mike|Check with Mike why too many .fpr files are processed.|03/26/14|08:08:33|
+2014/03/26|10:36:24|2014/03/26|12:00:00|B|3|DR documents (GEFS.ppt; Infrastructure; cloud)|Peggy|email with links sent to DR group.|03/26/14|10:55:32|
+2014/03/25|17:46:33|2014/03/26|07:00:00|B|3|FortifyParser: Change Metadata files to resource or constants|Mike|Completed and checked in.|03/26/14|12:02:11|Late
+2014/03/26|16:45:56|2014/03/27|07:00:00|B|3|Task Track: Add Change(Double Click); Delete to Daily Tasks. Add daily tasks once a day|Task Track-Forrest|Added all Daily Task Track functionality|03/27/14|12:10:49|Late
+2014/03/21|15:08:30|2014/03/27|08:00:00|B|3|B-Edit - ASA CSV Consolidation|Veena|Original Program Complete - Still need XLS -> CSV Conversion|03/28/14|12:35:13|Late
+2014/03/27|16:03:28|2014/03/28|07:00:00|B|3|iPas acronym?|Asif|IBM Pure Application System-http://www.ibm.com/ibm/puresystems/us/en/pf_pureapplication.html\|03/28/14|12:45:37|Late
+2014/03/27|16:01:17|2014/03/28|18:00:00|B|3|FortifyParser unzip/remove/tagslist refactor soon|Mike|Mike refactored other Rainbow XML parsing; will use the same.|03/28/14|14:34:00|
+2014/03/28|07:09:56|2014/03/28|13:00:00|P|3|Rock Drawing|Monika|Drawn|03/28/14|15:45:46|Late
+2014/03/25|07:58:00|2014/03/28|07:00:00|B|3|Setup Michigan Trip||Record Locator (PNR): EINABI; 4/14 Delta 142 1:00-3:39  Seat 40F; 4/16 Delta 511 5:33-6:26 Seat 21F; Courtyard by Marriot 88269752; Hertz G15849720D3|03/28/14|16:53:14|Late
+2014/03/24|14:40:22|2014/03/31|16:00:00|P|2|Bathroom Paint|Liz|Finished painting bathroom 3/30; need to install hardware tonight|03/31/14|07:46:44|
+2014/03/28|15:29:04|2014/03/31|10:00:00|B|1|Mexico Ordering High Level Architecture|Angelo|Sent to Angelo: C:\Users\213000864\Documents\Docu\architecture\Ordering\Mexico\2014\MexicoOrdering2014.ppt|03/31/14|09:45:23|
+2014/03/27|15:54:29|2014/03/31|10:00:00|B|3|Peggy 36 Years at GE!|Peggy|Congratulated Peggy this morning; actual date is April 12th|03/31/14|09:46:10|
+2014/03/28|16:54:59|2014/03/31|07:00:00|B|3|Michigan B-Edit/Fleet Overview Meetings Setup|Jose/Craig|Worked with Gurvinder to setup meetings for: @GE AMSTC Fleet <amstc.fleet@ge.com>|03/31/14|10:46:37|Late
+2014/03/31|10:00:59|2014/03/31|15:00:00|B|3|Fleet business contact for asset tracking|Tom Chess; Jennifer Lawrence|Mike Magnusson recommended Kimberly Clark (Kim Clark would be the best person.)|03/31/14|13:06:12|
+2014/03/31|11:27:01|2014/04/01|13:00:00|B|3|Torchlight 5K Signup for Forrest and Jess/Louella|Fitness Center|Signed Forrest and Jess up today ($30 total for both of us). If Jess can't run; then Louella will use Jess' bib.|03/31/14|13:07:29|
+2014/03/31|07:47:57|2014/03/31|16:00:00|B|3|Properties Push - System Design|Josh Hennagir; Jaromir Kosar|Initial Screen Layout (Remote Property Maintenance-RPM)|03/31/14|15:51:52|
+2014/03/31|16:49:34|2014/04/01|16:00:00|B|3|ASA: Add Summary File|Veena|Created Summary Total CSV in ASA.BED|04/01/14|08:35:49|
+2014/03/28|12:51:13|2014/04/01|18:00:00|B|3|ASA - Convert XLS to CSV for processing?|Veena|Vivek Mahajan will create CSV from Jenkins|04/01/14|16:25:51|
+2014/04/01|08:36:31|2014/04/01|17:00:00|P|3|Rock Draw - Virgin Mary|Bianca|Drawn|04/01/14|16:55:22|
+2014/03/31|14:39:07|2014/04/02|16:00:00|B|3|ASA - Add Summary File|Veena|Finished 3/31/2014|04/02/14|07:29:34|
+2014/03/31|15:51:55|2014/04/03|16:00:00|B|3|RPM Screen Review|Josh Hennagir; Jaromir Kozar|Reviewed with Josh AM; change to allow duplicate file/server|04/03/14|10:36:17|
+2014/04/03|16:05:35|2014/04/04|07:00:00|B|2|Add "Debug" button to Builder System - B-Edit Windows|Forrest|Finished in 15 minutes|04/04/14|10:32:32|Late
+2014/04/02|07:29:58|2014/04/04|13:00:00|B|3|Range this weekend?|Josh|We'll go Sunday|04/04/14|18:06:07|Late
+2014/04/07|07:52:18|2014/04/07|11:00:00|B|2|Fleet Initiatives - Password Compliance Gaps - Review Needs|Angelo|Siteminder changes needed for IDAMS apps. Legacy (Ordering/Personal Mileage) apps in progress. Angelo will send info on all (Ramu and Laksmipathy involved).|04/07/14|09:41:18|
+2014/03/11|14:00:00|2014/04/07|07:00:00|P|2|GEFS Golf League Signup|Jennifer Miller|Paid 10:00 4/7/2014|04/07/14|09:59:47|Late
+2014/04/07|14:22:54|2014/04/07|16:00:00|P|3|Get-in-Gear Pickup Date?|Puneeta|Packet Pick-up at Minnehaha Park Pavilion; Friday; April 25; from Noon - 8:00 pm|04/07/14|14:59:29|
+2014/04/07|15:09:38|2014/04/07|17:00:00|P|2|Biking URL for Dale|Mike/Dale|Mike said the Greenway is great; just a few puddles|04/07/14|15:21:06|
+2014/03/24|17:05:38|2014/04/03|14:00:00|P|2|ESTA for Louella: http://travel.state.gov/content/visas/english/visit/visa-waiver-program.html; https://esta.cbp.dhs.gov/esta/esta.html|Louella|Louella said she's already taken care of it!|04/08/14|13:04:54|Late
+2014/04/01|13:04:16|2014/04/08|14:00:00|B|2|Sue lunch tomorrow|Sue Hjerpe|Ride to work tomorrow; I'll need a ride to the restaurant|04/08/14|17:05:35|Late
+2014/03/16|11:39:34|2014/04/08|07:00:00|P|3|Soup Super on Wednesday 4/9|St Peders|Bought groceries 4/8 $40.44|04/09/14|07:39:55|Late
+2014/04/09|10:36:12|2014/04/09|12:00:00|B|3|Award for B-Edit ASA System - Gift Selection; and Thank you to Veena!|Veena|Redlobster $100|04/10/14|07:44:49|Late
+2014/04/08|12:56:55|2014/04/08|07:00:00|P|3|Get-in-Gear Packet Pickup is on Friday 4/25|Puneeta|Talked to Puneeta on walk to parking lot|04/10/14|07:45:12|Late
+2014/04/07|07:54:23|2014/04/10|09:00:00|P|2|Jesus Christ Superstart Friday Night Tickets|Olivia|Text to Olivia; Liz will reserve 3 seats|04/10/14|07:50:01|
+2014/04/10|08:33:29|2014/04/10|10:00:00|B|3|Ordering eMail 2014 Process - Create PPT to show current flow & potential solutions|Brindha|Created PPT and sent to Brindha|04/10/14|08:34:28|
+2014/04/10|07:20:26|2014/04/10|07:00:00|P|1|Bike Wheel Call - Where?|Freewheel Midtown; Penn Cycle; Eric's|Bring it to Penn Cycle|04/10/14|16:22:33|Late
+2014/04/07|07:54:54|2014/04/11|07:00:00|P|3|Minnehaha Lacrosse Tomorrow|Olivia|Saturday 4:30 at Cretin|04/11/14|09:39:58|Late
+2014/04/02|12:47:09|2014/04/11|07:00:00|B|3|Sue Hjerpe Last Day||Said good-bye; see her and Adam at races; recycled her paper|04/11/14|15:54:52|Late
+2014/03/14|14:15:26|2014/04/10|14:00:00|B|2|B-Edit Michigan Training Course Work; Case/Exercises; Sylibus||Finished 4/14/2014; demo 4/15/2014|04/15/14|07:59:11|Late
+2014/04/15|16:32:01|2014/04/16|07:00:00|B|3|Fleet Overview links sent||Sent Overview; Levels; Applications; Tech Stack docs to the AMSTC team|04/16/14|12:29:17|Late
+2014/04/15|08:03:52|2014/04/17|07:00:00|P|3|Rock Edits - Gurvinder Photo; Monika Edit/Photo|||04/17/14|08:18:33|Late
+2014/04/17|07:49:17|2014/04/17|16:00:00|B|3|RPM - Download Button|Josh Hennagir|Added Download to both Compare and Update screens|04/17/14|10:45:19|
+2014/04/16|14:58:03|2014/04/17|07:00:00|B|3|ASA Double Slashes in Output File?|Veena|The problem was caused by using c:\ for the files; but after the fix there's security on the root; so the answer was to use files in a directory.|04/17/14|14:12:44|Late
+2014/04/17|12:42:59|2014/04/21|07:00:00|P|2|Give Monika's Rock|Monika Mulani|Long talk; going to Chicago; runner; family in Singapore|04/17/14|15:45:03|
+2014/04/16|15:00:11|2014/04/17|17:00:00|B|2|Fix Recurring Month/Year - see TaskTrack-Recurring-Monthly-Yearly.txt|Task Tracker||04/21/14|08:15:46|Late
+2014/04/21|08:16:41|2014/04/21|10:00:00|B|3|Haircut appointment setup|Judy Hart - Zena's|Thursday 4/24/2014 at 6:15|04/21/14|11:49:52|Late
+2014/04/21|08:18:21|2014/04/21|07:00:00|B|3|Iraq Rock Series|Sarah Kanan|Meeting Setup at 10:00 Tomorrow 4/22/2014|04/21/14|11:53:52|Late
+2014/04/17|14:15:08|2014/04/22|07:00:00|B|3|Confluency Overview for B-Edit|Ruchi Saxena|Ruchi setup meeting for next week.|04/22/14|09:17:16|Late
+2014/04/17|08:18:38|2014/04/24|16:00:00|P|3|Big Bowl Donation|Puneeta/Sarah|Donated $40 (+$40 GE Match) 4/23/2014|04/24/14|07:23:42|
+2014/03/28|15:46:15|2014/04/23|07:00:00|P|3|Lunch Setup?|Poh Im|Setup for 4/29 at 11:30|04/24/14|10:17:19|Late
+2014/04/24|07:25:23|2014/04/25|16:00:00|B|2|Add Search EFOBJ/PBOBJ; Add Tomorrow Filter|Task Tracker|Added Search; no need for Tomorrow Filter|04/25/14|08:32:14|
+2014/04/21|08:21:37|2014/04/25|16:00:00|B|3|Peter Lunch/Birthday Sunday|Peter Anderson - call|emailed to see if Sunday after church is ok for lunch to celebrate Peter's birthday|04/25/14|08:58:23|
+2014/04/24|08:18:05|2014/04/25|11:00:00|P|3|Minnehaha Lacrosse vs Washburn at 5:30|Olivia|Good day for Lacross; 62f and Sunny!|04/25/14|09:10:03|
+2014/04/24|16:01:06|2014/04/25|07:00:00|B|1|RPM Demo Meeting Setup|Tim March/Tim Hundt/Craig Kellog|Setup meeting for May 5th|04/25/14|10:00:03|Late
+2014/04/24|10:09:42|2014/04/25|13:00:00|P|2|Interior Paint Selection Tonight|Liz|Review with Liz tonight|04/25/14|13:37:27|Late
+2014/04/03|13:55:55|2014/04/08|07:00:00|B|2|Mainframe ID Unsuspended - Delgado; Ivonne  worked on it; New ticket REQ1563297 4/10/2014||G1BYFBT reactivated and pw reset in TSO by Ivonne|04/25/14|13:37:56|Late
+2014/04/25|14:15:06|2014/04/28|07:00:00|B|2|Check for use of QTCN653; QTCN6160; QTCN637; QTCN650|Deepak Kanniappan|Finished downloading all COBOL; JCL; PROC; COPY from 3090; and sent out email to Deepak on findings|04/28/14|08:51:04|Late
+2014/04/30|09:31:39|2014/04/30|11:00:00|P|1|XFer $ Justin Flight|Jess|Transferred $1500|04/30/14|12:45:30|Late
+2014/04/09|11:20:38|2014/05/02|16:00:00|B|3|ASA OK?; bad data in 2014_03_15_PROD_CH_Analysis.csv line 118?|Vivek/Veena|Corrected Firefox file read; multi-line double-quote carriage return split error; files with different number of lines.|05/01/14|10:27:09|
+2014/05/02|08:05:44|2014/05/02|10:00:00|P|1|Maui Car Rental Setup||Hertz Conf# 619334490F4|05/02/14|14:48:23|Late
+2014/04/24|08:39:52|2014/05/02|09:00:00|B|2|Mary Markos Funeral at 10:00|Annunciation Parish 525 W 54th St; Minneapolis|Bless you Mary|05/02/14|14:48:44|Late
+2014/05/02|08:26:11|2014/05/02|10:00:00|P|2|Warrior Dash Signup - Forrest/Louella|Fitness Center|Paid $65 GEFS (Jody Graham) for Forrest/Liz -> Louella|05/02/14|16:12:34|Late
+2014/04/25|14:12:40|2014/05/05|07:00:00|B|1|Notify everyone about Hawaii Vacation Plans||email sent for May 15 - May 22|05/05/14|07:56:09|Late
+2014/04/17|08:24:50|2014/05/05|10:00:00|B|1|Expense Report|Detroit - AMSTC|Sumitted AMSTC B-Edit expense report (including copy of Courtyard receipt)|05/05/14|08:40:37|
+2014/05/07|07:31:55|2014/05/07|09:00:00|P|2|My Fair Lady|Lou/Liz/Josh/Rachel|Front Row Tickets for July 9th|05/07/14|07:32:38|
+2014/04/25|14:45:24|2014/05/02|07:00:00|B|3|Udeploy Capabilities?|Aijuan Cai|Udeploy to move files; no editing|05/07/14|12:37:19|Late
+2014/05/07|09:58:34|2014/05/07|16:00:00|P|2|Jessica Geroux Lunch Saturday|Jessica Geroux|Lunch plans for Saturday 12:00 or 1:00; depending on tiling project|05/07/14|14:42:38|
+2014/05/07|11:07:34|2014/05/08|07:00:00|B|1|TG4 Request 358808 OK?|Brian Kirchner|Quarterly Release run by Angelo - No architectural changes to note so the release is good to go|05/08/14|08:26:52|Late
+2014/03/18|07:37:13|2014/05/09|16:00:00|P|2|Skydive under 18? Indoor?|Louella|Can't Skydive in US under 18|05/08/14|08:27:19|
+2014/05/07|15:05:35|2014/05/08|07:00:00|B|3|RPM User's Guide|Josh Hennagir|Created User's Guide|05/08/14|14:48:36|Late
+2014/04/25|14:50:02|2014/05/09|07:00:00|B|3|RPM Technical Document||Completed User's Guide|05/08/14|14:56:00|
+2014/05/07|14:42:57|2014/05/09|07:00:00|P|1|Lunch Saturday 12:00 or 1:00 depending on tiling project|Jessica Geroux|Plans for noon|05/09/14|08:12:15|Late
+2014/05/05|08:53:05|2014/05/09|07:00:00|P|1|Mother's Day Sunday|Josh/Jess|Dinner plans|05/09/14|08:12:33|Late
+2014/05/12|07:39:43|2014/05/13|16:00:00|P|1|Golf Tomorrow - Clubs in Car||Ready to play for the first time this year!|05/13/14|07:48:58|
+2014/05/13|09:03:27|2014/05/13|11:00:00|B|1|RPM Exact File Match|Josh Hennagir; Tim Hundt|Added an Exact File Match checkbox to the Compare screen; including verification logic in case the report is blank and the checkbox wasn't checked.|05/13/14|09:05:28|
+2014/05/05|10:32:33|2014/05/13|16:00:00|P|1|Hawaii Clothes - Shorts/Swimsuit/Shirts/Thin Light Pants|Forrest|Bought 2 Golf Galaxy shirts; Liz fixed the pants I wore at May and Manas' wedding.|05/13/14|11:21:40|
+2014/05/13|15:21:16|2014/05/14|07:00:00|B|2|RPM - Exact File Match opening CSV and additional file after downloads (2nd run?)||Couldn't reproduce the problem...|05/14/14|09:05:02|Late
+2014/05/13|15:25:17|2014/05/14|07:00:00|B|1|RPM and B-Edit Analysis summary docs for Colab|Tim Hundt|Wrote Colab documents for RPM; Task Tracker; and B-Edit Analysis system.|05/14/14|10:00:21|Late
+2014/05/05|14:33:25|2014/05/14|14:00:00|B|1|Vacation Tomorrow|Ext Absence|Added Outlook notification|05/14/14|15:02:09|Late
+2014/05/27|15:05:25|2014/05/27|17:00:00|B|2|RPM exact compare fixed for multiple files|Josh Hennagir|Changed systemcurr to run a bat file to correct the problem.|05/27/14|15:06:19|
+2014/05/14|10:07:42|2014/05/23|12:00:00|B|2|Printer setup||Used \\fltepmnpfiprp\B3F2CNTRWEST|05/28/14|13:26:13|Late
+2014/05/13|16:01:34|2014/05/27|07:00:00|B|2|B-Edit Applications; and BEDIT/BEDITWIN code in version control|Tim Hundt|Added Bedit; beditwin; and all programs into SVN under https://openge.ge.com/svn/gecaci; but need to move to other directory away from gecaci.|05/29/14|15:50:38|Late
+2014/05/29|12:06:40|2014/05/29|14:00:00|B|1|Setup Govern Meeting with Australia||Setup with Sanjiv Singh at 5:00pm Monday 6/2; which is 8:00AM 6/3 in Australiia.|05/30/14|08:22:50|Late
+2014/03/18|07:36:38|2014/05/30|07:00:00|P|3|Mystic Lake/Shout House July Schedule|Louella|Looked up a number of comedy clubs in Minneapolis (ACME Comedy Co; Shout House; Comedy Sportz; Brave New Workshop)|05/30/14|09:09:03|Late
+2014/05/30|13:05:21|2014/05/30|15:00:00|B|2|CA-MTE Archtiecture Diagram with SFTP via Appworx|Donna Young|Uploaded from C:\Users\213000864\Documents\Docu\architecture\ART\CA-MTE to http://libraries.ge.com/foldersIndex.do?entity_id=43461675101&sid=101&SF=1 |05/30/14|13:06:48|
+2014/05/05|14:30:01|2014/06/02|07:00:00|P|1|Olivia Graduation Party 6/8|Olivia West||06/02/14|08:45:42|Late
+2014/04/17|14:09:26|2014/06/02|07:00:00|B|2|CA-MTE Appworx SFTP to FIPR Document|Donna Young/Check with Prameela|Sent 6/30/2014|06/02/14|08:47:20|Late
+2014/05/29|12:06:20|2014/06/02|16:00:00|B|2|Review Security Projects||Quick review of all projects Brian sent.|06/02/14|10:36:38|
+2014/05/05|14:30:41|2014/06/06|07:00:00|P|1|Olivia Graduation Party 6/8|Olivia West|Buy card tonight.|06/06/14|07:47:20|Late
+2014/05/30|12:48:10|2014/06/06|07:00:00|P|1|Sabrina - Go Fund Me|Sabrina Spork|Donated $100|06/06/14|08:18:40|Late
+2014/05/30|10:38:38|2014/06/09|12:00:00|B|1|July Vacation|Neil/Brian|Sent email 6/9/2014 at 10:10am|06/09/14|10:09:17|
+2014/05/27|15:23:11|2014/05/28|07:00:00|B|1|Governance - C:\Users\213000864\Documents\Docu\architecture\Govern|Brian Kirchner|Setup Chrome on Laptop|06/09/14|15:41:52|Late
+2014/05/29|16:11:59|2014/05/30|07:00:00|B|3|SDLC Analytics Favorite: http://3.162.142.223:9090/sdlcanalytics|Brian Kirchner|Setup Chrome on Laptop|06/09/14|15:42:42|Late
+2014/06/09|13:51:40|2014/06/10|07:00:00|B|2|TG2 Continuous Delivery Requirements|Mike/Igor/Aijuan->Angelo|Got the Continuous Delivery Wiki link from Mike; and passed on instructions to Angelo.|06/10/14|12:01:28|Late
+2014/06/10|15:10:27|2014/06/11|07:00:00|B|2|Governance - ITG 383223 - Sould ITG/PPM upgrade be included in CD?|Brian Kirchner|Brian's Answer: "I think you can opt out completely from that one"|06/11/14|07:45:29|Late
+2014/06/12|07:21:40|2014/06/12|07:00:00|P|1|Setup Ascensus Beneficiary|Liz Bentley||06/12/14|08:08:26|Late
+2014/04/25|13:34:17|2014/06/09|07:00:00|B|3|RPM Demo|Brian Kirchner/Shawn Passmore|Demo to Brian 6/10/2014|06/12/14|13:43:20|Late
+2014/06/12|11:05:53|2014/06/12|13:00:00|B|1|Governance - Decision Tree|Brian Kirchner|Met with Brian 6/12/2014 at 2:00; and created diagram|06/12/14|15:45:24|Late
+2014/05/30|07:40:05|2014/06/13|09:00:00|P|3|Outdoor Service on Sunday|St. Peders|Reminder marked on paper|06/13/14|10:03:44|Late
+2014/06/12|16:28:22|2014/06/13|07:00:00|B|1|Send Goveranance Flow|Brian Kirchner|Sent 6/12/2014|06/13/14|10:04:01|Late
+2014/06/10|12:49:03|2014/06/13|07:00:00|P|2|eMail Rachel - Have a great trip|Rachel West|Sent email 6/13/2014 at 10:00am|06/13/14|10:07:55|Late
+2014/06/12|08:08:28|2014/06/13|07:00:00|P|1|Add Ascensus beneficiaries|Liz; Josh; and Jess|Your beneficiary designation has been completed as of 06/13/2014 at 11:50:00 a.m. ET. Your confirmation number for this designation is 1640000044299|06/13/14|10:50:28|Late
+2014/06/13|15:28:27|2014/06/16|07:00:00|B|2|Send B-Edit and RPM files to Leroy|Leroy Wilson|Sent files to Leroy 6/17/2014 at 2:57pm|06/17/14|14:58:00|Late
+2014/06/17|07:30:06|2014/06/17|09:00:00|P|1|Liz(Jess-Small?); Josh(Size?); Rachel(Size?) Torchlight 5K|Jess; Josh; Rachel|Liz and Jess stopped at Marathon Sports today to register; and got the bibs and shirts.|06/18/14|15:46:36|Late
+2014/06/19|07:35:07|2014/06/19|09:00:00|B|2|Merge A-Doc with Security Doc|Syed Hussaini|First draft complete in Word document|06/19/14|08:49:42|
+2014/03/18|07:33:50|2014/06/20|07:00:00|P|2|Jess/Justin Furniture for Wedding|Jess|Gave Jess $5000 for Justin's recording instead.|06/20/14|07:15:37|Late
+2014/06/09|15:42:43|2014/06/10|07:00:00|B|1|Governance - C:\Users\213000864\Documents\Docu\architecture\Govern|Brian Kirchner|Setup rythmn|06/20/14|07:18:27|Late
+2014/06/10|15:03:10|2014/06/11|07:00:00|B|2|Governance - Documentation Review using XLS in place of Wiki|Brian Kirchner|OK to use XLS; talked to Mike about putting it into SDLC|06/20/14|07:19:13|Late
+2014/06/20|07:25:19|2014/06/20|09:00:00|B|1|Change SSO Password||Josh987|06/20/14|08:53:09|
+2014/06/20|07:16:46|2014/06/20|09:00:00|P|1|Painting Photo|Sarah Kanan|Sent 4 photos to choose from|06/20/14|10:58:45|Late
+2014/06/20|07:16:09|2014/06/20|09:00:00|P|1|Haircut Appointment|Zena's Judy Hart|Set for 6/24/2014 at 5:15pm|06/20/14|11:03:41|Late
+2014/06/20|07:41:37|2014/06/20|09:00:00|P|2|Walk - Photos of creek for Louella; groceries; bills||Very overflowed creek! It's getting hot and humid now too!|06/20/14|12:34:00|Late
+2014/06/20|07:42:38|2014/06/20|09:00:00|B|1|Buy wall paint||Bought on Friday; painted on Saturday after helping Paul & Kaelin pack for move|06/23/14|07:03:24|Late
+2014/06/20|11:02:33|2014/06/23|16:00:00|P|1|Haircut Tomorrow - Bring Check|Judy Hart|Have check ready|06/23/14|07:50:45|
+2014/06/23|15:56:33|2014/06/23|17:00:00|P|2|Valleyfair Saturday August 16th|Liz; Jess; Josh; Rachel|All want to go!|06/24/14|15:31:48|Late
+2014/05/27|15:06:23|2014/06/25|17:00:00|P|2|Louella Graduation|Louella Dent|Louella sent email today about her graduation! Just 1 week until she's here!|06/25/14|07:41:37|
+2014/06/24|08:12:50|2014/06/24|10:00:00|P|2|Paul/Kaelin visit Thursday|Jess/Josh/Rachel|Sent text this morning; Rachel sounds interested.|06/25/14|10:16:03|Late
+2014/06/24|16:08:30|2014/06/25|07:00:00|B|2|Task Tracker: Help starts User's Guide; Show Daily tasks in Views|Forrest|Completed|06/25/14|10:22:08|Late
+2014/06/25|10:27:09|2014/06/26|07:00:00|B|1|Sococo Screen Share|Mike/Igor/Aijuan|Can't share in Lobby; must be in a meeting room that allows screen sharing; then click ^ at the bottom of the screen.|06/26/14|09:11:07|Late
+2014/06/26|09:09:58|2014/06/26|07:00:00|P|1|Paul and Kaelin visit tonight a bit after 5:00|Kaelin|I called Kaelin; and they're coming. I warned them I'm biking; and might not be home until 5.|06/26/14|13:27:50|Late
+2014/06/26|09:09:58|2014/06/26|07:00:00|P|1|Paul and Kaelin visit tonight a bit after 5:00|Kaelin|Called Kaelin; they're coming. I warned her that I biked today so I might not be home until 5.|06/26/14|14:57:40|Late
+2014/06/25|10:16:06|2014/06/27|07:00:00|P|1|Eclipse to Westside VW at 3:30|Josh|On calenday; and sent Josh a text.|06/27/14|11:47:57|Late
+2014/06/26|15:28:34|2014/06/27|07:00:00|B|2|Update Task Tracker User's Guide with Drag/Drop Capability||Updated documentation with both drag/drop and bubble help.|06/27/14|14:46:00|Late
+2014/06/26|08:08:44|2014/06/30|16:00:00|P|2|Barnes & Noble Gift Card|Liz Bentley|Printed at work|06/30/14|08:53:36|
+2014/06/25|10:25:18|2014/07/01|12:00:00|B|2|Task Track View Drag/Drop Tasks|Forrest|Completed 6/27/2014; plus bubble task displays|06/30/14|08:56:04|
+2014/06/26|14:57:43|2014/06/30|07:00:00|B|3|B-Edit Review/Design for Java|Mike Yushchenko|Met with Mike 6/30/2014 at 9:30 and described high level B-Edit. Mike's going to think about Groovy and Java-8 conversion.|06/30/14|10:18:34|Late
+2014/07/01|07:47:47|2014/07/01|09:00:00|B|1|Publish EA Governance XLS||Published to: http://libraries.ge.com/foldersIndex.do?p_id=0&ohr_id=213000864&entity_id=31000646101&sid=101&SF=1#31000646101|07/01/14|08:27:30|
+2014/06/27|14:49:22|2014/07/01|07:00:00|B|1|Governance Process Job|Brian Kirchner/Snehal Antani|Meeting with Snehal/Brian/Neil 7/1/2014 at 11:00am. Working for Brian now.|07/01/14|12:58:23|Late
+2014/05/30|07:44:31|2014/07/02|09:00:00|P|1|Louella Here Tomorrow!|Louella|Last minute things to do; but ready!|07/02/14|07:36:16|
+2014/05/30|07:43:37|2014/07/02|09:00:00|P|3|LSS Safehouse Monday|St. Peders|Wrote reminder note for home|07/02/14|07:37:40|
+2014/04/09|15:41:35|2014/07/02|07:00:00|B|1|PW Policy Compliance|Angelo|Haven't heard anything lately; so closing.|07/02/14|07:38:19|Late
+2014/07/02|13:22:38|2014/07/03|15:00:00|B|2|Task Tracking - Sort Tasks by Date/Time before all saves||Added s100_sort|07/02/14|13:58:39|
+2014/07/02|14:48:53|2014/07/03|07:00:00|B|1|Publish B-Edit - Start at step 8 of deployment|Forrest|Published|07/03/14|08:13:34|Late
+2014/07/02|13:46:17|2014/07/03|09:00:00|B|3|Poh Im Khoo Last Day|Poh Im Khoo|Nice talk with Poh Im before she left.|07/07/14|08:39:13|Late
+2014/07/03|13:10:25|2014/07/04|07:00:00|P|1|Block Party Tickets|Louella|Purchased Sunday 7/6/2014 for Lou; Liz; Jess; Forrest|07/07/14|08:40:05|Late
+2014/07/01|13:00:39|2014/07/03|14:00:00|P|1|Pickup Louella from Airport|Louella|Got to the airport on-time; big smiles and hugs; everything was perfect!|07/07/14|08:40:48|Late
+2014/07/02|13:13:09|2014/07/03|07:00:00|B|1|B-Edit Java Design Review|Mike Yushchenko|Few talks with Mike before I left on Louella vacation for July.|07/07/14|08:42:32|Late
+2014/07/02|07:38:46|2014/07/07|07:00:00|P|1|LSS Safehouse||Dropped off food with Liz and Louella.|07/08/14|09:51:00|Late
+2014/06/27|14:50:12|2014/07/03|13:00:00|B|1|Goals and Objectives|Brian Kirchner|Sent initial draft of goals to Brian 7/10/2014 at 10:40am (C:\Users\213000864\Documents\Docu\personal\G&O\2014\Bentley-G&O-2014.xls)|07/10/14|10:44:59|Late
+2014/07/11|09:23:19|2014/07/11|11:00:00|B|3|G&O - Create and Submit|Brian Kirchner|Created and submitted 7/11/2014 at 9:20am. Original request from Woods Jr.; Kevin (GE Capital) <Kevin.WoodsJr@ge.com> 6/30/2014 at 4:58pm.|07/11/14|09:25:31|
+2014/06/30|09:30:03|2014/07/11|11:00:00|P|2|Maui GoPro Photos/Movies and Blowhole Photos|Josh & Rachel|Rachel posted Maui photos 7/10/2014; so I have my Blowhole photo. Still need underwater GoPro video/photos.|07/11/14|09:30:05|
+2014/07/11|09:35:07|2014/07/11|16:00:00|P|1|NBS - Cash Disbursement Acct #LQ12954|(800) 325-5144|Requested 7/11/2014 at 9:49am; $171.60 Cash Fund (Check Today); $1000 RSU trade (Check next Wednesday)|07/11/14|09:52:11|
+2014/07/02|13:21:16|2014/07/03|07:00:00|B|3|Neil Thank You eMail|Neil Adakonis|Sent 7/11/2014 at 10:42am|07/11/14|10:43:24|Late
+2014/07/03|13:09:17|2014/07/12|08:00:00|P|1|Warrior Dash Today|Louella|Pouring rain 1st try; 2nd try we were too late :-( but we got our shirts and medals.|07/14/14|10:01:43|Late
+2014/07/03|08:15:58|2014/07/15|10:00:00|P|2|Cash out UBS Financial||Called to cash out 7/11/2014|07/14/14|10:02:36|
+2014/07/17|10:34:32|2014/07/18|12:00:00|P|1|Twins Tonight|Liz/Louella|Liz and Louella going; nice weather.|07/18/14|08:50:30|
+2014/07/17|10:32:54|2014/07/22|12:00:00|P|1|Twins Baseball Tonight|Liz/Jess?|Liz and Jess went; Twins/Indians; Twins lost 2-8|07/23/14|10:02:54|Late
+2014/07/03|13:09:46|2014/07/23|07:00:00|P|1|Torchlight 5K Tonight|Jess/Louella/Josh/Rachel|Liz came too and walked with me and Lou the entire race.|07/24/14|09:22:51|Late
+2014/07/17|10:31:49|2014/07/25|12:00:00|P|1|Aquatennial Fireworks Tomorrow||Stone Arch Bridge with Liz; Louella; Josh; Rachel; Jess; Ariel|07/28/14|11:19:43|Late
+2014/05/30|07:40:31|2014/07/25|09:00:00|P|3|Outdoor Service Sunday|St. Peders|Liz and Forrest only; cool morning; cloudy; windy|07/28/14|11:20:11|Late
+2014/06/25|08:43:44|2014/07/18|07:00:00|P|1|United Way Golf Signup|Joel Rasmusson|Paid $75 8/1/2014 at 10:00am United Way check #17506 to Joel|08/01/14|10:06:56|Late
+2014/07/22|08:57:04|2014/08/01|10:00:00|B|1|Required Training Assigned - Received 7/21/2014 at 11:49pm||Completed: Fundamentals of Application Security - Full Version (24 out of 25 correct = 96%)|08/04/14|10:11:26|Late
+2014/07/17|10:34:58|2014/08/05|12:00:00|P|1|Twins Tonight||Plan to go with Jess; but she has a bad back; we'll see...|08/05/14|14:25:12|Late
+2014/08/01|07:54:36|2014/08/06|16:00:00|P|1|Dentist Tomorrow at 8am|Thomas Bruss|Teeth were fine|08/07/14|09:41:55|Late
+2014/07/02|14:51:38|2014/07/31|07:00:00|P|1|Rock for Portugal|Monica Caldas|Monica would like a Minneapolis skyline|08/07/14|11:35:24|Late
+2014/06/23|15:55:57|2014/08/11|07:00:00|B|2|Valleyfair Saturday||Aren't going|08/11/14|07:46:10|Late
+2014/08/06|09:25:04|2014/08/11|11:00:00|B|1|Casual Day tomorrow|Monica Caldas|Wore my "Run With Fire" Torchlight 5K shirt|08/12/14|08:29:51|Late
+2014/08/06|09:25:49|2014/08/12|11:00:00|B|1|IT BBQ at Noon|VIC|Played Disc golf with Veena and Aparna|08/13/14|08:40:21|Late
+2014/08/13|16:05:58|2014/08/14|07:00:00|B|1|2 Page Summary of ARB Charter|Brian Kirchner|First draft sent to Brian|08/14/14|15:02:42|Late
+2014/05/30|07:41:24|2014/08/15|09:00:00|P|3|Outdoor Service Sunday|St. Peders|Hope for good weather|08/15/14|09:35:36|Late
+2014/08/14|15:13:43|2014/08/15|17:00:00|B|1|Governance: Retain Application Documentation; not just project docs||Created a directory for application architecture; added link to tracking XLS.|08/15/14|09:36:08|
+2014/08/04|11:16:54|2014/08/20|13:00:00|B|1|United Way Golf Tournament Tomorrow at 8:00am|Heritage Links Golf Course Lakeville; MN|Printed directions|08/20/14|08:52:39|
+2014/07/17|10:35:17|2014/08/22|12:00:00|P|1|Twins Tomorrow Tonight||Wrote note for tomorrow|08/22/14|08:18:02|
+2014/04/30|09:22:56|2014/08/25|07:00:00|P|2|Janelle/Michael Wedding 8/30|Janelle|Shopping next weekend|08/25/14|08:41:54|Late
+2014/08/26|10:18:47|2014/08/27|12:00:00|P|1|Lou Dentist Apt 8/28/2014|Louella Dent|Wrote email|08/27/14|09:51:14|
+2014/08/25|12:00:12|2014/08/28|07:00:00|P|2|River Rats at 6:30||May rain tonight; so not sure if we'll go|08/28/14|08:32:57|Late
+2014/04/30|09:23:48|2014/08/29|07:00:00|P|2|Janelle/Michael Wedding Tomorrow|Janelle|Shopping tomorrow at Sears for Gift Card|08/29/14|08:04:12|Late
+2014/08/29|15:17:56|2014/09/01|16:00:00|P|1|Badminton Signup Tomorrow|Liz|Text to Liz|09/02/14|08:25:48|Late
+2014/09/02|08:10:32|2014/09/02|10:00:00|P|1|Rock Arrived?|Bianca|yes I did get it on Friday right before he got in so gave it to him as a surprise; the rock looked awesome. and he was super excited with it; was instagramming it and sending it to all his friends back in Seattle
+|09/02/14|11:38:57|Late
+2014/09/05|08:04:20|2014/09/05|10:00:00|B|3|Monster Dash Signup - Forrest; Josh; Rachel|Fitness Center|Turned in check 9/4/2014 for $67.48|09/05/14|08:05:00|
+2014/07/17|10:35:34|2014/09/05|12:00:00|P|1|Twins Sunday Afternoon||Note for home ready|09/05/14|08:22:15|
+2014/09/02|08:09:12|2014/09/05|10:00:00|B|1|Call Nadine Tomorrow - Address/Bday|Nadine Allaf|Note for home ready|09/05/14|08:22:22|
+2014/09/18|08:45:36|2014/09/24|07:00:00|P|1|United Way Pledge|Judy Heiland - Link|Pledge complete and received casual day stickers|09/24/14|08:45:35|Late
+2014/06/12|16:17:21|2014/06/30|07:00:00|B|2|Goveranance - Adjust security checklist adding architecture/design/development/src code management|Syed Husainni|Security sections were updated a couple months ago.|09/25/14|14:19:04|Late
+2014/09/24|13:24:07|2014/09/30|15:00:00|B|1|Beditwin Bitmap Display||Working with copy and stretch!|09/30/14|08:30:33|
+2014/09/30|07:50:25|2014/09/30|09:00:00|P|2|River Rats PPT Print for Rock||Printed 2 sheets.|09/30/14|15:01:21|Late
+2014/09/23|09:36:05|2014/09/30|11:00:00|P|1|Borrow Projector?|Linda Ericson -> Josh/Rachel|Linda said yes I can. I texted Josh and Rachel.|10/01/14|08:16:13|Late
+2014/09/09|14:12:51|2014/09/17|07:00:00|B|2|Analysis of Search Log Files|Aparna Kansal and Dillip Subudhi|Installed and tested on Dillip Subudhi's machine; everything works well (except Dillip has a '.' character in his directory structure which causes problems).|10/01/14|15:47:30|Late
+2014/09/04|08:19:42|2014/10/03|07:00:00|P|1|Birthday dinner/event tomorrow for Liz|Liz|Going to Duluth Saturday night; eating at Radisson Sunday at 1:00|10/03/14|07:46:28|Late
+2014/10/01|08:19:43|2014/10/13|10:00:00|B|1|United Way Sun Country tickets!|Dawn Marcotte (Josh Hobday said Dawn place order)|Picked up $540 gift certificate from Dawn Marcotte|10/08/14|11:42:02|
+2014/09/15|13:20:25|2014/10/09|07:00:00|P|1|Olivia Lunch Saturday?|Olivia West|Lunch with Olivia and Rachel at Punch on UofM campus last Saturday 10/4/2014.|10/09/14|09:12:15|Late
+2014/10/03|15:53:13|2014/10/06|07:00:00|B|1|Setup ARB Meeting|ARB member list from Brian email|Setup first meeting for 10/15/2014|10/09/14|15:10:34|Late
+2014/08/14|15:01:52|2014/10/10|17:00:00|P|2|Rock Requests|Sarah Kanan|Asked Sara via email today|10/10/14|08:59:28|
+2014/08/14|14:55:55|2014/10/10|16:00:00|P|2|Mizna Arab Film Festival when?|Sarah Kanan|Asked Sara via email today|10/10/14|08:59:39|
+2014/06/25|14:24:37|2014/06/30|13:00:00|B|1|Setup Governing Architecture Review Board (ARB)|Brian Kirchner|Setup first ARB for 10/15/2014|10/10/14|09:11:30|Late
+2014/10/03|08:46:28|2014/10/06|10:00:00|B|1|Jess Off Health Ins|GE|Changed Opt2 HlthChoice 3+ to 2 so monthly will reduce from $218.46 to $173.32 (reduced $45.18 per check). Also the HRA account yearly allotment will change from $1000 to $750.|10/10/14|14:05:09|Late
+2014/09/05|11:54:11|2014/10/14|13:00:00|P|1|First Badminton Session 7:00-9:00|Washburn|Biked today; leave early enough to eat and go to badminton.|10/14/14|14:28:46|Late
+2014/10/10|08:49:31|2014/10/15|10:00:00|B|1|Attivio Log File Analysis Status|Aparna Kansal|Received good status 10/10/2014|10/15/14|08:42:52|
+2014/10/14|15:56:35|2014/10/15|17:00:00|P|1|Edit River Rats Photo||Edited and sent home|10/15/14|11:19:22|
+2014/09/29|10:28:38|2014/10/16|12:00:00|P|1|Dinner with Jennifer/Byron Sunday - Call tonight|Jennifer and Byron|Wrote note to call tonight|10/16/14|08:53:56|
+2014/10/15|08:43:26|2014/10/15|10:00:00|P|1|Offer room for Josh/Rachel wedding visit|Tom Bentley|Sent email to Tom 10/16/2014|10/17/14|09:06:05|Late
+2014/10/13|07:46:10|2014/10/17|09:00:00|P|1|IKEA Dresser Tonight for Jess' Room|Liz Bentley|Wrote a note to buy it tonight|10/17/14|09:21:52|Late
+2014/10/13|15:45:40|2014/10/21|17:00:00|P|1|Diwali Kurta Tomorrow||Wrote a note for home|10/21/14|08:21:42|
+2014/10/16|09:18:17|2014/10/16|11:00:00|B|1|ARB Colab Post - Members; Mission; etc... review with Brian prior to publishing|Brian Kirchner|Sent draft to Brian 10/20/2014|10/21/14|08:23:14|Late
+2014/09/09|14:33:34|2014/10/22|16:00:00|P|1|Monster Dash Pickup Tomorrow|Liz/Jess ID Mailed/Texted|Set to pickup numbers today. I have Liz and Jess' IDs in email.|10/23/14|10:45:17|Late
+2014/09/09|14:34:29|2014/10/24|16:00:00|P|1|Monster Dash Tomorrow|Josh/Rachel|Picked up numbers yesteday (solar eclipse also!)|10/24/14|09:04:46|
+2014/10/20|08:18:24|2014/10/24|10:00:00|P|1|Black Suit Shopping|Liz Help|On list for this weekend|10/24/14|09:15:40|
+2014/10/20|08:21:47|2014/10/24|10:00:00|P|2|Check Snowblower||Started on second pull!|10/27/14|09:01:44|Late
+2014/10/16|08:53:08|2014/10/16|07:00:00|P|1|Rome Rock for Wedding|Josh and Rachel|Finished Sunday 10/26/2014|10/27/14|09:02:04|Late
+2014/05/05|07:33:53|2014/10/27|09:00:00|P|1|Josh/Rachel Wedding 10/31|Josh/Rachel|Ready for wedding on Friday!|10/27/14|09:03:11|Late
+2014/10/13|16:05:40|2014/10/14|07:00:00|P|1|Sunaina Congratulations|Sunaina Pereria|Wrote Congratulations on Saturday 10/25/2014|10/27/14|09:21:17|Late
+2014/10/10|07:56:26|2014/10/27|09:00:00|P|1|Jess flight tomorrow arrives at 9:13AM|Jessica Bentley|Ready to pick Jess up in the morning; taking PC home|10/27/14|10:18:21|Late
+2014/10/13|08:14:43|2014/10/30|10:00:00|P|1|Josh/Rachel leave for Italy Sunday 11/02/2014 at 5:12pm|Josh/Rachel|Gift/card/check/rock ready to give to them.|10/30/14|07:21:34|
+2014/10/01|08:17:58|2014/10/28|10:00:00|B|1|Pick up projector from Linda this week (she's off Friday)|Linda Ericson|Picked it up this morning.|10/30/14|07:22:24|Late
+2014/10/29|15:47:00|2014/10/30|07:00:00|B|1|Cobertura used in CD for code coverage? If not; what tool is used?|Mike Yushchenko|JaCoCo should be used in place of Cobertura (answered in Brian's daily CD standup meeting).|10/30/14|10:59:19|Late
+2014/05/05|07:34:35|2014/10/31|09:00:00|P|1|Josh/Rachel Wedding|Josh/Rachel|Rehersal dinner last night; ready for their wedding tonight!|10/31/14|07:25:10|
+2014/10/20|08:22:09|2014/10/24|10:00:00|P|1|Storm Window Paint|Liz|Bought brown paint today (Brown Eyes)|11/02/14|21:15:24|Late
+2014/10/10|07:57:28|2014/11/03|09:00:00|P|1|Jess flight leaves tomorrow at 5:25pm|Jessica Bentley|On my calendar to drive her to the airport|11/03/14|08:15:10|
+2014/10/31|09:00:53|2014/11/03|11:00:00|B|1|Recurring Webex|Syed Hussaini|Setup as http://sc.ge.com/*FBentley|11/03/14|09:19:50|
+2014/10/29|15:40:05|2014/11/07|07:00:00|P|1|Signup for Reindeer Run|Online|Signed up; cost of $33.03|11/04/14|10:01:16|
+2014/10/24|09:24:03|2014/10/27|11:00:00|B|1|Yearly Benefits Open Enrollment - Check on changes for Liz||Switched to Option 1 on 11/4/2014|11/05/14|07:42:57|Late
+2014/11/06|09:07:16|2014/11/07|11:00:00|P|1|Facetime with Josh tonight at 5:00pm|Josh and Rachel|Wrote note for home|11/07/14|07:02:46|
+2014/11/06|09:07:48|2014/11/07|11:00:00|P|1|Skype with May/Manas tomorrow at 6-7pm|May & Manas|Wrote note for home|11/07/14|07:02:59|
+2014/11/06|15:56:33|2014/11/07|17:00:00|B|1|Update Governance Expectations (all scanners in place before TG2; in use during build)||Updated Expectations email notes|11/07/14|08:01:22|
+2014/11/07|08:03:53|2014/11/07|10:00:00|B|1|Setup meeting to get front-end dev more engaged with Governance|Ann Dvoretsky|Setup for Wednesday 11/12/2014|11/10/14|09:03:29|Late
+2014/10/13|08:15:57|2014/11/11|10:00:00|P|1|Josh/Rachel back from Italy tomorrow 11/12/2014 at 3:00PM|Josh/Rachel|Ready to pick them up|11/11/14|11:15:19|Late
+2014/11/03|08:13:59|2014/11/12|10:00:00|P|1|Josh and Rachel back from Italy at 5:07pm|MSP|Texted with Josh this morning; ready to pick them up!|11/12/14|07:33:30|
+2014/11/11|22:29:47|2014/11/12|07:00:00|P|1|Leave for Home at 4:00pm to get to Airport for 5:07pm flight|Josh/Rachel MSP|On my GE Calendar|11/12/14|07:34:16|Late
+2014/09/04|08:18:52|2014/11/11|10:00:00|P|1|Louella Oral Surgery Nov 13th email|Louella Dent|Send email last night; praying for her; she'll be watched over!|11/12/14|14:19:53|Late
+2014/05/05|07:35:30|2014/11/13|09:00:00|P|1|Dylan/Leah Wedding 11/16|Dylan/Leah|Ready for wedding on Sunday!|11/13/14|07:54:08|
+2014/11/11|12:27:21|2014/11/14|14:00:00|P|1|Builder created 1 year ago||Quite a bit of functionality for 1 year!!|11/14/14|08:04:30|
+2014/10/30|14:13:12|2014/11/14|16:00:00|B|1|1 Year Anniversary of starting Builder Tomorrow||Finished changing Control window to Full Screen. Functionality in 1 Year (create and generate systems for bedit; beditwin[full window object creation]; full interactive debugging; view program flow; call flow; pom file dependencies; download 3090; user manuals update). Created other systems: GECA Technology; Task Tracker; RPM; ASA; Pacman; Life; Attivio Log Analysis; Cross-Site Scripting Fix; URL Jumping Fix; JSDoc Checker. |11/14/14|12:53:09|
+2014/11/12|11:31:47|2014/11/14|13:00:00|B|1|Asif Last Day Today|Asif Shariff|Saw Asif on Wednesday; but he left too early to say bye on Friday.|11/15/14|08:56:07|Late
+2014/05/05|07:36:13|2014/11/16|09:00:00|P|1|Dylan/Leah Wedding|Dylan/Leah|Ready to leave at 1:55 for the wedding at 3:00.|11/16/14|11:01:42|Late
+2014/11/11|22:29:15|2014/11/12|01:00:00|P|1|Lang Command New Objects Mix before create||Working|11/17/14|07:41:30|Late
+2014/11/15|22:39:10|2014/11/17|07:00:00|P|1|Attach text to paintfile objects or create additional text object (if text entered)|Builder|Created second object with text; improved initial positioning of objects also.|11/18/14|07:52:38|Late
+2014/11/18|16:06:34|2014/11/18|07:00:00|B|1|Security Awareness Training||Completed 11/18/2014 with a score of 100%|11/18/14|16:07:10|Late
+2014/11/17|15:45:53|2014/11/18|07:00:00|P|1|Speed up drag if connectors are present|Builder.bed|Changed connector object lookup to fs which improved speed|11/20/14|07:27:00|Late
+2014/11/20|11:05:34|2014/11/20|16:00:00|B|1|Devcloud Jenkins use? 386451 Appscan/Sonar not on Dashboard; no Fortify|Brian Kirchner|Wrote email to PM (Michael) saying that the scan results must be flowing to the SDLC; and that Fortify must also be configured before TG2 signoff.|11/21/14|09:35:39|Late
+2014/10/10|08:00:49|2014/11/24|10:00:00|P|1|Jess's flight arrives tomorrow at 10:15pm|Jessica Bentley|Ready to pick her up!|11/24/14|07:59:51|
+2014/11/23|18:31:42|2014/11/24|20:00:00|B|1|Remove **** lines from paintfile; test on desktop|Builder|Tested OK|11/24/14|15:12:14|
+2014/11/23|18:31:02|2014/11/24|20:00:00|P|1|Fix Dup to use current object type and not the currently selected combo type|Builder|Fixed|11/24/14|15:39:39|
+2014/11/25|12:49:30|2014/11/26|14:00:00|P|1|List of 20 things about me||Finished list; sent to yahoo account|11/26/14|13:56:31|
+2014/11/23|18:33:03|2014/11/28|20:00:00|B|1|Fix loss of all paintfile object occassionally when undo is pressed|Builder|Fixed|11/28/14|11:44:28|
+2014/11/20|08:35:36|2014/12/01|07:00:00|P|1|Iraqi  Voices Premiere Tomorrow at 7:00PM|Macalester College; 1600 Grand Ave; St Paul; 55105; Ruth Stricker Dayton Campus Center Lower Level|On the calendar to go with Liz.|12/01/14|07:50:13|Late
+2014/10/10|08:01:52|2014/12/01|10:00:00|P|1|Jess's flight leaves tomorrow at 3:00pm|Jessica Bentley|On my calendar to leave early|12/01/14|07:50:40|
+2014/11/12|14:59:25|2014/12/01|16:00:00|P|1|Jess' flight leaves tomorrow at 3:00pm|Jessica Bentley|On schedule to leave early from work.|12/01/14|07:56:54|
+2014/09/30|07:49:32|2014/12/02|09:00:00|P|1|Last Badminton Session 7:00-9:00|Washburn|Postponed to next week|12/02/14|07:47:10|
+2014/11/20|08:37:49|2014/12/02|16:00:00|B|1|Iraqi Voices Tonight at 7:00PM|Macalester College; 1600 Grand Ave; St Paul; 55105; Ruth Stricker Dayton Campus Center Lower Level|Very moving films; Sarah's was short but very good!|12/03/14|08:05:27|Late
+2014/11/21|09:54:26|2014/12/03|07:00:00|B|1|Print Speed to Trust responses: Forrest.Bentley@ge$tserrof12 - Personal\SpeedToTrust dir|http://assessments.franklincovey.com |Printed and ready for class.|12/03/14|08:08:09|Late
+2014/11/19|11:38:52|2014/12/04|07:00:00|B|1|Check Speed to Trust responses: Forrest.Bentley@ge$tserrof12|http://assessments.franklincovey.com - Brian|Checked and printed; ready for class tomorrow.|12/04/14|07:35:38|Late
+2014/11/04|10:01:17|2014/12/04|12:00:00|P|1|Reindeer Run Packet Pickup tomorrow 11:00am - 6:00pm|Harriet Bandshell|On my calendar|12/04/14|07:35:53|
+2014/11/24|08:00:10|2014/12/04|10:00:00|P|1|White Elephant party at Peter Anderson's tomorrow evening|Anderson's|Switched to O'day's; probably not going though; too many other things going on.|12/04/14|07:36:31|
+2014/12/04|16:16:07|2014/12/05|07:00:00|B|1|Add Mike/Igor to Architecture Review meeting requests||Done|12/05/14|08:27:34|Late
+2014/10/09|09:12:18|2014/12/05|11:00:00|P|1|Pepper Spray and Ear Plugs|Oliva West|On my Christmas List|12/05/14|08:28:41|
+2014/12/03|08:04:28|2014/12/05|10:00:00|P|1|Driving Range Tomorrow?|Josh Bentley|Sent text to Josh|12/05/14|08:32:54|
+2014/11/04|10:02:03|2014/12/05|12:00:00|B|1|Reindeer Run Packet Pickup Today -  Race tomorrow at 9:30am|Harriet Bandshell|On my calendar|12/05/14|08:33:30|
+2014/12/05|09:00:38|2014/12/05|07:00:00|B|1|Speed of Trust Training|Patricia Cowan|Received Trust Quotient responses; training completed.|12/05/14|09:01:35|Late
+2014/12/04|16:21:28|2014/12/05|07:00:00|P|1|Fix Builder - reopen window Arrow objects CX/CY bad; add object select window|Builder.bed|Code had lower case 'arrow'; changed to 'Arrow'|12/05/14|10:52:11|Late
+2014/12/05|08:37:38|2014/12/05|10:00:00|B|1|Change Watch entry to Follow-Up check box|GECATechnology.bed|Changes finished|12/05/14|10:52:31|Late
+2014/12/06|16:26:29|2014/12/08|07:00:00|P|1|Fitness Center 5k 25:17; Reindeer Run 24:45||Recorded|12/08/14|07:36:59|Late
+2014/12/07|18:21:27|2014/12/08|20:00:00|P|1|Fix select special objects window already open and reopen makes visible|Builder.bed|Added setfocus after window open|12/08/14|08:00:49|
+2014/12/08|08:12:37|2014/12/09|07:00:00|P|1|Coffee Selection|Liz Bentley|Selected samples|12/09/14|07:33:23|Late
+2014/12/02|07:47:43|2014/12/09|09:00:00|P|1|Harris Bank Lien Release received?|Harris Bank BMO|Received in mail Saturday|12/09/14|07:33:48|
+2014/12/04|16:16:34|2014/12/05|07:00:00|B|1|Add Mike/Igor to ARB|Brian Kirchner|Added both; and Mike joined ARB meeting 12/9/2014|12/10/14|08:39:53|Late
+2014/11/25|12:52:47|2014/12/10|14:00:00|B|1|EMS Updated||Completed 12/10/2014|12/11/14|08:04:36|Late
+2014/12/08|08:17:29|2014/12/11|16:00:00|B|1|Mentor Lunch Sunday?|Anders Jensen|Anders was sick for 3 days; so has a lot of homework to do; so not this weekend.|12/12/14|11:38:58|Late
+2014/10/10|16:30:04|2014/12/09|07:00:00|P|1|Copy B-Edit; BEDITWIN; and C Compiler to Jump Drive|Mike Yushchenko|Copied all to drive using pkzip and net command to copy file. net use \\3.162.141.104\DropBox pi314 /user:labtest copy c:\bedit\BentleyBeditBackup.zip \\3.162.141.104\DropBox\BentleyBeditBackup.zip|12/12/14|13:26:16|Late
+2014/11/25|17:18:42|2014/12/03|19:00:00|B|2|Install VNC Protocol for remote Apple access|Mike Yushchenko|Used Net command instead|12/12/14|13:26:35|Late
+2014/12/10|14:26:40|2014/12/11|07:00:00|B|1|Review the GECA Technology COLAB communication; get it up to date and publish|Brian Kirchner|Published ARB introduction.|12/15/14|08:51:01|Late
+2014/12/15|09:01:46|2014/12/16|07:00:00|B|1|Speed up zoom|GECA Technology|Improved speed of zoom in/out.|12/15/14|13:57:23|
+2014/11/25|12:43:07|2014/12/01|14:00:00|B|1|GECA Technology working on Network|GECA Technology|Working|12/15/14|15:24:05|Late
+2014/12/15|15:24:38|2014/12/16|16:00:00|B|1|GECA Technology drag view screen|GECA Technology|Added drag for polar zoom.|12/16/14|12:57:32|
+2014/10/10|07:58:47|2014/12/19|09:00:00|P|1|Jess flight arrives Sunday at 10:20pm|Jessica Bentley|Ready to pick her up!|12/19/14|07:41:54|
+2014/10/17|09:38:21|2014/12/19|11:00:00|P|1|Eclipse Oil Due|Josh Bentley|Set for tomorrow; along with Driving Range!|12/19/14|18:29:25|Late
+2014/12/08|07:21:30|2014/12/22|09:00:00|P|1|Christmas Carol Saturday Night|Guthrie|Everyone is ready!|12/22/14|09:04:03|Late
+2014/11/07|14:08:49|2014/12/22|16:00:00|B|1|Mexico Configurator - Appscan config for SwiftEdit changes; plus Fortify planning|Kishan Barot/Angelo Williams/Mike Y.|Done|12/22/14|09:21:53|
+2014/12/19|08:42:58|2014/12/23|07:00:00|P|1|Merry Christmas/Happy New Year eMails to all friends||Finished 12/24/2014|12/26/14|07:42:21|Late
+2014/12/30|14:56:40|2015/01/02|07:00:00|P|1|Lunch on Sunday with Jessica?|Jessica Geroux|Going to Perkins|01/02/15|08:55:34|Late
+2014/10/10|07:59:44|2015/01/02|09:00:00|P|1|Jess flight leaves Monday at 1:50pm|Jessica Bentley|On my calendar; working from home Monday|01/02/15|09:03:59|Late
+2015/01/01|11:26:44|2015/01/02|13:00:00|B|1|Mail Finance 2014 XLS Home||Mailed this morning|01/02/15|09:04:16|
+2014/12/30|14:36:55|2015/01/06|07:00:00|P|1|Seema Lunch Wed; where?|Seema Gopalan|Don Pablos at 11:00|01/06/15|15:44:18|Late
+2015/01/08|07:43:08|2015/01/09|09:00:00|P|1|Skype this weekend - Christmas Gifts/New Years|May and Manas|Wrote a note|01/09/15|07:48:14|
+2014/12/26|16:54:16|2015/01/09|16:00:00|P|1|Open Priority to 2 characters for hilight and change|Task Tracker|Completed|01/09/15|09:48:05|
+2015/01/08|16:20:32|2015/01/09|16:00:00|B|1|PHP; Tomcat GEFS/JSP/Test.JSP Testing|TheNewBoston.COM|Tested and documented PHP|01/09/15|15:45:52|
+2014/12/30|14:53:23|2015/01/09|16:00:00|B|1|Setup lunch for this weekend. Saturday?|Olivia & Rachel|Set for Saturday at noon!|01/09/15|15:46:10|
+2014/10/30|10:58:05|2014/11/03|07:00:00|B|1|Publish GECA Technology Link|ARB Architects|Decided not to publish to all|01/12/15|08:01:06|Late
+2014/08/06|09:08:41|2015/01/14|16:00:00|P|1|Jill/Kerry Dinner Tonight|Audette's|On the calendar|01/14/15|07:33:13|
+2014/12/08|08:17:54|2015/01/15|10:00:00|B|1|Mendor Lunch Sunday|Peter Anderson|Sent email to Tim|01/15/15|13:53:26|Late
+2015/01/14|15:55:35|2015/01/15|17:00:00|P|1|Zaineb rock message - Lunch Saturday with Sarah?|Zaineb Kanan - Facebook|Zaineb can't make Saturday due to spending time with her daughter; we'll have to figure out how to get the rocks to her.|01/15/15|14:15:39|
+2015/01/14|10:03:33|2015/01/16|07:00:00|B|1|Carbone's tonight?|Liz|Liz/Josh/Rachel|01/16/15|07:36:34|Late
+2015/01/15|07:35:42|2015/01/16|09:00:00|B|1|Carbone's Tonight|Liz-Josh-Rachel|On schedule|01/16/15|07:36:47|
+2015/01/12|15:09:23|2015/01/16|17:00:00|P|1|Jill Shoveling|Liz|Let Liz know earlier in the week.|01/16/15|07:37:32|
+2015/01/08|08:54:04|2015/01/15|16:00:00|B|1|Buy Fayetteville Tickets|Orbitz/Expedia/Kyack/Cheapair|Buying them tonight|01/16/15|07:38:35|Late
+2015/01/16|15:20:45|2015/01/20|16:00:00|B|1|Connectors on Desktop remain when testing|Builder|Old version of BEDITWIN in c:\bedit\beditwin\builder directory.|01/20/15|13:09:46|
+2015/01/09|15:39:28|2015/01/20|16:00:00|B|1|Entire Builder System to Bob Thielen|Bob Thielen|Sent; will follow-up on Friday to help install and demo|01/20/15|13:10:06|
+2015/01/15|15:59:36|2015/01/22|16:00:00|B|1|Add Color selection screens and GECA Technology usage to Builder manual|BuilderGuide.doc|Completed|01/22/15|16:37:19|Late
+2015/01/22|07:36:31|2015/01/23|07:00:00|B|1|Extra Xfer to Josh for Oil Change|Joshua Bentley|Extra $20 for Tiguan Oil Change|01/23/15|07:14:05|Late
+2015/01/16|10:03:38|2015/01/23|12:00:00|B|1|Lunch with Zaineb tomorrow|Caspian Bistro - Minneapolis|On schedule; see Olivia afterwards too!|01/23/15|07:15:25|
+2014/12/19|18:27:51|2015/01/22|07:00:00|B|1|CTX iPAS (#393143) - Fortify should be setup mid Jan 2015|Kohli; Baljeet (200021619)|Fortify setup for CTX 1/13/2015|01/28/15|09:39:20|Late
+2015/01/22|16:37:22|2015/01/23|18:00:00|B|1|Design Review Checklist document|Governance|Finished initial draft|01/28/15|13:27:32|Late
+2015/01/27|15:19:34|2015/01/29|07:00:00|P|1|Nadine meet when; lunch/dinner?|Nadine Allaf|Dinner on Sunday|01/29/15|07:33:49|Late
+2014/09/18|09:02:31|2015/01/29|07:00:00|P|2|Wedding Photos|Puneeta|Showed wedding photos; nice talk; her 10yr old son is in love and talking marriage about a girl that doesn't know he likes her.|01/29/15|14:35:00|Late
+2015/01/28|13:26:50|2015/01/29|07:00:00|B|1|GEC Technology Install|Lakshmi|Installed and instructed. Initially couldn't run beditwin even though it was in the path; so I copied the exe to the builder directory to force GEC Technology to work.|01/29/15|15:03:54|Late
+2015/01/28|09:04:05|2015/01/29|07:00:00|B|1|Add front end components to Architecture Doc Template|Ann Dvoretsky|Added Ann's questions to the template.|01/29/15|15:12:26|Late
+2015/01/26|07:36:33|2015/01/30|07:00:00|B|1|Nadine in town for Loppet; meet when?|Nadine Allaf|Note written to call|01/30/15|10:35:16|Late
+2015/01/30|12:06:45|2015/01/30|14:00:00|B|1|Jetstream Documentation|Brian Kirchner/Mike Yushchenko|Complete in Gliffy; ongoing minor changes|02/03/15|09:30:01|Late
+2015/01/30|14:14:58|2015/02/03|16:00:00|P|1|Jennifer Birthday Dinner When/Where - Call|Jennifer Leason|Note for tonight|02/03/15|09:32:14|
+2015/02/03|17:42:50|2015/02/04|07:00:00|B|1|Spectrum colors on JetStream Diagram|Gliffy|Fixed colors|02/04/15|10:37:10|Late
+2015/01/26|09:06:54|2015/02/05|07:00:00|B|1|Tripple Expresso Tonight|Forrest/Liz/Josh|On my calendar|02/05/15|09:52:09|Late
+2015/02/04|16:26:42|2015/02/05|07:00:00|B|1|JetStream higher level flow|Gliffy|JetStream Functional View completed|02/05/15|15:32:00|Late
+2015/01/08|08:42:07|2015/01/30|10:00:00|B|1|Handle removed issues; and test all scenarios for Fortify trage|FortifyParser.java - Mike Yushchenko|Fortify may not be used in the future; so I'm closing this task.|02/06/15|16:01:39|Late
+2014/12/04|09:11:11|2015/02/09|11:00:00|B|1|Fortify - Mark as not an issue? Process to review? Security? - View on SDLC based on setting|Brian Kirchner|Fortify may not be used in the near future; so I'm cancelling this task.|02/09/15|10:20:21|
+2014/12/26|16:51:26|2015/02/10|07:00:00|B|1|Music Man Tickets for Liz|Guthrie|Bought tickets center 4th row 1 & 2 for Friday 7/3/2015 at 7:30!|02/10/15|07:32:22|Late
+2015/02/04|10:37:46|2015/02/10|16:00:00|P|1|Judy Hart haircut tomorrow at 4:45; bring check|Checkbook|Wrote a note to bring check.|02/10/15|09:06:50|
+2015/02/10|10:14:30|2015/02/10|12:00:00|P|1|Society of Women Engineers Reference|Jessica Geroux|Completed reference for Jessica|02/10/15|10:15:09|
+2015/02/11|13:09:16|2015/02/12|16:00:00|P|1|Get-in-Gear and Color Run Check Tomorrow||Note written|02/12/15|09:43:31|
+2015/01/30|14:16:00|2015/02/13|07:00:00|P|1|Goldy's Run 10 Mile; Get-in-Gear 1/2 Marathon; Color Run Signup||Signed up; $27.50; $25.00; $22.50|02/13/15|13:38:47|Late
+2014/08/07|09:38:23|2015/02/13|16:00:00|P|1|Dentist on Monday|Dr. Bruss|Wrote reminder|02/13/15|13:39:41|
+2015/02/11|16:00:17|2015/02/13|18:00:00|P|1|Valentine's Day Shop|Liz|Bought card; researching flower delivery|02/13/15|13:39:58|
+2015/02/03|14:28:16|2015/02/17|16:00:00|P|1|Donate to Alzheimer's Association's Boston Marathon team for 2015|Dan Capodicci|Donated 52.25; but the site took the money twice...|02/17/15|14:07:23|
+2014/08/26|09:07:24|2015/02/09|07:00:00|B|1|Order GE Mac|Mike Yushchenko|Mike ordered; REQ2741390|02/17/15|15:51:08|Late
+2015/02/04|11:18:16|2015/02/18|16:00:00|B|1|GEC Technology Data Maintenance Progress - asked via email 2/5/2015|Nathan Anderson|Meeting today at 3:00|02/18/15|14:19:45|
+2015/02/15|20:31:11|2015/02/19|22:00:00|P|1|Olivia Lunch Saturday or Sunday; Shopping/$/Card|Olivia West|Sunday lunch|02/20/15|07:53:46|Late
+2015/02/06|07:28:36|2015/02/20|07:00:00|B|1|Oscar Night Party on Sunday at 6:00|Peggy Woodling's|Wrote note|02/20/15|07:53:55|Late
+2015/02/17|07:22:51|2015/02/20|09:00:00|P|1|Taxes this weekend||Wrote note|02/20/15|07:56:10|
+2015/01/26|10:17:31|2015/02/20|07:00:00|B|1|Goals and Objectives|Brian Kirchner|Setup first draft of goals and submitted.|02/23/15|14:38:17|Late
+2015/02/20|10:51:15|2015/02/23|16:00:00|B|1|Add stories into Rally|Brian Kirchner|Created GEC Technology story on Friday.|02/24/15|07:14:30|Late
+2015/01/08|08:04:56|2015/03/16|10:00:00|P|1|Lunch this month with Seema 11:30 at Don Pablos|Seema Gopalan|Had lunch with Seema 2/25/2016 at Don Pablo's|02/25/15|13:39:38|
+2015/02/23|14:38:25|2015/02/27|16:00:00|P|1|Lunch with Anders (Buffalo Wild Wings) on Saturday at 11:00|Anders Jensen|Wrote note for Saturday|02/27/15|09:06:04|
+2015/02/25|13:39:45|2015/03/30|15:00:00|B|1|Put Twins Games on Schedule||Done; paint Dave Crowley today also.|03/02/15|11:10:51|
+2015/02/17|15:51:10|2015/03/12|16:00:00|B|1|Pick up Mac|Josh Linden|Have Mac and files.|03/12/15|16:13:44|Late
+2015/02/27|09:03:08|2015/03/13|16:00:00|B|2|Wixon Party - Pittsburg Blue at 6:00PM|Liz Bentley|On schedule; dropping Josh/Jess off at Airport for San Francisco today too|03/13/15|07:34:29|
+2015/02/15|20:29:49|2015/03/13|22:00:00|P|1|Get Lucky 7K Tomorrow||Ready to run|03/13/15|07:35:07|
+2015/03/12|16:13:13|2015/03/13|16:00:00|B|1|Setup ARB||Setup for 3/25|03/13/15|15:00:55|
+2015/03/06|12:40:07|2015/03/13|16:00:00|P|1|Check for Twins Opener|Dave Crowley|Done|03/13/15|15:01:02|
+2015/03/13|15:03:15|2015/03/16|16:00:00|P|1|Run 4.15 Miles 35 Mins 3/13/2015||Entered into spreadsheet|03/16/15|09:16:04|
+2015/02/26|16:05:19|2015/02/27|18:00:00|B|1|.Net Training|Brian Kirchner|Worked with James Mecca to learn how Trade Payable Service works|03/27/15|07:38:16|Late
+2015/03/13|15:01:21|2015/03/26|16:00:00|B|1|Work on Data Destruction for Peggy|Brian Kirchner|On task list|04/01/15|09:50:41|Late
+2015/02/17|14:38:02|2015/04/03|16:00:00|P|1|Good Friday||Service tonight with Jess; Josh; Rachel|04/03/15|08:03:36|
+2015/04/03|08:24:08|2015/04/07|10:00:00|B|1|Leagal Hold Maintenance screen updates|Peggy Sanko|Sent 4/3/2015|04/03/15|08:53:44|
+2015/03/30|12:06:26|2015/04/03|16:00:00|P|1|Touch up bedroom paint tomorrow|Heater/Short wall over stairs/Liz closet/Ceiling(vaccuum too)|On Schedule|04/03/15|08:56:43|
+2015/03/30|12:05:20|2015/04/10|14:00:00|P|1|Ceiling Lights Buy/Install||Installed on Sunday 4/12/2015|04/13/15|09:46:05|Late
+2015/02/13|13:59:28|2015/04/10|15:00:00|P|1|Goldy's Run 10 Mile Tomorrow||Ran in 1:24:22|04/13/15|09:46:16|Late
+2015/02/17|14:15:07|2015/04/10|16:00:00|P|1|Goldy's Run Packet Pickup 11:00am-7:00pm|Mariucci Arena|Done|04/13/15|09:46:37|Late
+2015/03/30|12:07:44|2015/04/10|14:00:00|B|1|Dinning Room Table/BR Chair-Automan-light-cord; LR Blinds||Table bought|04/13/15|09:47:48|Late
+2015/03/30|12:10:06|2015/04/14|07:00:00|P|1|1st Badminton||On schedule|04/14/15|11:21:41|Late
+2015/04/08|07:07:29|2015/04/15|09:00:00|P|1|Jess Flight Home in May|Orbitz/Expedia|Scheduled/paid|04/15/15|08:45:21|
+2015/03/30|12:03:15|2015/04/15|14:00:00|P|1|St Peders Photography Editing Setup Time|Jill Audette|Thursday 5:30 at St Peders|04/15/15|08:45:36|
+2015/03/02|10:56:20|2015/04/17|16:00:00|P|1|Twins Game Sunday at 1:00 against A's||May need to give tickes away since Rachel has play tickets.|04/17/15|13:30:54|
+2015/02/13|14:00:36|2015/04/22|16:00:00|P|1|Get-in-Gear 1/2 Marathon Saturday||Ready to go|04/22/15|07:28:46|
+2015/02/17|14:25:01|2015/04/24|16:00:00|P|1|Get-in-Gear Packet Pickup noon-8:00pm; 1/2 Marathon Tomorrow at 9:00am|Minnehaha Falls|On schedule|04/24/15|08:24:53|
+2015/04/07|11:15:59|2015/04/24|13:00:00|P|1|Louella Donation|Louella Dent|Couldn't find it|04/27/15|08:52:56|Late

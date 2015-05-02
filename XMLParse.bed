@@ -1,0 +1,232 @@
+//******************************
+//* Parse a Property File that's
+//* an XML file and convert all
+//* tags into named pairs in the
+//******************************
+!x100_convert_xml
+    string Xpath     error
+    string Tag       error
+    string TagDone   error
+    string ValueDone error
+    string Newline   error
+    string TagName   error
+    string TagValue  error
+
+    Xpath = null
+    open TagFile null
+   
+    open XMLFile C:\BEdit\BEDITWIN\Builder\RPM-data\Josh\jbossTicketCacheReplicationConfig.xml
+    //open XMLFile C:\BEdit\BEDITWIN\Builder\RPM-data\Josh\ticketGrantingTicketCookieGenerator.xml
+    //open XMLFile C:\BEdit\BEDITWIN\Builder\RPM-data\Josh\server.xml
+    //open XMLFile C:\BEdit\BEDITWIN\Builder\RPM-data\Josh\context.xml
+    b rs:/@tab@/:/ /;*
+    b
+    do
+
+        //************************************
+        //* Check for Comments & Unwanted Tags
+        //************************************
+        if  (!eof)
++           scan:/@line/:/<!/
++           if  (found) call !x200_comments 
++       endif
+        //************************************
+        //* Find Tag Start
+        //************************************
+        if  (!eof)
++           scan:/@line/:/</
++           if (found)
++              call !x300_tag
++              if  (!TagDone)
++                  ValueDone = 'n'
++                  call !x400_values
++       endif
+        //************************************
+        //* Find Tag End
+        //************************************
+        if  (!eof)
++           scan:/@line/:'</'
++           if (found)
++              call !x500_tag_done
++       endif
+        f;1
+    until (eof)
+    file TagFile
+    write TagFile fgb.dat
+    close TagFile
+    return
+
+//****************************************
+//* Bypass Comments
+//****************************************
+!x200_comments
+    Newline = right
+    r:/@right@/
+    fs:/->/
+    if (!eof) 
++      scan:/@line/:/->/
++      Newline = right
++      r:/@Newline/
++   endif
+    return
+
+//****************************************
+//* Start a Tag
+//****************************************
+!x300_tag
+    scan:/@right/:word
+    Tag = left
+    r:/@right@/
+    split:/@Tag@/;1
+    if (left = '/')
++      TagDone = 'y'
++      scanr:/@Xpath@/:/</
++      Xpath = left
++      return
++   endif
+    scan:/@Tag/:'/>'
+    if  (found) return
+    scan:/@Tag/:'</'
+    if (found)
++      scan:/@Tag/:/>/
++      TagName = left
++      scan:/@right/:/</
++      TagValue = left
++      scan:/@right/:/>/
++      r:/@right@/
++      TagDone = 'y'
++      Newline = '@Xpath@:@TagName@=@TagValue@'
++      file TagFile
++      i:/@Newline@/
++      file XMLFile
++      return
++   endif
+    scan:/@Tag/:/>/
+    if (found)
++      Newline = '@right@@line@'
++      r:/@Newline@/
++      Xpath = '@Xpath@<@left@>'
++      TagDone = 'y'
++      return
++   endif
+    if  (Tag = 'attribute')
++       call !x350_attribute
++       if  (TagDone)
++           return
++   endif
+    TagDone = 'n'
+    Xpath = '@Xpath@<@Tag@>'
+    return
+
+//****************************************
+//* Handle XML Attributes
+//****************************************
+!x350_attribute
+    TagDone = 'n'
+    scan:/@line/:/"/
+    if (!found) return
+    scan:/@right/:/"/
+    if (!found) return
+    TagName = left
+    scan:/@right/:/>/
+    if (!found) return
+    scan:/@right/:/</
+    if (!found) return
+    TagValue = left
+    scan:/@right/:/>/
+    r:/@right/
+    Newline = '@Xpath@:@TagName@=@TagValue@'
+    file TagFile
+    i:/@Newline@/
+    file XMLFile
+    TagDone = 'y'
+    return
+
+//****************************************
+//* Get the Tag Values
+//****************************************
+!x400_values
+    if-1  (line = null) 
++       f;1
++       if-2 (eof)
++          return
++       else-2
++          scan:/@line/:/<!/
++          if-3  (found) 
++              call !x200_comments 
++              if-4 (eof)
++                 return
++       endif
++   endif
+    scan:/@line/:word
+    Tag = left
+    r:/@right/
+    scan:/@Tag/:'/>'
+    if (found)
++      Tag = left
++      TagDone = 'y'
++   endif
+    scan:/@Tag/:'?>'
+    if (found)
++      Tag = left
++      TagDone = 'y'
++   endif
+    scan:/@Tag/:/>/
+    if (found)
++      Tag = left
++      r:/@right@/
++      ValueDone = 'y'
++   endif
+    scan:/@Tag@/:'</'
+    if (found)
++      TagDone = 'y'
++      goto !x400_value_tag_done
++   endif
+    pack Tag
+    if (Tag != null) 
++      Newline = '@Xpath@:@Tag@'
++      file TagFile
++      i:/@Newline@/
++   endif
+    file XMLFile
+!x400_value_tag_done
+    if-1 (TagDone)
++      scanr:/@Xpath@/:/</
++      Xpath = left
++   else-1
++       if-2  (!ValueDone)
++           goto !x400_values
++   endif
+    return
+
+//****************************************
+//* Tag is Closing
+//****************************************
+!x500_tag_done
+    scan:/@right/:/>/
+    r:/@right@/
+    scanr:/@Xpath@/:/</
+    Xpath = left
+    return
+
+//****************************************
+//* Shrink the XML Names Xpath in 1st column
+//****************************************
+!x600_fix_xml_names
+    b
+    do
+        f;1
+        if (!eof)
++          scan:/@line/:/,/
++          TagName = left
++          HoldRight = right
++          scanr:/@TagName/:/>:/
++          TagName = right
++          scanr:/@left/:/</
++          TagName = '@right@:@TagName@'
++          Newline = '@TagName@,@HoldRight@'
++          r:/@Newline/
++       endif
+    until (eof)
+    b
+    return

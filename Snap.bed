@@ -1,0 +1,105 @@
+//********************************************************************************
+//* Program : Snap.bed
+//* Author  : Forrest Bentley
+//* Date    : 10/17/14
+//* Desc    : This program will insert snap statements into every paragraph in a DC-COBOL program
+//* 
+//********************************************************************************
+//*              M A I N T E N A N C E       L O G
+//*
+//* Date       Author           Description
+//* ---------- ---------------- --------------------------------------------------
+//*
+//********************************************************************************
+
+    string Filename
+    string Holdright
+    string Newline
+    string SnapVar
+ 
+//****************************************************
+//* Main Procesing
+//****************************************************
+!a100_main
+    call !b100_init
+    call !b200_proc
+    call !b300_wrap
+    exit
+ 
+//****************************************************
+//* Initialization
+//****************************************************
+!b100_init
+    system:"cls"
+    print:"******************************************************************"
+    print:"* Begin Snap.bed    @date@ - @time@"
+    print:"* This program will insert snap statements into every paragraph in a DC-COBOL program"
+    print:"******************************************************************"
+!b100_loop
+    printx:"Filename:"
+    input Filename
+    pack Filename
+    if  (Filename = null) exit
+    open DC-COBOL-File @Filename error print:"File doesn't exist, retry" goto !b100_loop
+    printx:"Variable to snap (enter if none):"
+    input SnapVar
+    pack SnapVar
+
+    return
+ 
+//****************************************************
+//* Process
+//****************************************************
+!b200_proc
+    b
+
+    fs:/WORKING-STORAGE SECTION./
+    if (eof) print:"Unable to WORKING-STORAGE SECTION" exit
+    i:/000000 01  W0100-SNAP-MESSAGE                PIC X(80).'
+
+    fs:/PROCEDURE DIVISION./
+    if (eof) print:"Unable to locate PROCEDCURE DIVISION" exit
+    do
+        split:/@line/;6
+        split:/@right/;1
+        if  (left != '*') and (left != '/')
++           Holdright = right
++           split:/@right/;1
++           if (left != ' ')
++              scan:/@Holdright/:/-EXIT/
++              if  (!found)
++                  scan:/@Holdright/:word
++                  Newline = '000000     W0100-SNAP-MESSAGE = @left@.' i:/@Newline/
++                  Newline = '000000     SNAP TITLE IS W0100-SNAP-MESSAGE.' i:/@Newline/
++       endif
+
+        if  (SnapVar != null)
++           scan:/@line/:/@SnapVar/
++           if  (found)
++               Newline = '000000     W0100-SNAP-MESSAGE = @snapVar@' i:/@Newline/
++               Newline = '000000     SNAP TITLE IS W0100-SNAP-MESSAGE' i:/@Newline/
++       endif
+
+        f;1
+    until (eof)
+    return
+ 
+//****************************************************
+//* Wrapup
+//****************************************************
+!b300_wrap
+    print:"******************************************************************"
+    print:"* Snap Processing Complete    @date@ - @time@"
+    print:"******************************************************************"
+    wait
+    return
+ 
+//****************************************************
+//* End of Program
+//****************************************************
+!z999_end_of_program
+    return
+ 
+//********************************************************************************
+//* End of program Snap.bed
+//********************************************************************************

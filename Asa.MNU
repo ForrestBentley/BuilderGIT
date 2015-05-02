@@ -1,0 +1,20 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Asa Excel Consolidation
+MENU,~Test
+ITEM,Asa_Selection_MSOBJ,Asa_Selection_WIN
+ITEM,Asa_Browse_MSOBJ,Asa_Browse_WIN
+--------------------
+ITEM,Asa_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Asa_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Asa_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Asa_Main_About_MSOBJ,~About Asa System

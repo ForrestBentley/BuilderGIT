@@ -1,0 +1,148 @@
+//**********************************************
+//* File: BuilderLang.dat
+//* Desc: Contains Language Interface commands
+//**********************************************
+
+//**********************************************
+//* Controls Window Commands
+//**********************************************
+undo:                  call !a400_Builder_Control_Undo_PBOBJ call !a400_Builder_Control_Undo_PBOBJ window paint Builder_Control_WIN
+oops:                  call !a400_Builder_Control_Undo_PBOBJ call !a400_Builder_Control_Undo_PBOBJ window paint Builder_Control_WIN
+align top:             call !a1100_Builder_Align_Top_PBOBJ   
+align bottom:          call !a1100_Builder_Align_Bottom_PBOBJ
+align right:           call !a1100_Builder_Align_Right_PBOBJ
+align left:            call !a1100_Builder_Align_Left_PBOBJ
+align horizontally:    call !a1100_Builder_Align_Midhoriz_PBOBJ
+align horiz:           call !a1100_Builder_Align_Midhoriz_PBOBJ
+align vertically:      call !a1100_Builder_Align_Midvert_PBOBJ
+align vert:            call !a1100_Builder_Align_Midvert_PBOBJ
+align middle:          call !a1100_Builder_Align_Midvert_PBOBJ
+align mid:             call !a1100_Builder_Align_Midvert_PBOBJ
+distribute vertically: call !a1100_Builder_Align_Distvert_PBOBJ
+distribute vert:       call !a1100_Builder_Align_Distvert_PBOBJ
+dist vert:             call !a1100_Builder_Align_Distvert_PBOBJ
+dist vertically:       call !a1100_Builder_Align_Distvert_PBOBJ
+distribute horizontally:call !a1100_Builder_Align_Disthoriz_PBOBJ   
+distribute horiz:      call !a1100_Builder_Align_Disthoriz_PBOBJ      
+dist horiz:            call !a1100_Builder_Align_Disthoriz_PBOBJ
+dist horizontally:     call !a1100_Builder_Align_Disthoriz_PBOBJ
+
+//**********************************************
+//* Main Menu Commands
+//**********************************************
+exit:                  call !a110_Builder_Main_Exit_MSOBJ
+quit:                  call !a110_Builder_Main_Exit_MSOBJ
+bye:                   call !a110_Builder_Main_Exit_MSOBJ
+
+bedit:                 call !a110_Builder_Main_Bedit_MSOBJ
+eclipse:               call !a110_Builder_Main_Eclipse_MSOBJ
+rumba:                 call !a110_Builder_Main_Rumba_MSOBJ
+3090:                  call !a110_Builder_Main_Rumba_MSOBJ
+mainframe:             call !a110_Builder_Main_Rumba_MSOBJ
+xampp:                 call !a110_Builder_Main_Xampp_MSOBJ
+convert:               call !a110_Builder_Main_Convert_MSOBJ
+calc:                  call !a110_Builder_Main_Calc_MSOBJ
+calculator:            call !a110_Builder_Main_Calc_MSOBJ
+soap:                  call !a110_Builder_Main_Soap_MSOBJ
+toad:                  call !a110_Builder_Main_Toad_MSOBJ
+fiddler:               call !a110_Builder_Main_Fiddler_MSOBJ
+magnify:               call !a110_Builder_Main_Magnify_MSOBJ
+notepad:               call !a110_Builder_Main_Notepad_MSOBJ
+paint:                 call !a110_Builder_Main_Paint_MSOBJ
+search commercial:     call !a110_Builder_Main_Search_MSOBJ
+commercial search:     call !a110_Builder_Main_Search_MSOBJ
+ransack:               call !a110_Builder_Main_Search_MSOBJ
+dir:                   call !a110_Builder_Main_Directory_MSOBJ
+directory:             call !a110_Builder_Main_Directory_MSOBJ
+dos:                   call !a110_Builder_Main_Dos_MSOBJ
+dos prompt:            call !a110_Builder_Main_Dos_MSOBJ
+task:                  call !a110_Builder_Main_Tasktrack_MSOBJ
+tasks:                 call !a110_Builder_Main_Tasktrack_MSOBJ
+task tracker:          call !a110_Builder_Main_Tasktrack_MSOBJ
+task track:            call !a110_Builder_Main_Tasktrack_MSOBJ
+todo:                  call !a110_Builder_Main_Tasktrack_MSOBJ
+task manager:          call !a110_Builder_Main_Taskmanager_MSOBJ
+performance:           call !a110_Builder_Main_Performance_MSOBJ
+perfmon:               call !a110_Builder_Main_Performance_MSOBJ
+performance monitor:   call !a110_Builder_Main_Performance_MSOBJ
+bpm:                   call !a110_Builder_Main_BPM_MSOBJ
+bpm documentation:     call !a110_Builder_Main_BPM_MSOBJ
+bpm docs:              call !a110_Builder_Main_BPM_MSOBJ
+bachman on the net:    call !a110_Builder_Main_Bachmannet_MSOBJ
+bachman net:           call !a110_Builder_Main_Bachmannet_MSOBJ
+bachman network:       call !a110_Builder_Main_Bachmannet_MSOBJ
+bachman records:       call !a110_Builder_Main_Bachmannet_MSOBJ
+bachman visual:        call !a110_Builder_Main_Bachman_MSOBJ
+backman graph:         call !a110_Builder_Main_Bachman_MSOBJ
+backman pdf:           call !a110_Builder_Main_Bachman_MSOBJ
+knowledge gateway:     call !a110_Builder_Main_Gateway_MSOBJ
+gateway:               call !a110_Builder_Main_Gateway_MSOBJ
+mfo2:                  call !a110_Builder_Main_MFO2_MSOBJ
+myfleetoffice2:        call !a110_Builder_Main_MFO2_MSOBJ
+futuretimeline:        call !a110_Builder_Main_FutureTimeline_MSOBJ
+future timeline:       call !a110_Builder_Main_FutureTimeline_MSOBJ
+explaining the future: call !a110_Builder_Main_ExplainingFuture_MSOBJ
+explainingthefuture:   call !a110_Builder_Main_ExplainingFuture_MSOBJ
+explain future:        call !a110_Builder_Main_ExplainingFuture_MSOBJ
+explain the future:    call !a110_Builder_Main_ExplainingFuture_MSOBJ
+tutorials:             call !a110_Builder_Main_Tutorials_MSOBJ
+it tutorials:          call !a110_Builder_Main_Tutorials_MSOBJ
+
+code check:            call !a110_Builder_Main_CodeCheck_MSOBJ
+code checker:          call !a110_Builder_Main_CodeCheck_MSOBJ
+codecheck:             call !a110_Builder_Main_CodeCheck_MSOBJ
+codechecker:           call !a110_Builder_Main_CodeCheck_MSOBJ
+3090 checker:          call !a110_Builder_Main_3090Check_MSOBJ
+3090 check:            call !a110_Builder_Main_3090Check_MSOBJ
+3090checker:           call !a110_Builder_Main_3090Check_MSOBJ
+mfchecker:             call !a110_Builder_Main_3090Check_MSOBJ
+mf check:              call !a110_Builder_Main_3090Check_MSOBJ
+mf checker:            call !a110_Builder_Main_3090Check_MSOBJ
+3090 code check:       call !a110_Builder_Main_3090Check_MSOBJ
+3090 code checker:     call !a110_Builder_Main_3090Check_MSOBJ
+mfcodecheck:           call !a110_Builder_Main_3090Check_MSOBJ
+mfcodechecker:         call !a110_Builder_Main_3090Check_MSOBJ
+mf code checker:       call !a110_Builder_Main_3090Check_MSOBJ
+download:              call !a110_Builder_Main_Download_MSOBJ
+3090 download:         call !a110_Builder_Main_Download_MSOBJ
+mf download:           call !a110_Builder_Main_Download_MSOBJ
+search directory:      call !a110_Builder_Main_Searchdir_MSOBJ
+search dir:            call !a110_Builder_Main_Searchdir_MSOBJ
+directory search:      call !a110_Builder_Main_Searchdir_MSOBJ
+dir search:            call !a110_Builder_Main_Searchdir_MSOBJ 
+search:                call !a110_Builder_Main_Searchdir_MSOBJ         
+
+pacman:                call !a110_Builder_Main_Pacman_MSOBJ
+life:                  call !a110_Builder_Main_Life_MSOBJ
+
+about:                 call !a110_Builder_Main_About_MSOBJ
+manual:                call !a110_Builder_Main_ControlManual_MSOBJ
+analysis manual:       call !a110_Builder_Main_ControlManual_MSOBJ
+analysis:              call !a110_Builder_Main_ControlManual_MSOBJ
+help analysis:         call !a110_Builder_Main_ControlManual_MSOBJ
+analysis doc:          call !a110_Builder_Main_ControlManual_MSOBJ
+analysis documentation:call !a110_Builder_Main_ControlManual_MSOBJ
+overview:              call !a110_Builder_Main_Overview_MSOBJ
+bedit guide:           call !a110_Builder_Main_Manual_MSOBJ
+bedit manual:          call !a110_Builder_Main_Manual_MSOBJ
+bedit language:        call !a110_Builder_Main_Manual_MSOBJ
+bedit reference:       call !a110_Builder_Main_Manual_MSOBJ
+bedit doc:             call !a110_Builder_Main_Manual_MSOBJ
+help bedit:            call !a110_Builder_Main_Manual_MSOBJ
+bedit documentation:   call !a110_Builder_Main_Manual_MSOBJ
+system:                call !a110_Builder_Main_AboutSystem_MSOBJ
+system details:        call !a110_Builder_Main_AboutSystem_MSOBJ
+
+banneron:              call !a110_Builder_Main_Banneron_MSOBJ
+banner on:             call !a110_Builder_Main_Banneron_MSOBJ
+turn banner on:        call !a110_Builder_Main_Banneron_MSOBJ
+banneroff:             call !a110_Builder_Main_Banneroff_MSOBJ
+banner off:            call !a110_Builder_Main_Banneroff_MSOBJ
+turn banner off:       call !a110_Builder_Main_Banneroff_MSOBJ
+
+help:                  system:"start BuilderLangHelp.docx"
+?:                     system:"start BuilderLangHelp.docx"
+
+//**********************************************
+//* End of BuilderLang.dat
+//**********************************************

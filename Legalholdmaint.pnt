@@ -1,0 +1,13 @@
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Business_Text,Text,14,32,10,13,0,0,255,Times New Roman,GE Business Name
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Corp_Text,Text,14,56,10,13,0,0,255,Times New Roman,Fleet Corp Code
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Parent_Text,Text,14,104,10,13,0,0,255,Times New Roman,Customer Number
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Customer_Text,Text,14,80,10,13,0,0,255,Times New Roman,Parent Customer Number
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Levelcodeacct_Text,Text,14,128,10,13,0,0,255,Times New Roman,Account Number
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Asset_Text,Text,14,152,10,13,0,0,255,Times New Roman,Asset
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Assetuniqueid_Text,Text,14,176,10,13,0,0,255,Times New Roman,Asset ID
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Effectivestart_Text,Text,14,224,10,13,0,0,255,Times New Roman,Hold End Date
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Effectiveend_Text,Text,14,248,10,13,0,0,255,Times New Roman,Add Date
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Holduntil_Text,Text,14,200,10,13,0,0,255,Times New Roman,Hold Start Date
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Requestedby_Text,Text,14,272,10,13,0,0,255,Times New Roman,Add Userid
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Requestdate_Text,Text,14,296,10,13,0,0,255,Times New Roman,Modify Date
+Legalholdmaint_Legalholdmaint_WIN,Legalholdmaint_Legalholdmaint_Requestdate.1_Text,Text,14,320,10,13,0,0,255,Times New Roman,Modify Userid

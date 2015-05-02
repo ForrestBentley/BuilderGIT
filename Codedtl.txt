@@ -1,0 +1,80 @@
+**********************************************************************************************************
+*                                             GE Fleet Services                              Date:09/17/14
+*                                         Java Standards Code Scan                     Start Time:13:14:44
+*                                            System:Javamail
+*                                       Code Check Version:V2007.04.20
+**********************************************************************************************************
+c:\JavaMail\Contact.java
+                         import sun. : import sun.net.smtp.SmtpClient;
+                         import .* : import java.io.*;
+c:\JavaMail\EMail.java
+                         Hardcoded IP : 	//public final static String smtpServer =  "3.61.196.101"; 
+                         Hardcoded IP : 	//public final static String smtpServer =  "3.61.128.61"; 
+                         import sun. : import sun.net.smtp.SmtpClient; 
+                         import .* : import java.io.*; 
+                         printStackTrace : 			e.printStackTrace();
+c:\JavaMail\JavaMail.java
+                         import .* : import java.sql.*;
+                         import .* : import java.util.*;
+                         import .* : import java.text.*;
+                         import .* : import java.io.*;
+                         printStackTrace : 			ex.printStackTrace();
+                         printStackTrace : 			e.printStackTrace();
+c:\JavaMail\Backup\EMail.java
+                         Hardcoded IP : 	//public final static String smtpServer =  "3.61.196.101"; 
+                         Hardcoded IP : 	//public final static String smtpServer =  "3.61.128.61"; 
+                         import sun. : import sun.net.smtp.SmtpClient; 
+                         import .* : import java.io.*; 
+                         printStackTrace : 			e.printStackTrace();
+c:\JavaMail\Backup\JavaMail.java
+                         import .* : import java.sql.*;
+                         import .* : import java.util.*;
+                         import .* : import java.text.*;
+                         import .* : import java.io.*;
+                         printStackTrace : 			ex.printStackTrace();
+                         printStackTrace : 			e.printStackTrace();
+c:\JavaMail\Backup\JavaMailer.java
+                         Hardcoded IP : 	//public final static String smtpServer =  "3.61.196.101"; 
+                         Hardcoded IP : 	//public final static String smtpServer =  "3.61.128.61"; 
+                         import sun. : import sun.net.smtp.SmtpClient; 
+                         import .* : import java.sql.*;
+                         import .* : import java.util.*;
+                         import .* : import java.text.*;
+                         import .* : import java.io.*;
+                         printStackTrace : 			ex.printStackTrace();
+                         printStackTrace : 			e.printStackTrace();
+                         printStackTrace : 			e.printStackTrace();
+c:\JavaMail\Backup\Test.java
+                         import .* : import java.sql.*;
+                         import .* : import java.util.*;
+                         import .* : import java.text.*;
+                         import .* : import java.io.*;
+c:\JavaMail\Backup\Testing.java
+c:\JavaMail\GenericSource\EMail.java
+                         Hardcoded IP : 	//public final static String smtpServer =  "3.61.196.101"; 
+                         Hardcoded IP : 	//public final static String smtpServer =  "3.61.128.61"; 
+                         import sun. : import sun.net.smtp.SmtpClient; 
+                         import .* : import java.io.*; 
+                         printStackTrace : 			e.printStackTrace();
+c:\JavaMail\GenericSource\JavaMail.java
+                         import .* : import java.sql.*;
+                         import .* : import java.util.*;
+                         import .* : import java.text.*;
+                         import .* : import java.io.*;
+                         printStackTrace : 			ex.printStackTrace();
+                         printStackTrace : 			e.printStackTrace();
+c:\JavaMail\Old\EMail.java
+                         Hardcoded IP : 	//public final static String smtpServer =  "3.61.196.101"; 
+                         Hardcoded IP : 	//public final static String smtpServer =  "3.61.128.61"; 
+                         import sun. : import sun.net.smtp.SmtpClient; 
+                         import .* : import java.io.*; 
+                         printStackTrace : 			e.printStackTrace();
+c:\JavaMail\Old\JavaMail.java
+                         import sun. : import sun.net.smtp.SmtpClient; 
+                         import .* : import java.sql.*;
+                         import .* : import java.util.*;
+                         import .* : import java.text.*;
+                         import .* : import java.io.*; 
+                         printStackTrace : 			ex.printStackTrace();
+                         printStackTrace : 				e.printStackTrace();
+                         printStackTrace : 			e.printStackTrace();

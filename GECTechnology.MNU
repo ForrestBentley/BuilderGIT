@@ -1,0 +1,34 @@
+***********************************
+* M E N U
+***********************************
+TITLE,GEC Technology
+MENU,~GEC Technology
+ITEM,GECTechnology_Techview_MSOBJ,~GEC Technology Viewer
+ITEM,GECTechnology_Export_MSOBJ,~Export to Excel
+--------------------
+ITEM,GECTechnology_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Color Schemes
+ITEM,GECTechnology_Main_Colors1_MSOBJ,Colors - ~Default
+ITEM,GECTechnology_Main_Colors2_MSOBJ,Colors - B~old
+ITEM,GECTechnology_Main_Colors3_MSOBJ,Colors - GE
+ITEM,GECTechnology_Main_Colors4_MSOBJ,Colors - B and ~W
+ITEM,GECTechnology_Main_Colors5_MSOBJ,Colors - ~Pastel
+ITEM,GECTechnology_Main_Colors6_MSOBJ,Colors - B~rown
+ITEM,GECTechnology_Main_Colors7_MSOBJ,Colors - ~Blue
+ITEM,GECTechnology_Main_Colors8_MSOBJ,Colors - ~Green
+ITEM,GECTechnology_Main_Colors9_MSOBJ,Colors - ~Red
+ITEM,GECTechnology_Main_Colors3D_MSOBJ,Colors - ~3D
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,GECTechnology_Main_Banneron_MSOBJ,Banner O~n
+ITEM,GECTechnology_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,GECTechnology_Main_About_MSOBJ,~About GEC Technology System

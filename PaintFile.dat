@@ -1,0 +1,22 @@
+MainWindow,EarthBitmap,Bitmap,273,222,BuilderEarth.bmp
+Builder_Control_WIN,GroupRectangle,Box,804,51,117,229,250,250,250
+Testpaintaction_Window1_WIN,Testpaintaction_Window1_Closebox1_Box,Box,190,82,100,20,0,255,200
+Testpaintaction_Window1_WIN,Testpaintaction_Window1_Closebox2_Box3D,Box3D,177,133,100,20,150,0,0
+Testpaintaction_Window1_WIN,Testpaintaction_Window1_Closeellipse_Ellipse,Ellipse,467,113,50,50,0,255,0
+Testpaintaction_Window1_WIN,Testpaintaction_Window1_Closeellipse3d_Ellipse3D,Ellipse3D,375,210,50,50,255,0,0
+Testpaintaction_Window1_WIN,Testpaintaction_Window1_Closecircle_Circle,Circle,481,197,50,50,255,0,0
+Testpaintaction_Window1_WIN,Testpaintaction_Window1_Closediamond_Diamond,Diamond,614,242,100,20,255,0,0
+Testpaintaction_Window1_WIN,Testpaintaction_Window1_Closetext_Text,Text,175,317,40,0,0,0,255,ALGERIAN,Close this window
+Testpaintaction_Window1_WIN,Testpaintaction_Window1_Closetilttext_TextTilt,TextTilt,228,461,0,20,255,0,0,ALGERIAN,Close this window
+Testpaintaction_Window1_WIN,Testpaintaction_Window1_Closebitmap_Bitmap,Bitmap,670,47,c:\bedit\beditwin\builder\PaintBMP\Scrat.bmp
+Testpaintaction_Window1_WIN,Testpaintaction_Window1_Closebitmap2_BitmapFit,BitmapFit,703,289,100,0,c:\bedit\beditwin\builder\BuilderEarth.bmp
+Builder_Control_WIN,Testpaintaction_Window1_Closebox1_Box,Box,603,99,100,20,0,255,200
+Builder_Control_WIN,Testpaintaction_Window1_Closebox2_Box3D,Box3D,603,150,100,20,150,0,0
+Builder_Control_WIN,Testpaintaction_Window1_Closeellipse_Ellipse,Ellipse,861,88,50,50,0,255,0
+Builder_Control_WIN,Testpaintaction_Window1_Closeellipse3d_Ellipse3D,Ellipse3D,861,228,50,50,255,0,0
+Builder_Control_WIN,Testpaintaction_Window1_Closecircle_Circle,Circle,861,158,50,50,255,0,0
+Builder_Control_WIN,Testpaintaction_Window1_Closediamond_Diamond,Diamond,1035,259,100,20,255,0,0
+Builder_Control_WIN,Testpaintaction_Window1_Closetext_Text,Text,596,334,40,0,0,0,255,ALGERIAN,Close this window
+Builder_Control_WIN,Testpaintaction_Window1_Closetilttext_TextTilt,TextTilt,649,478,0,20,255,0,0,ALGERIAN,Close this window
+Builder_Control_WIN,Testpaintaction_Window1_Closebitmap_Bitmap,Bitmap,1091,64,c:\bedit\beditwin\builder\PaintBMP\Scrat.bmp
+Builder_Control_WIN,Testpaintaction_Window1_Closebitmap2_BitmapFit,BitmapFit,1124,306,100,0,c:\bedit\beditwin\builder\BuilderEarth.bmp

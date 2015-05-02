@@ -1,0 +1,401 @@
+//********************************************************************************
+//* Program : Jsparms.bed
+//* Author  : Forrest Bentley
+//* Date    : 02/14/14
+//* Desc    : This program will read all JS files in an input directory 
+//*           (and all sub-directories) and identify functions that don't 
+//*           contain proper JSDoc comments.
+//*
+//*           If the JSParms.ini file exists, then it will be used for all directory input
+//* 
+//********************************************************************************
+//*              M A I N T E N A N C E       L O G
+//*
+//* Date       Author           Description
+//* ---------- ---------------- --------------------------------------------------
+//* 02/24/2014 Forrest Bentley  Added logic to bypass files too large to process
+//* 02/25/2014 Forrest Bentley  Added JSParms.ini processing
+//*
+//********************************************************************************
+
+    string Newline
+    string MacroCommand
+    string Done
+
+    int    CountJSFiles
+    int    CountJSErrorFiles
+    int    CountJSErrorFunctions
+    int    CountParmErrors
+    int    CountReturnErrors
+    int    CountJSTooLarge
+
+    int    FunctionLineNumber
+    string FunctionName
+    string FirstErrorInFile
+    string FunctionInError
+    string ReturnSet
+    string ReturnFound
+    int    BraceCount
+
+    string Params
+    string CommentEnd
+    string CommentStart
+    string TestParam
+ 
+//****************************************************
+//* Main Procesing
+//****************************************************
+!a100_main
+    call !b100_init
+    call !b200_proc
+    call !b300_wrap
+    exit
+ 
+//****************************************************
+//* Initialization
+//****************************************************
+!b100_init
+    system:"cls"
+    open Report null
+    Newline = "******************************************************************" i:/@Newline@/ p
+    Newline = "* Begin Jsparms.bed    @date@ - @time@" i:/@Newline@/ p
+    Newline = "* This program will read all JS files in an input directory" i:/@Newline@/ p
+    Newline = "* (and all sub-directories) and identify functions that don't" i:/@Newline@/ p
+    Newline = "* contain proper JSDoc comments." i:/@Newline@/ p
+    Newline = "******************************************************************" i:/@Newline@/ p
+    string Directory error
+    string Response error
+
+    if  (exists JSParms.ini)
++       open JSParms.ini JSParms.ini
++       return
++   endif
+ 
+    open JSParms.ini null
+    printx:"Please enter the directory to process:"
+    input Directory
+    if-1  (Directory = null)
++       printx:"Do you want to exit?"
++       input Response
++       if-2 (!Response)
++          goto !b100_init 
++       else-2
++           exit
++   endif
+    i:/@Directory/
+    return
+ 
+//****************************************************
+//* Process
+//****************************************************
+!b200_proc
+    string JSFilename
+
+    //**********************************************
+    //* Directory List Processing 
+    //*     Input : Directory string initialized 
+    //*     Output: DirFileList file of files in Directory 
+    //**********************************************
+    open DirFileListFull null
+    string Extension = 'js'
+    file JSParms.ini
+    b
+    do
+        if  (!eof)
++           Directory = line
++           call BuilderDirList.bed
++           file DirFileList
++           b
++           copy;*
++           file DirFileListFull
++           paste
++           file JSParms.ini
++           f;1
++       endif
+    until (eof)
+    file DirFileListFull
+    b
+    copy;*
+    close DirFileList
+    open DirFileList null
+    paste
+    b
+    
+    string FileReady = 'y'
+
+    //**********************************************
+    //* Process each JS file
+    //**********************************************
+    b
+    do
+        if  (!eof)
++           JSFilename = line
++           call !b250_process_js_file
++           endif
+        file DirFileList 
+        f;1
+    until (eof)
+    return
+ 
+//****************************************************
+//* Process 1 JS File
+//****************************************************
+!b250_process_js_file
+ 
+    system:"cls"
+    file Report
+    Newline = 'Processing @JSFilename@'
+    i:/@Newline/
+    p
+    CountJSFiles ++
+    FirstErrorInFile = 'y'
+    fixfile @JSFilename JSParms-work.js
+    close JSCode error
+    open JSCode JSParms-work.js error goto !b250_bad_js
+    b
+    ib:/$*$Top/
+    rs:/@tab@/:/    /;*
+    b
+
+!b250_function_loop
+    //**********************************************
+    //* Separate the Params into the ParamsFile
+    //**********************************************
+    close ParamsFile error
+    open ParamsFile null
+    file JSCode
+    //**************************
+    //* Find Function
+    //**************************
+    pattern on
+    scan:/@line/:/*=*function*(/
+    pattern off
+    if (!found) goto !b250_next
+    ReturnSet = 'n'
+    FunctionInError = 'n'
+    FunctionName = left
+    Params = right
+    FunctionLineNumber = lineno - 1
+    leftjust FunctionName
+    pack FunctionName
+    scanr:/@FunctionName/:/ /
+    if (found) FunctionName = right
+    Newline = "    function @FunctionName@"
+    file Report
+    i:/@Newline@/
+    p
+    file JSCode
+    Done = 'n'
+    do
+        scan:/@Params/:/,/
+        if-1 (found)
++          Newline = left
++          crush Newline
++          file ParamsFile
++          i:/@Newline@/
++          file JSCode
++          Params = right
++       else-1
++          scan:/@Params/:/)/
++          if-2 (found)
++              Newline = left
++              crush Newline
++              file ParamsFile
++              i:/@Newline@/
++              file JSCode
++              Done = 'y'
++           else-2
++              f;1
++              if-3  (eof)
++                  Done = 'y'
++              else-3
++                  Params = line
++       endif
+    until (Done)
+
+    //**********************************************
+    //* Verify there are JSDoc Comments for each
+    //* Param in the ParamsFile
+    //**********************************************
+    file JSCode
+    ib:/$*$FGB/
+    CommentStart = 'n'
+    CommentEnd = 'n'
+!b250_backup
+    //**********************************************
+    //* Backup through the Comments above the function
+    //**********************************************
+    b;1
+    if  (line = '$*$Top')
++       goto !b250_find_params
++   endif
+    crush line
+    if (line = null) goto !b250_backup
+    scan:/@line/:|*/|
+    if  (found) 
++       CommentEnd = 'y'
++   endif
+    subs ^
+    pattern on
+    scan:/^line/:/@return/
+    if (found) ReturnSet = 'y'
+    scan:/^line/:/@param*{*}/
+    pattern off
+    subs @
+    if  (found) 
++       scan:/@right/:word
++       TestParam = left
++       call !b260_check_param
++       goto !b250_backup
++   endif      
+    if-1 (CommentEnd)
++      scan:/@line/:|/*|
++      if-2  (found)
++          goto !b250_check_all_params
++      else-2
++          goto !b250_backup
++   endif
+
+!b250_check_all_params
+    file ParamsFile
+    b
+    if (eof) goto !b250_relocate
+    if (FirstErrorInFile)
++      FirstErrorInFile = 'n'
++      CountJSErrorFiles ++
++   endif
+    CountJSErrorFunctions ++
+    FunctionInError = 'y'
+    do
+        //***********************
+        //* Parameter Error
+        //***********************
+        CountParmErrors ++
+        Newline = '        *** Error: Missing Comments Parm @line@ - Line @FunctionLineNumber@'
+        file Report
+        i:/@Newline@/
+        p
+        file ParamsFile
+        f;1
+    until (eof)
+
+!b250_relocate
+    file JSCode
+    fs:/$*$FGB/
+    d;1
+    ReturnFound = 'n'
+
+!b250_brace_loop
+    scan:/@line/:/{/
+    if (found) BraceCount ++
+    scan:/@line/:/}/
+    if (found) BraceCount --
+    scan:/@line/:/ return /
+    if (found) ReturnFound = 'y'
+    if-1 (BraceCount > 0)
++      f;1
++      if-2 (eof) 
++         goto !b250_done
++      else-2
++         goto !b250_brace_loop
++   endif
+    if-1 (ReturnFound) and (!ReturnSet)
++      //***********************
++      //* Return Error
++      //***********************
++      CountReturnErrors ++
++      Newline = '        *** Error: Return not set'
++      file Report
++      i:/@Newline/
++      p
++      file JSCode
++      if-2 (FirstErrorInFile)
++         FirstErrorInFile = 'n'
++         CountJSErrorFiles ++
++         if-3 (!FunctionInError)
++            CountJSErrorFunctions ++
++      else-2
++         if-4 (!FunctionInError)
++            CountJSErrorFunctions ++
++   endif
++   endif
+
+!b250_next
+    file JSCode
+    f;1
+    if  (eof)
++       goto !b250_done
++   endif
+    goto !b250_function_loop
+
+!b250_done
+    close JSCode
+    return
+ 
+//**********************************************
+//* Unable to open JS file
+//**********************************************
+!b250_bad_js
+    print:"Unable to open @JSFilename@"
+    CountJSTooLarge ++
+    Newline = '        *** Unable to Open / lines too large to process'
+    file Report
+    i:/@Newline/
+    p
+    close JSCode error
+    //wait
+    return
+
+//**********************************************
+//* Unable to open JS file
+//**********************************************
+!b260_check_param
+    scan:/@TestParam/:/[/ if (found) TestParam = '@left@@right@'
+    scan:/@TestParam/:/]/ if (found) TestParam = '@left@@right@'
+    crush TestParam
+    file ParamsFile
+    b
+    do
+        if (!eof)
++          if (line = TestParam)
++             d
++             goto !b260_done
++       endif
+    f;1
+    until (eof)
+!b260_done
+    file JSCode
+    return
+
+//****************************************************
+//* Wrapup
+//****************************************************
+!b300_wrap
+    file Report
+    Newline = "******************************************************************" i:/@Newline/ p
+    Newline = "* Jsparms Processing Complete    @date@ - @time@" i:/@Newline/ p
+    Newline = "* Output located at JSParms.dat" i:/@Newline/ p
+    Newline = "******************************************************************" i:/@Newline/ p
+    Newline = "Directory        @Directory@" i:/@Newline/ p
+    Newline = "JS Files         @CountJSFiles@" i:/@Newline/ p
+    Newline = "File Errors      @CountJSErrorFiles@" i:/@Newline/ p
+    Newline = "Files Too Large  @CountJSTooLarge@" i:/@Newline/ p
+    Newline = "Function Errors  @CountJSErrorFunctions@" i:/@Newline/ p
+    Newline = "Parameter Errors @CountParmErrors@" i:/@Newline/ p
+    Newline = "Return Errors    @CountReturnErrors@" i:/@Newline/ p
+    Newline = "******************************************************************" i:/@Newline/ p
+    write Report JSParms.dat
+    system:"del JSParms-work.js"
+    system:"start JSParms.dat"
+    //wait
+    return
+
+//****************************************************
+//* End of Program
+//****************************************************
+!z999_end_of_program
+    return
+ 
+//********************************************************************************
+//* End of program Jsparms.bed
+//********************************************************************************

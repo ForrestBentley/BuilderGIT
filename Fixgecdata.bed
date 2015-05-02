@@ -1,0 +1,106 @@
+//********************************************************************************
+//* Program : Fixgecdata.bed
+//* Author  : Forrest Bentley
+//* Date    : 01/21/15
+//* Desc    : This program will read all of the GECTech-History files and add a dummy Key to allow History reporting to still work properly after the Key field was added
+//* 
+//********************************************************************************
+//*              M A I N T E N A N C E       L O G
+//*
+//* Date       Author           Description
+//* ---------- ---------------- --------------------------------------------------
+//*
+//********************************************************************************
+    string Filename
+    string Newline
+    int    Count
+ 
+//****************************************************
+//* Main Procesing
+//****************************************************
+!a100_main
+    call !b100_init
+    call !b200_proc
+    call !b300_wrap
+    exit
+ 
+//****************************************************
+//* Initialization
+//****************************************************
+!b100_init
+    system:"cls"
+    print:"******************************************************************"
+    print:"* Begin Fixgecdata.bed    @date@ - @time@"
+    print:"* This program will read all of the GECTech-History files and add a dummy Key to allow History reporting to still work properly after the Key field was added"
+    print:"******************************************************************"
+    //**********************************************
+    //* Directory List Processing 
+    //*     Input - "Directory" string contains location 
+    //*             of directory to search
+    //*           - "Extension" string of extensions to search
+    //*     Output- DirFileList file of files in Directory 
+    //**********************************************
+    string Directory = 'c:\bedit\beditwin\builder\GECTech-History' error
+    string Extension = null error
+    call BuilderDirList.bed
+    file DirFileList
+    b
+    do
+        if  (!eof)
++           Filename = line
++           call !d100_proc_file
++           file DirFileList
++       endif
+        f;1
+    until (eof)
+    return
+    wait
+//****************************************************
+//* Process
+//****************************************************
+!b200_proc
+    
+    return
+ 
+//****************************************************
+//* Wrapup
+//****************************************************
+!b300_wrap
+    print:"******************************************************************"
+    print:"* Fixgecdata Processing Complete    @date@ - @time@"
+    print:"******************************************************************"
+    wait
+    return
+ 
+//****************************************************
+//* Process 1 file
+//****************************************************
+!d100_proc_file
+    print:"Processing @Filename@"
+    open DataFile @Filename error print:"Unable to open @Filename@" wait return
+    b
+    Newline = 'Key|@line@'
+    r:/@Newline/
+    f;1
+    Count = 0
+    do
+        if  (!eof)
++           Count ++
++           Newline = '@Count@|@line@'
++           r:/@Newline@/
++       endif
+        f;1
+    until (eof)
+    write DataFile @Filename
+    close DataFile
+    return
+ 
+//****************************************************
+//* End of Program
+//****************************************************
+!z999_end_of_program
+    return
+ 
+//********************************************************************************
+//* End of program Fixgecdata.bed
+//********************************************************************************

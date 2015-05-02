@@ -1,0 +1,2332 @@
+//************************************************************************
+//* Program : CHK3090.bed
+//* Author  : Forrest Bentley
+//* Date    : June 17, 2002
+//* Desc    : This program will read all 3090 source to ensure adherance to
+//*           GECFS standards
+//*
+//* Check                   Warning   Error
+//* ---------------------   -------   -----
+//* Total Lines             >4000     >5000
+//* Comments                <8%       <4%
+//* Move Corresponding      Any
+//* Occurs Too Large        >1000     >5000
+//* Sentence Length         >30       >60
+//* PROGRAM-NAME Miss Move            Any
+//* SYSCTL with Retrieval             Any
+//* Missing Move to LS-RETURN-LEN     Any
+//*
+//* Input                        Output
+//* ---------------------------  ---------------------------------
+//* Entered Directory of files   CHK3090.txt 
+//*                              JCLXREF.txt
+//*
+//************************************************************************
+//*                          Change Log
+//*
+//* Author             Date      Description
+//* ---------------- ----------  ------------------------------------------
+//* F.Bentley        06/24/2002  Added DB2 Program & Line count
+//*                              Added Total Line check
+//*                              Added Comment Percent check
+//*                              Added Move Corresponding check
+//*                              Added occurs too large check
+//* F.Bentley        06/25/2002  Corrected Output Report Alignment Errors
+//*                              Added FIND, OBTAIN, MODIFY, STORE, ERASE
+//* F.Bentley        06/27/2002  Added check for sentence length
+//*                              Added Lineno to warnings/errors
+//*                              Added loop to MOVE CORR check
+//* F.Bentley        07/18/2002  Added code to capture db2 sql
+//* F.Bentley        07/26/2002  Added jcl xref code
+//* F.Bentley        07/31/2002  Fixed jcl lines starting with @
+//* F.Bentley        09/13/2002  Added UPDATE to selected DB2 lines
+//* F.Bentley        09/16/2002  Added ADSO Code
+//* F.Bentley        10/12/2002  Corrected OBTAIN/FIND/STORE/MODIFY/ERASE for ADSO
+//*                              Added field level retrieval logic
+//* F.Bentley        10/14/2002  Removed , from IDMS Fields
+//* F.Bentley        10/18/2002  Added Logfile
+//* F.Bentley        10/25/2002  Added CSV Log
+//* F.Bentley        11/01/2002  Added CICS COBOL check for move to PROGRAM-NAME
+//*                              Added SYSCTL & COBOL RETRIEVAL Error (Inefficent Code)
+//* F.Bentley        11/04/2002  Fixed PROGRAM-NAME move using Working Storage variable
+//*                              Fixed Commented SYSCTL JCL, & Commented Usage-Mode's
+//* F.Bentley        11/11/2002  Changed all JCLXREF System Names to match FIX3090 System Names
+//* F.Bentley        11/12/2002  Changed output record to remain consistent with other ETL files
+//*                              Added 'Fleet Services' as business field for ETL
+//*                              Added Program Calls Stack for SYSCTL Checking
+//* F.Bentley        11/13/2002  Added logic to capture calls for all programs, cleaned up sysctl errors
+//* F.Bentley        11/15/2002  Added Database Schema to output file
+//*                              Corrected SYSCTL errors if unable to open single cobol program (assumed correct)
+//* F.Bentley        11/18/2002  Fixed CallCountError Report Line Error
+//* F.Bentley        11/19/2002  Added Additional Fields to CSV
+//* F.Bentley        11/20/2002  Added 6 Errors to CSV
+//* F.Bentley        11/21/2002  Added logic to handle as/400 code (cobol,copy,jcl,sql)
+//* F.Bentley        11/25/2002  Removed AS400 logic since this program was cloned into chkas400.bed
+//* F.Bentley        11/26/2002  Corrected logic to not skip checks if not an IDMS Program
+//* F.Bentley        11/29/2002  Corrected division by zero : CommentCompute = TotalComments / TotalcobLines
+//*                              Corrected aborts due to fix on 11/26/2002
+//* F.Bentley        12/05/2002  Fixed Access Mode Detail DISP=SHR,DSN= to just SHR
+//* F.Bentley        12/12/2002  Fixed abort if CSV files are currently open.
+//*                              Added Related Component Location and Type
+//* F.Bentley        12/16/2002  Corrected output line to properly handle related component.
+//* F.Bentley        01/14/2003  Corrected blank AccessModeDetail for DSNs
+//* F.Bentley        01/23/2003  Improved AccessMode = 'Write' logic (OLD = Read)
+//* F.Bentley        09/14/2004  Added check for missing move to LS-RETURN-LEN
+//* F.Bentley        09/21/2004  Removed IDMS-ABORT when checking for return length, only check cicstc.txt cics files
+//* F.Bentley        09/23/2004  Removed Commented return length statements
+//* F.Bentley        09/27/2004  Added CICSTranCode to output MSCICSLN.TXT File
+//* F.Bentley        08/05/2005  Added check for standard copyright comments
+//*                              Added check for IDMS-ABORT section in IDMS programs
+//*                              Added check to ensure PERFORM and THRU are on the same line
+//*                              Added Maintenance Log Check
+//*                              Added WORKING STORAGE Start variable check
+//*                              Added warning for any area walk to ensure that the programmer checks proper currency
+//*                              Added IDMS-STATUS usage check (should use 88 level names from IDMS-COPY)
+//*                              Added check for IF and AND on same line
+//*                              Added Version
+//* F.Bentley        08/08/2005  Added check for existance of chklist.txt to determine standard 3090 dir, or entered dir
+//* F.Bentley        08/07/2007  Added if (eof) b fs:/PROCEDURE DIVISION/ fs:/ USING /
+//* F.Bentley        01/11/2014  Blank out comment lines to prevent warnings/errors on comments
+//*                              Added 01 PIC Warning
+//*                              Added GOTO non-EXIT Error
+//*
+//************************************************************************
+//*                              To Do
+//*
+//* Check Paragraph/Section Length
+//* Add JCL/Proc Checking
+//*
+//************************************************************************
+string Version = "Version 01-11-2014"
+
+string  Newline
+string  CurrDir
+string  StartDir
+string  Sysline
+string  CurrentDirectory
+string  Newdir
+string  Filename
+string  Testline
+string  ReportLine
+string  CheckSystem
+string  FileType
+string  JavaScriptOn
+
+string  ErrorLine
+
+float   GrandTotalCodeLines
+
+integer TotalCodeLines
+integer TotalComments
+dollar  CommentPercent
+float   CommentCompute
+integer Errors
+integer Warnings
+integer JSPJavaCode
+dollar  JSPJavaPercent
+integer TotalDisplays
+integer TotalSRCLines
+integer TotalSRCLinesinFile
+integer TotalFunctions
+integer TotalFunctionsinFile
+
+string  JavaHTMLWarningFlag
+
+integer TotalJavaFiles
+integer TotalJspFiles
+integer TotalHTMLFiles
+integer TotalJSFiles
+integer TotalCPPFiles
+integer TotalHFiles
+integer TotalRCFiles
+integer TotalGIFFiles
+integer TotalJPGFiles
+
+integer CommentWarnings
+integer CommentErrors
+integer CodeLineWarnings
+integer CodeLineErrors
+integer IdmsAbortErrors
+integer PerformThruErrors
+integer MaintenanceLogErrors
+integer WorkingStorageErrors
+integer Pic01Warnings
+integer GotoErrors
+
+integer CopyrightErrors
+
+integer MoveCorrWarnings
+integer OccursWarnings
+integer OccursErrors
+
+integer AreaWalkWarnings
+
+integer ProgramNameErrors
+
+integer SysctlRetrieveErrors
+integer MissingMoveLSReturnLenErrors
+string  LengthComputed
+
+integer FileWarnings
+integer DisplayWarnings
+integer LineLengthWarnings
+integer LineLengthErrors
+integer LineLengthWarningCount
+integer LineLengthErrorCount
+integer FileSizeWarnings
+integer FileSizeErrors
+integer SRCLineWarnings
+integer SRCLineErrors
+integer IDMSStatusErrors
+integer IFANDErrors
+
+
+float   FileSize
+
+string  Schema
+string  SubSchema
+string  Area
+string  Mode
+
+integer TotalFiles
+integer TotalcobFiles
+integer TotalcpyFiles
+integer TotaljclFiles
+integer TotalprcFiles
+
+integer TotalCobol
+integer TotalADSO
+integer TotalCobolIDMS
+integer TotalCICS
+integer TotalCICSIDMS
+integer TotalDB2
+
+float   TotalcobLines = 0
+float   TotalcpyLines
+float   TotaljclLines
+float   TotalprcLines
+float   TotalAdsLines
+float   TotalLines
+
+float   TotalCobolLines
+float   TotalADSOLines
+float   TotalCobolIDMSLines
+float   TotalCICSLines
+float   TotalDB2Lines
+float   TotalCICSIDMSLines
+
+string  Type
+string  CopyFileName
+integer Occurs
+string  IDMSFunction
+string  IDMSType
+
+integer LineCount
+
+string  ChangeFrom
+string  ChangeFrom2
+string  ChangeTo
+
+string  Proc
+string  Procname
+
+string  System
+string  File
+string  Database
+string  AccessMode
+string  AccessModeDetail
+string  Record
+string  SystemName
+string  Program
+string  FileHold
+
+float   DSN
+integer JclxrefCount = 1
+string  JclxrefName
+
+string  RecordRec
+string  SearchRec
+string  IDMSRec
+
+string  StartDate
+string  StartTime
+
+float   FDefects
+float   FLines
+float   FOpportunities
+float   FMillion = 1000000
+float   DPMO
+string  DPMOPrint
+string  Sigma
+float   FTest
+float   FZero = 0
+string  SDefects
+
+string CICSProgramName
+string TestFileName
+
+string TestCobol
+string TestCall
+string CallProgram
+string SysctlUpdate
+string SysctlCheck
+string TestProgName
+
+integer CallCount
+integer CallErrorCount
+
+string  LastCICSProg
+string  TestCICSFileName
+string  IDMSAbortCut
+string  CICSTranCode
+string  CICSMissingLengthLine
+
+string  Macro
+string  ParaPrefix
+string  HoldRight
+
+//************************************************************************
+//* Main
+//************************************************************************
+!a100_main
+    call !b100_init
+    call !b200_proc_dir
+    call !b300_wrap
+    exit
+
+//************************************************************************
+//* Initialization
+//************************************************************************
+!b100_init
+    StartDate = date
+    StartTime = time
+    open ScannedForCall null
+    open ReportFile null
+    open MissingReturnLength null
+    i:/Program,Tran Code/
+
+    system:"cls" cls
+    print:"*******************************************************************************"
+    print:"*                            3090 Code Scanner                                *"
+    print:"*                                                                             *"
+    print:"* This system will scan all 3090 system source files                          *"
+    print:"*******************************************************************************"
+
+    //CurrDir = 'c:\cdcheck\3090'
+    //CurrDir = 'c:\cdcheck\3090\cobol'
+    //CurrDir = 'c:\cdcheck\3090test3'
+
+    if (exists Chk3090.dir)
++      open CurrDirFile chk3090.dir
++      CurrDir = line 
++      close CurrDirFile
++      goto !b100_dir_done    
++   endif
+    //if (exists chklist.txt) CurrDir = 'c:\cdcheck\3090test3' goto !b100_dir_done
+    printx:"Please enter the directory to check  :"
+    input CurrDir
+
+!b100_dir_done
+    StartDir = CurrDir
+    system:"cls" cls
+    open cicstc cicstc.txt
+
+!b100_start
+    ReportLine = "**********************************************************************************************************"
+    call !z100_report_line
+    ReportLine = "*                                              GE Fleet Services                             Date:@date@"
+    call !z100_report_line
+    ReportLine = "*                                               3090 Code Scan                         Start Time:@time@"
+    call !z100_report_line
+    ReportLine = "**********************************************************************************************************"
+    call !z100_report_line
+    open FileSizeFile null
+    open Jclxref null
+    open DirectoryFile null
+    i:/@CurrDir@/
+    return
+
+//************************************************************************
+//* Main Process
+//************************************************************************
+!b200_proc_dir
+    file DirectoryFile
+    if (eof) goto !b200_done
+    CurrDir = line
+    d
+    call !c100_expand_dir
+    call !c200_proc_files
+    goto !b200_proc_dir
+!b200_done
+    return
+
+//************************************************************************
+//* Wrapup
+//************************************************************************
+!b300_wrap
+   //************************
+   //* Cleanup Files
+   //************************
+   system:"del fgbdir"
+   system:"del fgbfile"
+   system:"del Chk3090.dir"
+   system:"cls" cls
+
+   //************************
+   //* Finish the Report
+   //************************
+
+   ReportLine = "================================================================="
+   call !z100_report_line
+
+   ReportLine = "Mainframe Code Scan Summary for @StartDir@"
+   call !z100_report_line
+
+   ReportLine = "================================================================="
+   call !z100_report_line
+
+   ReportLine = ""
+   call !z100_report_line_print
+   ReportLine = "-------- F I L E S    S C A N N E D ---------"
+   call !z100_report_line_print
+
+   ReportLine = "COBOL Files Scanned"
+   size ReportLine,30
+   Newline = '               @TotalCobol@' splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "COBOL-IDMS Files Scanned"
+   size ReportLine,30
+   Newline = '               @TotalCobolIDMS@' splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "CICS Files Scanned"
+   size ReportLine,30
+   Newline = '               @TotalCICS@' splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "CICS-IDMS Files Scanned"
+   size ReportLine,30
+   Newline = '               @TotalCICSIDMS@' splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "DB2 Files Scanned"
+   size ReportLine,30
+   Newline = '               @TotalDB2@' splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "ADSO Files Scanned"
+   size ReportLine,30
+   Newline = '               @TotalADSO@' splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "COPY  Files Scanned"
+   size ReportLine,30
+   Newline = '               @TotalcpyFiles@' splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "JCL   Files Scanned"
+   size ReportLine,30
+   Newline = '               @TotaljclFiles@' splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "PROC  Files Scanned"
+   size ReportLine,30
+   Newline = '               @TotalprcFiles@' splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = ""
+   size ReportLine,30
+   ReportLine = "@ReportLine@---------------" call !z100_report_line_print
+   ReportLine = "Total Files Scanned"
+   size ReportLine,30
+   Newline = '               @TotalFiles@' splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+//------------------------------------------------------------------------------------
+
+   ReportLine = ""
+   call !z100_report_line_print
+   ReportLine = "-------- L I N E S    S C A N N E D ---------"
+   call !z100_report_line_print
+
+   ReportLine = "COBOL Lines Scanned"
+   size ReportLine,30
+   Newline = '               @TotalCobolLines@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "COBOL-IDMS Lines Scanned"
+   size ReportLine,30
+   Newline = '               @TotalCobolIDMSLines@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "CICS Lines Scanned"
+   size ReportLine,30
+   Newline = '               @TotalCICSLines@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "CICS-IDMS Lines Scanned"
+   size ReportLine,30
+   Newline = '               @TotalCICSIDMSLines@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "DB2 Lines Scanned"
+   size ReportLine,30
+   Newline = '               @TotalDB2Lines@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "ADSO Lines Scanned"
+   size ReportLine,30
+   Newline = '               @TotalADSOLines@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "COPY  Lines Scanned"
+   size ReportLine,30
+   Newline = '               @TotalcpyLines@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "JCL   Lines Scanned"
+   size ReportLine,30
+   Newline = '               @TotaljclLines@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "PROC  Lines Scanned"
+   size ReportLine,30
+   Newline = '               @TotalprcLines@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = ""
+   size ReportLine,30
+   ReportLine = "@ReportLine@---------------" call !z100_report_line_print
+   ReportLine = "Total Lines Scanned"
+   size ReportLine,30
+   Newline = '               @TotalLines@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   //*********************************
+   //* Warnings
+   //*********************************
+   ReportLine = ""
+   call !z100_report_line_print
+
+   ReportLine = "------------- W A R N I N G S ---------------"
+   call !z100_report_line_print
+
+   ReportLine = "Code Line Warnings"
+   size ReportLine,30
+   Newline = '               @CodeLineWarnings@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "Comment Line Warnings"
+   size ReportLine,30
+   Newline = '               @CommentWarnings@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "OCCURS Warnings"
+   size ReportLine,30
+   Newline = '               @OccursWarnings@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "MOVE CORRESPONDING Warnings"
+   size ReportLine,30
+   Newline = '               @MoveCorrWarnings@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "Sentence Length Warnings"
+   size ReportLine,30
+   Newline = '               @LineLengthWarnings@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "Area Walk Warnings"
+   size ReportLine,30
+   Newline = '               @AreaWalkWarnings@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "01 PIC Warnings"
+   size ReportLine,30
+   Newline = '               @Pic01Warnings@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   //*********************************
+   //* Errors
+   //*********************************
+   ReportLine = ""
+   call !z100_report_line_print
+   ReportLine = "--------------- E R R O R S -----------------"
+   call !z100_report_line_print
+
+   ReportLine = "Code Line Errors"
+   size ReportLine,30
+   Newline = '               @CodeLineErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "IDMS-ABORT Errors"
+   size ReportLine,30
+   Newline = '               @IdmsAbortErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "PERFORM THRU diff line Errors"
+   size ReportLine,30
+   Newline = '               @PerformThruErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "Comment Line Errors"
+   size ReportLine,30
+   Newline = '               @CommentErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "Copyright Errors"
+   size ReportLine,30
+   Newline = '               @CopyrightErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "OCCURS Errors"
+   size ReportLine,30
+   Newline = '               @OccursErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "Sentence Length Errors"
+   size ReportLine,30
+   Newline = '               @LineLengthErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "CICS Program Name Errors"
+   size ReportLine,30
+   Newline = '               @ProgramNameErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "SYSCTL with RETRIEVAL Errors"
+   size ReportLine,30
+   Newline = '               @SysctlRetrieveErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "Missing Move to LS-RETURN-LEN Errors"
+   size ReportLine,30
+   Newline = '               @MissingMoveLSReturnLenErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "Missing Maintenance Log Errors"
+   size ReportLine,30
+   Newline = '               @MaintenanceLogErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "Missing WORKING STORAGE start Field Errors"
+   size ReportLine,30
+   Newline = '               @WorkingStorageErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "IDMS-STATUS Usage Errors"
+   size ReportLine,30
+   Newline = '               @IDMSStatusErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "AND on same line as IF Errors"
+   size ReportLine,30
+   Newline = '               @IFANDErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = "GOTO Errors"
+   size ReportLine,30
+   Newline = '               @GotoErrors@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   //********************************
+   //* Compute Sigma
+   //********************************
+   FLines = TotalLines
+   FOpportunities = 0
+   FDefects = CodeLineErrors                            FOpportunities ++
+   FDefects = FDefects + CommentErrors                  FOpportunities ++
+   FDefects = FDefects + OccursErrors                   FOpportunities ++
+   FDefects = FDefects + LineLengthErrors               FOpportunities ++
+   FDefects = FDefects + ProgramNameErrors              FOpportunities ++
+   FDefects = FDefects + SysctlRetrieveErrors           FOpportunities ++
+   FDefects = FDefects + MissingMoveLSReturnLenErrors   FOpportunities ++
+   FDefects = FDefects + PerformThruErrors              FOpportunities ++
+   FDefects = FDefects + IdmsAbortErrors                FOpportunities ++
+   FDefects = FDefects + CopyrightErrors                FOpportunities ++
+   FDefects = FDefects + MaintenanceLogErrors           FOpportunities ++
+   FDefects = FDefects + WorkingStorageErrors           FOpportunities ++
+   FDefects = FDefects + IDMSStatusErrors               FOpportunities ++
+   FDefects = FDefects + IFANDErrors                    FOpportunities ++
+   FDefects = FDefects + GotoErrors                     FOpportunities ++
+
+   ReportLine = ""
+   size ReportLine,30
+   ReportLine = "@ReportLine@---------------" call !z100_report_line_print
+
+   ReportLine = "Total Errors"
+   size ReportLine,30
+   Newline = '               @FDefects@' scan:/@Newline/:/./ Newline = left splitr:/@Newline/;15
+   ReportLine = "@ReportLine@@right@" call !z100_report_line_print
+
+   ReportLine = ""
+   call !z100_report_line_print
+
+   ReportLine = ' ' call !z100_report_line_print
+   DPMO = FLines * FOpportunities
+   if (DPMO = FZero) DPMO = 0 else DPMO = FDefects / DPMO
+   DPMO = DPMO * FMillion
+   Newline = '@DPMO@'
+   scan:/@Newline@/:/./
+   DPMOPrint = left
+   ReportLine = "DPMO = @left@"
+   call !z100_report_line_print
+   ReportLine = ' ' call !z100_report_line_print   
+
+   if (DPMO < 3.4) Sigma = '6.0' goto !b300_sigma_done
+
+   if (DPMO < 5) Sigma = '5.9' goto !b300_sigma_done
+   if (DPMO < 8) Sigma = '5.8' goto !b300_sigma_done
+   if (DPMO < 10) Sigma = '5.7' goto !b300_sigma_done
+   if (DPMO < 20) Sigma = '5.6' goto !b300_sigma_done
+   if (DPMO < 30) Sigma = '5.5' goto !b300_sigma_done
+   if (DPMO < 40) Sigma = '5.4' goto !b300_sigma_done
+   if (DPMO < 70) Sigma = '5.3' goto !b300_sigma_done
+   if (DPMO < 100) Sigma = '5.2' goto !b300_sigma_done
+   if (DPMO < 150) Sigma = '5.1' goto !b300_sigma_done
+   if (DPMO < 230) Sigma = '5.0' goto !b300_sigma_done
+
+   if (DPMO < 330) Sigma = '4.9' goto !b300_sigma_done
+   if (DPMO < 480) Sigma = '4.8' goto !b300_sigma_done
+   if (DPMO < 680) Sigma = '4.7' goto !b300_sigma_done
+   if (DPMO < 960) Sigma = '4.6' goto !b300_sigma_done
+   if (DPMO < 1350) Sigma = '4.5' goto !b300_sigma_done
+   if (DPMO < 1860) Sigma = '4.4' goto !b300_sigma_done
+   if (DPMO < 2550) Sigma = '4.3' goto !b300_sigma_done
+   if (DPMO < 3460) Sigma = '4.2' goto !b300_sigma_done
+   if (DPMO < 4660) Sigma = '4.1' goto !b300_sigma_done
+   if (DPMO < 6210) Sigma = '4.0' goto !b300_sigma_done
+
+   if (DPMO < 8190) Sigma = '3.9' goto !b300_sigma_done
+   if (DPMO < 10700) Sigma = '3.8' goto !b300_sigma_done
+   if (DPMO < 13900) Sigma = '3.7' goto !b300_sigma_done
+   if (DPMO < 17800) Sigma = '3.6' goto !b300_sigma_done
+   if (DPMO < 22700) Sigma = '3.5' goto !b300_sigma_done
+   if (DPMO < 28700) Sigma = '3.4' goto !b300_sigma_done
+   if (DPMO < 35900) Sigma = '3.3' goto !b300_sigma_done
+   if (DPMO < 44600) Sigma = '3.2' goto !b300_sigma_done
+   if (DPMO < 54800) Sigma = '3.1' goto !b300_sigma_done
+   FTest = 668 FTest = FTest * 100 if (DPMO < FTest) Sigma = '3.0' goto !b300_sigma_done
+
+   FTest = 808 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.9' goto !b300_sigma_done
+   FTest = 968 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.8' goto !b300_sigma_done
+   FTest = 1150 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.7' goto !b300_sigma_done
+   FTest = 1350 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.6' goto !b300_sigma_done
+   FTest = 1580 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.5' goto !b300_sigma_done
+   FTest = 1840 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.4' goto !b300_sigma_done
+   FTest = 2120 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.3' goto !b300_sigma_done
+   FTest = 2420 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.2' goto !b300_sigma_done
+   FTest = 2740 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.1' goto !b300_sigma_done
+   FTest = 3080 FTest = FTest * 100 if (DPMO < FTest) Sigma = '2.0' goto !b300_sigma_done
+
+   FTest = 3440 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.9' goto !b300_sigma_done
+   FTest = 3820 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.8' goto !b300_sigma_done
+   FTest = 4200 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.7' goto !b300_sigma_done
+   FTest = 4600 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.6' goto !b300_sigma_done
+   FTest = 5000 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.5' goto !b300_sigma_done
+   FTest = 5400 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.4' goto !b300_sigma_done
+   FTest = 5700 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.3' goto !b300_sigma_done
+   FTest = 6100 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.2' goto !b300_sigma_done
+   FTest = 6500 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.1' goto !b300_sigma_done
+   FTest = 6900 FTest = FTest * 100 if (DPMO < FTest) Sigma = '1.0' goto !b300_sigma_done
+
+   FTest = 7200 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.9' goto !b300_sigma_done
+   FTest = 7500 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.8' goto !b300_sigma_done
+   FTest = 7800 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.7' goto !b300_sigma_done
+   FTest = 8100 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.6' goto !b300_sigma_done
+   FTest = 8400 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.5' goto !b300_sigma_done
+   FTest = 8600 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.4' goto !b300_sigma_done
+   FTest = 8800 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.3' goto !b300_sigma_done
+   FTest = 9000 FTest = FTest * 100 if (DPMO < FTest) Sigma = '0.2' goto !b300_sigma_done
+   Sigma = '0.1' goto !b300_sigma_done
+
+!b300_sigma_done
+   ReportLine = "Sigma = @Sigma@"
+   call !z100_report_line_print
+
+   ReportLine = ""
+   call !z100_report_line_print
+   ReportLine = "====================================== N O T E S ============================================"
+   call !z100_report_line_print
+   ReportLine = "Please ensure that the change log date is updated in all COBOL programs with the production rollout date."
+   call !z100_report_line_print
+   ReportLine = ""
+   call !z100_report_line_print
+   ReportLine = "For a full list of the 3090 standards see: GEFS_3090_Standards.doc"
+   call !z100_report_line_print
+
+   b
+   f;2
+   ReportLine = "*                                             @Version@                         End Time:@time@"
+   call !z100_report_line
+   f;1
+   ReportLine = '* Scan directory = @StartDir@'
+   call !z100_report_line
+   ReportLine = '**********************************************************************************************************'
+   call !z100_report_line
+   ReportLine = ' '
+   call !z100_report_line
+
+   write ReportFile Chk3090.txt
+   close ReportFile
+
+   write Jclxref JCLXREF.txt
+   close Jclxref
+
+   print:"3090 CODE SCAN COMPLETE!"
+//   wait
+
+   open LogFile Checkcd.log error open LogFile null
+   f;*
+
+   Newline = "@FDefects@"
+   scan:/@Newline/:/./
+   SDefects = left
+   Newline = "@TotalLines@" 
+   scan:/@Newline@/:/./
+   Newline = "CHK3090 Start[@StartDate@ @StartTime@] End [@date@ @time@] System[3090] Lines[@left@] Checks[4] Errors[@SDefects@] DPMO[@DPMOPrint@] Sigma[@Sigma@]"
+   i:/@Newline/
+   write LogFile Checkcd.log
+   close LogFile
+
+   open CSVFile CHECKLOG.CSV error open CSVFile null i:/Program,Start Date,Start Time,End Date,End Time,System,Directory,Units,Opportunities,Defects,DPMO,Sigma,>3500 Lines per File,<!-- Lines,Lines >500 Chars,<2% Comments,>90% Java,>3000 Java,Hardcoded IP,File Size Errors,SRC= >20,JS > 40Functions,JS Function >200 Lines,SQL Errors/
+   f;*
+
+   Newline = "@TotalLines@" 
+   scan:/@Newline@/:/./
+   Newline = "CHK3090,@StartDate@,@StartTime@,@date@,@time@,3090,,@left@,@FOpportunities@,@SDefects@,@DPMOPrint@,@Sigma@,@CodeLineErrors@,@CommentErrors@,@OccursErrors@,@LineLengthErrors@,@ProgramNameErrors@,@SysctlRetrieveErrors@,@MissingMoveLSReturnLenErrors@,,,,"
+   i:/@Newline/
+!b300_csv
+   write CSVFile CHECKLOG.CSV error print:"Please close all csv files!" wait goto !b300_csv
+   close CSVFile
+   write MissingReturnLength MSCICSLN.CSV
+   close MissingReturnLength
+   close cicstc
+   system:"start notepad chk3090.txt"
+   sleep 1000
+   return
+
+//************************************************************************
+//* Expand the directory
+//************************************************************************
+!c100_expand_dir
+    Sysline = 'dir @CurrDir@ > fgbdir'
+    system:"@Sysline@"
+    cls
+    return
+
+//************************************************************************
+//* Process the files
+//************************************************************************
+!c200_proc_files
+    close CurrFile error
+    open CurrFile fgbdir
+    close FileList error
+    open FileList null
+    file CurrFile
+    b
+!c200_loop
+    if (eof) goto !c200_done
+    scan:/@line/:word
+    if (left = "Volume") goto !c200_next
+
+    //******************************************
+    //* set the directory name
+    //******************************************    
+    if (left = "Directory") 
++      scanr:/@line/:word 
++      CurrentDirectory = right // ReportLine = "@CurrentDirectory@" call !z100_report_line_print file CurrFile
++      goto !c200_next
++   endif
+
+    scan:/@line/:/File(s)/ if (found) goto !c200_next
+    scan:/@line/:/Dir(s)/ if (found) goto !c200_next
+    Testline = line
+    pack Testline
+    if (Testline = null) goto !c200_next
+
+    //******************************************
+    //* Add new directories to the DirectoryFile
+    //******************************************    
+    scan:/@line/:/<DIR>/
+    if (found)
++      scanr:/@line/:word
++      if (right = '.') goto !c200_next
++   endif
+    if (found)
++      scanr:/@line/:word
++      if (right = '..') goto !c200_next
++   endif
+    scan:/@line/:/<DIR>/
+    if (found)
++      scanr:/@line/:word
++      Newdir = '@CurrentDirectory@\@right@'
++      file DirectoryFile
++      f;*
++      i:/@Newdir@/     // print:"added @Newdir@" wait
++      b
++      file CurrFile
++      goto !c200_next
++   endif
+
+    scan:/@line@/:/Copy of/
+    if (found) goto !c200_next
+
+    scanr:/@line@/:word
+    Filename = '@CurrentDirectory@\@right@'
+
+    //******************************************
+    //* Filter out only the files to be scanned
+    //******************************************
+    if (right = "fgbdir") goto !c200_next
+    if (right = "fgbfile") goto !c200_next
+    scanr:/@Filename@/:/./
+    if (!found) goto !c200_ok
+
+    if (right = 'cob') FileType = "cob" goto !c200_ok
+    if (right = 'jcl') FileType = "jcl" goto !c200_ok
+    if (right = 'prc') FileType = "prc" goto !c200_ok
+    if (right = 'cpy') FileType = "cpy" goto !c200_ok
+    if (right = 'ads') FileType = "ads" goto !c200_ok
+
+    goto !c200_next
+
+!c200_ok
+    scanr:/@line/:word
+    scanr:/@left/:word
+    file FileSizeFile
+    b
+    d;*
+    i:/@right/
+    rs:/,/://;*
+    FileSize = line
+    file CurrFile
+    Sysline = 'copy @Filename@ fgbfile'
+    system:"@Sysline@"
+    system:"cls" cls
+    //print:"@Sysline@" wait
+    call !d100_scan_one_file
+    file CurrFile
+!c200_next
+    f
+    if (eof) goto !c200_done
+    goto !c200_loop
+!c200_done
+    close CurrFile
+    return
+
+//************************************************************************
+//* Scan one file
+//************************************************************************
+!d100_scan_one_file
+    print:"Scanning @Filename@ @JclxrefCount@ @DSN@"
+    ReportLine = "*************************************************************"
+    call !z100_report_line
+    ReportLine = "@Filename@"
+    call !z100_report_line
+    ReportLine = "*************************************************************"
+    call !z100_report_line
+
+    if (DSN > 10000)
++      JclxrefName = 'JCLXREF.@JclxrefCount@'
++      write Jclxref @JclxrefName
++      file Jclxref
++      b d;*
++      DSN = 0
++      JclxrefCount ++
++   endif
+
+    //******************************************
+    //* Process each file type
+    //******************************************
+    open SourceFile fgbfile 
+    b
+    if (FileType = 'cob') call !e100_scan_cobol
+    if (FileType = 'ads') call !e100_scan_cobol
+    if (FileType = 'cpy') call !e200_scan_copy    
+    if (FileType = 'jcl') call !e300_scan_jcl
+    if (FileType = 'prc') call !e400_scan_proc
+
+!d100_done
+    close SourceFile error
+    return
+
+//************************************************************************
+//* Scan Cobol Source
+//************************************************************************
+!e100_scan_cobol
+    scanr:/@Filename/:/./
+    scanr:/@left/:/\/
+    TestCICSFileName = right
+    TotalFiles ++
+    TotalcobFiles ++
+    b f;* TotalLines = TotalLines + pcount
+    if (FileType = "ads")
++      TotalAdsLines = pcount 
++      subs |
++      b
++      rs:/@/:/-/;* //wait
++      subs @
++   else 
++      TotalcobLines = pcount
++   endif
+    open CopyFileList null
+    b d;*
+    file SourceFile
+
+    b
+!e100_copy_loop
+    fs:/ COPY /
+    if (eof) goto !e100_copy_done
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/') f goto !e100_copy_loop
+    scan:/@line/:/ COPY /
+    scan:/@right/:word
+    if (left = 'IDMS') f goto !e100_copy_loop
+
+    Newline = "    Copy @left@"
+
+    CopyFileName = "c:\cdcheck\3090\copy\@left@"
+    scan:/@CopyFileName/:/./
+    if (found) CopyFileName = left
+    scan:/@CopyFileName/:/'/
+    if (found) CopyFileName = "@left@@right@"
+    scan:/@CopyFileName/:/'/
+    if (found) CopyFileName = "@left@@right@"
+    CopyFileName = "@CopyFileName@.cpy"
+
+    //****************************************
+    //* Find the copy         (FGB 01/07/2014)
+    //**************************************** 
+    if  (!exists @CopyFileName@)
++       //print:"CopyFileName[@CopyFileName@] doesn't exist"
++       scanr:/@CopyFileName@/:/\/
++       CopyFileName = "@CurrentDirectory@\copy\@right@"
++       Macro = "if  (!exists @CopyFileName@)" $Macro
++           //print:"CopyFileName[@CopyFileName@] doesn't exist"
++           scanr:/@CopyFileName@/:/\/
++           CopyFileName = "@CurrentDirectory@\@right@"
++   endif
+    
+    close CopyFile error
+    open CopyFile @CopyFileName error file SourceFile f print:"    Unable to copy @CopyFileName@" goto !e100_copy_loop
+    //print:"Processing CopyFileName[@CopyFileName@]" wait
+
+    file CopyFileList b fs:/@CopyFileName@/
+    if (eof) i:/@Newline@/
+    file SourceFile
+
+    file CopyFile
+    print:"    Copy @CopyFileName@"
+    b copy;*
+    TotalcpyFiles ++
+    TotalFiles ++
+    TotalcpyLines = TotalcpyLines + pcount
+    TotalLines = TotalLines + pcount
+    file SourceFile
+    paste
+    close CopyFile
+    file SourceFile
+    f
+    goto !e100_copy_loop
+
+!e100_copy_done
+//    b f;* TotalLines = TotalLines + pcount
+//    TotalcobLines = pcount
+
+    b
+    //***************************
+    //* Blank out Comment Contents
+    //***************************
+    do
+        if (!eof)
++              scan:/@line/:/NO COPIES OF THIS PROGRAM/
++              if (found)
++                 Newline = /000000     NO COPIES OF THIS PROGRAM/
++                 r:/@Newline@/
++       endif
+        if (!eof)
++              scan:/@line/:/PROPRIETARY MATERIAL/
++              if (found)
++                 Newline = /000000     PROPRIETARY MATERIAL/
++                 r:/@Newline@/
++       endif
+        if (!eof)
++              scan:/@line/:/R E V I S I O N/
++              if (found)
++                 Newline = /000000     R E V I S I O N/
++                 r:/@Newline@/
++       endif
+        if (!eof)
++              scan:/@line/:/REVISION/
++              if (found)
++                 Newline = /000000     REVISION/
++                 r:/@Newline@/
++       endif
+        if (!eof)
++              scan:/@line/:/M A I N T E N A N C E/
++              if (found)
++                 Newline = /000000     M A I N T E N A N C E/
++                 r:/@Newline@/
++       endif
+        if (!eof)
++              scan:/@line/:/MAINTENANCE LOG/
++              if (found)
++                 Newline = /000000     MAINTENANCE LOG/
++                 r:/@Newline@/
++       endif
+        if (!eof)
++              scan:/@line/:/M O D I F I C A T I O N/
++              if (found)
++                 Newline = /000000     M O D I F I C A T I O N/
++                 r:/@Newline@/
++       endif
+        if (!eof)
++              scan:/@line/:/MODIFICATION LOG/
++              if (found)
++                 Newline = /000000     MODIFICATION LOG/
++                 r:/@Newline@/
++       endif
+        if (!eof)
++              scan:/@line/:/CHANGE LOG/
++              if (found)
++                 Newline = /000000     CHANGE LOG/
++                 r:/@Newline@/
++       endif
+
++       endif
+        if (!eof)
++          split:/@line/;6
++          split:/@right/;1
++          if (left = '*') or (left = '/')
++             Newline = '000000@left@ BLANKED OUT THIS COMMENT LINE FOR SCANNING'
++             r:/@Newline/
++       endif
+        f;1
+    until (eof)
+    //write SourceFile chk3090.s1
+
+    b
+    do
+        //*************************************
+        //* Find Current Paragraph Prefix
+        //*************************************
+        split:/@line/;6
+        split:/@right/;1
+        if (left = ' ')
++           split:/@right/;1
++           if (left != ' ')
++              //print:"Finding Paragraph on[@line@]" wait
++              ParaPrefix = left
++              scan:/@right/:word
++              ParaPrefix = '@ParaPrefix@@left@' //print:"ParaPrefix-a[@ParaPrefix@]" wait
++              scan:/@ParaPrefix@/:/-/
++              if (found)
++                 ParaPrefix = left //print:"ParaPrefix-b[@ParaPrefix@]" wait
++       endif
+        //*************************************
+        //* Check for PIC's on 01 levels
+        //*************************************
+        split:/@line/;6
+        scan:/@right/:word
+        if (left = '01')
++          scan:/@right@/:/ PIC/
++          if (found)
++             Pic01Warnings ++
++             ReportLine = "          ***** PIC on 01 Level (Warning) : @line@" call !z100_report_line
++             file SourceFile
++       endif
+        //*************************************
+        //* Check for GOTO non EXIT
+        //*************************************
+        scan:/@line/:/ GO TO /
+        if-found1 (found)
++          HoldRight = right
++          scan:/@right/:/EXIT/
++          if-found2 (!found)
++             GotoErrors ++
++             ReportLine = "          ***** GOTO non-EXIT (Error) : @line@" call !z100_report_line
++             file SourceFile
++          else-found2
++             //*************************************
++             //* Check for GOTO non EXIT
++             //*************************************
++             scan:/@HoldRight/:/@ParaPrefix@/
++             if (!found)
++                GotoErrors ++
++                ReportLine = "          ***** GOTO Different Paragraph EXIT expected[@ParaPrefix@] (Error) : @line@" call !z100_report_line
++                file SourceFile          
++       endif
+        f;1
+    until (eof)
+    b
+
+    Type = 'COBOL'
+    b fs:/EXEC CICS/ 
+    if (!eof) Type = 'CICS' 
+    b fs:/SCHEMA SECTION/
+    if (!eof) Type = '@Type@-IDMS'
+    b fs:/EXEC SQL/
+    if (!eof) Type = 'DB2'
+    if (FileType = "ads") Type = "ADSO"
+    if (Type = 'COBOL') TotalCobol ++ TotalCobolLines = TotalCobolLines + TotalcobLines
+    if (Type = 'CICS') TotalCICS ++ TotalCICSLines = TotalCICSLines + TotalcobLines
+    if (Type = 'COBOL-IDMS') TotalCobolIDMS ++ TotalCobolIDMSLines = TotalCobolIDMSLines + TotalcobLines
+    if (Type = 'CICS-IDMS') TotalCICSIDMS ++ TotalCICSIDMSLines = TotalCICSIDMSLines + TotalcobLines
+    if (Type = 'DB2') TotalDB2 ++ TotalDB2Lines = TotalDB2Lines + TotalcobLines
+    if (Type = 'ADSO') TotalADSO ++ TotalADSOLines = TotalADSOLines + TotalAdsLines
+
+    file ReportFile 
+    Newline = "@line@    @Type@" r:/@Newline/
+
+    file CopyFileList
+    b
+    copy;*
+    if (pcount > 0) file ReportFile paste
+    close CopyFileList
+    file SourceFile    
+
+    //***************************************
+    //* Total Line Count Check
+    //***************************************
+    if (TotalcobLines > 5000) 
++      CodeLineErrors ++
++      ReportLine = "          ***** Too Many Lines : @TotalcobLines@ (Error)" call !z100_report_line
++   else
++   if (TotalcobLines > 4000)
++      CodeLineWarnings ++
++      ReportLine = "          ***** Too Many Lines : @TotalcobLines@  (Warning)" call !z100_report_line
++   endif
+
+
+    //***************************************
+    //* Check for IDMS-ABORT in IDMS programs
+    //***************************************
+    if (Type != 'COBOL-IDMS') and (Type != 'CICS-IDMS') goto !e100_non_idms
+    file SourceFile
+    b
+    fs:/ IDMS-ABORT /
+    if (!eof) goto !e100_non_idms
+    IdmsAbortErrors ++
+    ReportLine = "          ***** No IDMS-ABORT in IDMS program" call !z100_report_line
+
+    file SourceFile
+    b
+
+!e100_non_idms
+    file SourceFile
+    b
+    fs:/IDMS-STATUS =/
+    if (eof) goto !e100_idms_status_ok  
+    IDMSStatusErrors ++
+    ReportLine = "          ***** IDMS-STATUS = used instead of 88 Level Names of IDMS-COPY (Error) : @line@" call !z100_report_line
+
+!e100_idms_status_ok
+    file SourceFile
+    b
+!e100_area_walk_check
+    fs:/ OBTAIN /-/ FIND /
+    if (eof) goto !e100_area_walk_check_finish
+    scan:/@line/:/NEXT/
+    if (!found) f;1 goto !e100_area_walk_check
+    scan:/@right/:/-AREA/
+    if (!found) f;1 goto !e100_area_walk_check
+    AreaWalkWarnings ++    
+    ReportLine = "          ***** Please check ensure proper area walking : find current prior to proceeding (Warning)" call !z100_report_line
+!e100_area_walk_check_finish
+
+    file SourceFile
+    b
+
+    if (Type = 'ADSO') goto !e100_skip_cobol
+    b fs:/R E V I S I O N/-/REVISION/ if (!eof) goto !e100_maintlog_ok
+    b fs:/M A I N T E N A N C E/-/MAINTENANCE LOG/ if (!eof) goto !e100_maintlog_ok
+    b fs:/M O D I F I C A T I O N/-/MODIFICATION LOG/ if (!eof) goto !e100_maintlog_ok
+    b fs:/CHANGE LOG/ if (!eof) goto !e100_maintlog_ok
+    MaintenanceLogErrors ++
+    ReportLine = "          ***** Missing Maintenance Log (Error)" call !z100_report_line
+!e100_maintlog_ok
+    file SourceFile
+
+    b fs:/WORKING STORAGE BEGIN/-/WORKING STORAGE START/ if (!eof) goto !e100_workingstorage_ok
+    WorkingStorageErrors ++
+    ReportLine = "          ***** Missing WORKING STORAGE START Field (Error)" call !z100_report_line    
+!e100_workingstorage_ok
+!e100_skip_cobol
+    file SourceFile
+    b
+    //***************************************
+    //* Check for move to Program Name in CICS-IDMS
+    //***************************************
+    if (Type != 'CICS-IDMS') goto !e100_skip_cics_name
+    file SourceFile
+    b
+    fs:/PROCEDURE DIVISION./-/PROCEDURE DIVISION USING/
+    if (eof) b fs:/PROCEDURE DIVISION/ fs:/ USING /
+    fs:/PROGRAM-NAME./
+    if (eof) goto !e100_program_name_error
+    scan:/@line/:/'/
+    if (found) goto !e100_program_name
+    scan:/@line/:/MOVE/
+    scan:/@right/:word
+    b
+    fs:/@left/
+    scan:/@line/:/VALUE/
+    if (!found) goto !e100_program_name_error
+!e100_program_name
+    scan:/@line/:/'/ if (!found) f;1 scan:/@line/:/'/
+    scan:/@right/:/'/
+    CICSProgramName = left
+    scanr:/@Filename/:/./
+    scanr:/@left/:/\/
+    TestFileName = right
+    upper TestFileName
+    //print:"CICSProgramName[@CICSProgramName@] TestFileName[@TestFileName@]" wait
+    if (CICSProgramName != TestFileName) goto !e100_program_name_error
+    goto !e100_skip_cics_name
+
+!e100_program_name_error
+    ProgramNameErrors ++
+    Errors ++ 
+    ReportLine = "          ***** Missing or Incorrect CICS MOVE to PROGRAM-NAME (Error)" call !z100_report_line
+!e100_skip_cics_name
+    //if (Type != "CICS-IDMS") goto !e100_skip_returnlength
+    file cicstc
+    b
+    fs:/@TestCICSFileName@/
+    if (eof) goto !e100_skip_returnlength
+    split:/@line/;4
+    CICSTranCode = left
+    //************************************************
+    //* Look for Linkage Return Length Computation
+    //************************************************
+    file SourceFile
+    LengthComputed = 'n'
+    b
+    IDMSAbortCut = 'n'
+    fs:/IDMS-ABORT SECTION/ if (!eof) IDMSAbortCut = 'y' cut;*
+    fs:/PROCEDURE DIVISION/
+    fs:/LS-RETURN-LEN/-/LK-RETURN-DATA/
+    if (!eof) split:/@line/;6 split:/@right/;1 if (left = ' ') goto !e100_IDMSAbortPaste
+
+    b
+    fs:/PROCEDURE DIVISION/
+    fs:/L01-RETURN-DATA/-/L01-RETURN-LEN/
+    if (!eof) split:/@line/;6 split:/@right/;1 if (left = ' ') goto !e100_IDMSAbortPaste
+
+    b
+    fs:/PROCEDURE DIVISION/
+    fs:/COMMAREA-LENGTH/-/L00-DATA-LEN/
+    if (!eof) split:/@line/;6 split:/@right/;1 if (left = ' ') goto !e100_IDMSAbortPaste
+
+    if (TestCICSFileName = LastCICSProg) goto !e100_skip_returnlength
+    LastCICSProg = TestCICSFileName
+    MissingMoveLSReturnLenErrors ++
+    file MissingReturnLength
+    f;*
+    CICSMissingLengthLine = /@TestCICSFileName@,@CICSTranCode@/
+    i:/@CICSMissingLengthLine@/
+    print:"                   **** Missing CICS Return Length Move ****"
+
+!e100_IDMSAbortPaste
+    if (IDMSAbortCut = 'y') file SourceFile f;* paste
+
+!e100_skip_returnlength
+    file SourceFile
+    b fs:/SCHEMA SECTION/
+    if (eof) goto !e100_cics_name_done
+    fs:/ DB /
+    scan:/@line/:/ DB /
+    scan:/@right/:word
+    SubSchema = left
+    scan:/@right/:word
+    scan:/@right/:word
+    Schema = left
+    ReportLine = "    Sub-Schema:@SubSchema@"
+    size ReportLine,40
+    ReportLine = "@ReportLine@Schema:@Schema@"
+    call !z100_report_line
+    open AreaFile null
+    b d;*
+    file SourceFile
+!e100_cics_name_done
+    //***************************************
+    //* MOVE CORRESPONDING Check
+    //***************************************
+    b
+!e100_move_corr_loop
+    fs:/MOVE CORR/
+    if (!eof) 
++      MoveCorrWarnings ++
++      ReportLine = "          ***** MOVE CORRESPONDING (Warning) line @lineno@" call !z100_report_line
++      file SourceFile
++   endif
+    f
+    if (!eof) goto !e100_move_corr_loop
+
+    file SourceFile
+    b
+!e100_occurs_loop
+    fs:/OCCURS/
+    if (eof) goto !e100_occurs_done
+    scan:/@line/:/OCCURS/
+    scan:/@right/:word
+    Occurs = left
+//    print:"Occurs:@Occurs@ @line@" wait
+    //***************************************
+    //* OCCURS Check
+    //***************************************
+    if (Occurs > 5000)
++      OccursErrors ++
++      ReportLine = "          ***** OCCURS @Occurs@ TIMES (ERROR) line @lineno@" call !z100_report_line
++   else
++    if (Occurs > 1000)
++      OccursWarnings ++
++      ReportLine = "          ***** OCCURS @Occurs@ TIMES (Warning) line @lineno@" call !z100_report_line
++   endif
+    file SourceFile
+    f
+    goto !e100_occurs_loop
+
+!e100_occurs_done
+    file SourceFile
+    b
+    fs:/PROCEDURE DIVISION/
+!e100_thru_loop
+    fs:/ THRU /
+    if (eof) goto !e100_thru_done
+    scan:/@line/:/ THRU /
+    scan:/@left/:/ PERFORM /
+    if (found) goto !e100_next_thru
+    b;1
+    scan:/@line/:/ PERFORM /
+    if (!found) f;1 goto !e100_next_thru
+    scan:/@right/:/THRU/
+    if (found) f;1 goto !e100_next_thru
+    f;1
+    PerformThruErrors ++
+    ReportLine = "          ***** PERFORM and THRU on separate lines : (Error) @line@" call !z100_report_line
+!e100_next_thru
+    file SourceFile
+    f;1
+    if (!eof) goto !e100_thru_loop
+
+!e100_thru_done
+    file SourceFile
+    b
+
+    TotalComments = 0
+!e100_comment_loop
+    if (eof) goto !e100_comment_done
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '/') or (left = '*') TotalComments ++
+    f
+    goto !e100_comment_loop
+!e100_comment_done
+    b
+    if (TotalcobLines = FZero) or (FileType = "ads")
++      CommentPercent = FZero
++   else
++      CommentCompute = TotalComments / TotalcobLines
++   endif
+    CommentCompute = CommentCompute * 100
+    CommentPercent = CommentCompute
+
+//    print:"TotalComments:@TotalComments@ TotalcobLines:@TotalcobLines@ CommentCompute:@CommentCompute@ CommentPercent:@CommentPercent@" wait
+
+    //***************************************
+    //* Comment % Check
+    //***************************************
+    if (CommentCompute < 4)
++      CommentErrors ++
++      ReportLine = "          ***** Too Few Comments : @CommentPercent@% (Error)" call !z100_report_line
++   else
++   if (CommentCompute < 8)
++      CommentWarnings ++
++      ReportLine = "          ***** Too Few Comments : @CommentPercent@% (Warning)" call !z100_report_line
++   endif 
+
+    file SourceFile
+    b    
+    //***************************************
+    //* Standard Copyright Comments Check
+    //***************************************
+    if (FileType = "ads") goto !e100_ads_skip
+    fs:/NO COPIES OF THIS PROGRAM/-/PROPRIETARY MATERIAL/
+    if (eof)
++      CopyrightErrors ++
++      ReportLine = "          ***** No Standard Copyright Comment (Error)" call !z100_report_line
++   endif
+
+!e100_ads_skip
+    file SourceFile
+    b    
+!e100_if_and_loop
+    fs:/ IF / if (eof) goto !e100_if_and_check_done
+    scan:/@line/:/ IF /
+    scan:/@right/:/ AND /
+    if (!found) f;1 goto !e100_if_and_loop
+    split:/@right/;1
+    split:/@right/;1
+    if (left = ' ') f;1 goto !e100_if_and_loop
+    IFANDErrors ++
+    ReportLine = "          ***** AND on same line as IF (Error) : @line@" call !z100_report_line
+!e100_if_and_check_done
+    file SourceFile
+    b    
+
+!e100_ready_loop
+    fs:/ READY /
+    if (eof) goto !e100_ready_done
+    scan:/@line/:/ READY /
+    scan:/@right/:word
+    Area = left
+    scan:/@right/:word
+    scan:/@right/:word
+    if (left = 'IS') scan:/@right/:word
+    Mode = left
+    ReportLine = "          Area:@Area@"
+    size ReportLine,40
+    ReportLine = "@ReportLine@@Mode@"
+    file AreaFile error goto !e100_skip_ready
+    b fs:/@Area@/
+    if (eof) 
++      i:/@ReportLine@/
++   else
++      if (Mode = 'UPDATE')
++         r:/@ReportLine@/
++   endif
+
+!e100_skip_ready
+    file SourceFile
+    f
+    goto !e100_ready_loop
+!e100_ready_done
+    file AreaFile error goto !e100_check_calls
+    b
+    rs:/./:/ /;*
+    b
+    copy;*
+    file ReportFile
+    paste
+    close AreaFile
+!e100_check_calls
+    open CallFile null error
+    b d;*
+    file SourceFile
+    b
+!e100_cics_call_loop
+    fs:/PROGRAM('/
+    if (eof) goto !e100_call
+    scan:/@line/:/PROGRAM('/
+    scan:/@right/:/'/
+    Newline = "               Call:@left@"
+    file CallFile
+    b
+    fs:/@Newline/
+    if (eof) i:/@Newline/
+    file SourceFile
+    f
+    goto !e100_cics_call_loop
+!e100_call
+    b
+!e100_call_loop
+    fs:/LINK PROG/
+    if (eof) goto !e100_call_done
+    scan:/@line/:/LINK PROG/
+    scan:/@right/:/'/
+    scan:/@right/:/'/
+    Newline = "               Call:@left@"
+    file CallFile
+    b
+    fs:/@Newline/
+    if (eof) i:/@Newline/
+    file SourceFile
+    f
+    goto !e100_call_loop
+!e100_call_done
+    file CallFile
+    b
+    copy;*
+    file ReportFile
+    paste
+
+    open IDMSFile null
+    b d;*
+    file SourceFile           
+    b
+!e100_find_loop
+    if (FileType = 'ads')
++      fs:/FIND /-/OBTAIN /
++   else
++      fs:/    FIND /-/    OBTAIN /
++   endif
+    if (eof) goto !e100_find_done
+    if (FileType = 'ads')
++      IDMSType = 'FIND/OBTAIN' scan:/@line/:/FIND / if (!found) scan:/@line/:/OBTAIN /
++   else
++      IDMSType = 'FIND/OBTAIN' scan:/@line/:/     FIND / if (!found) scan:/@line/:/     OBTAIN /
++   endif
+    scan:/@right/:word
+    if (left = 'LAST') or (left = 'FIRST') or (left = 'NEXT') or (left = 'DUPLICATE') or (left = 'CALC') or (left = 'CURRENT') scan:/@right/:word
+    if (left = 'WITHIN') f goto !e100_find_loop
+    IDMSFunction = '     @IDMSType@ @left@' scan:/@IDMSFunction@/:/./ if (found) IDMSFunction = left
+    file IDMSFile
+    b
+    fs:/@IDMSFunction@/
+    if (eof) i:/@IDMSFunction/
+    file SourceFile
+    f
+    goto !e100_find_loop
+!e100_find_done
+    b
+!e100_modify_loop
+    if (FileType = 'ads')
++       fs:/MODIFY /-/STORE /
++   else
++       fs:/    MODIFY /-/    STORE /
++   endif
+    if (eof) goto !e100_modify_done
+    if (FileType = 'ads')
++       IDMSType = 'MODIFY' scan:/@line/:/MODIFY / if (!found) IDMSType = 'STORE' scan:/@line/:/STORE /
++   else
++       IDMSType = 'MODIFY' scan:/@line/:/     MODIFY / if (!found) IDMSType = 'STORE' scan:/@line/:/     STORE /
++   endif
+    scan:/@right/:word
+    if (left = 'MAP') scan:/@right/:word
+    IDMSFunction = '     @IDMSType@ @left@' scan:/@IDMSFunction@/:/./ if (found) IDMSFunction = left
+    file IDMSFile
+    b
+    fs:/@IDMSFunction@/
+    if (eof) i:/@IDMSFunction/
+    file SourceFile
+    f
+    goto !e100_modify_loop
+!e100_modify_done
+    b
+!e100_erase_loop
+    if (FileType = 'ads')
++       fs:/ERASE /
++   else
++       fs:/    ERASE /
++   endif
+    if (eof) goto !e100_erase_done
+    if (FileType = 'ads')
++       IDMSType = 'ERASE' scan:/@line/:/ERASE /
++   else
++       IDMSType = 'ERASE' scan:/@line/:/     ERASE /
++   endif
+    scan:/@right/:word
+    IDMSFunction = '     @IDMSType@ @left@' scan:/@IDMSFunction@/:/./ if (found) IDMSFunction = left
+    file IDMSFile
+    b
+    fs:/@IDMSFunction@/
+    if (eof) i:/@IDMSFunction/
+    file SourceFile
+    f
+    goto !e100_erase_loop
+!e100_erase_done
+
+    file IDMSFile
+    b
+    copy;*
+    if (pcount > 0) file ReportFile paste
+    file SourceFile
+    b
+
+    //***************************************
+    //* Check Sentence Length
+    //***************************************
+    LineCount = 0
+!e100_sentence_loop
+    f
+    if (eof) goto !e100_sentence_done
+    split:/@line/;6
+    split:/@right/;1
+    if (left = '*') or (left = '/') goto !e100_sentence_loop
+    LineCount ++
+    scan:/@right/:/./
+    if (found)
++      if (LineCount > 60)
++        LineLengthErrors ++
++        ReportLine = "          ***** Sentence Length @LineCount@ (ERROR) line @lineno@" call !z100_report_line
++        LineCount = 0
++        goto !e100_next_sentence
++   endif
+    if (found)
++      if (LineCount > 30)
++        LineLengthWarnings ++
++        ReportLine = "          ***** Sentence Length @LineCount@ (Warning) line @lineno@" call !z100_report_line
++        LineCount = 0
++   endif
+
+    if (found) LineCount = 0
+
+!e100_next_sentence
+    file SourceFile
+    goto !e100_sentence_loop
+
+!e100_sentence_done
+    //********************************
+    //* Capture IDMS Fields
+    //********************************
+    call !k100_fields   
+
+    file SourceFile
+    b
+    clear 
+!e100_db2_loop
+    fs:/EXEC SQL/
+    if (eof) goto !e100_db2_done
+!e100_db2_copy_loop
+    if (eof) goto !e100_db2_done
+//    print:"e100_db2_copy_loop [@line@]" wait
+    scan:/@line/:/END-EXEC/
+    if (found) 
++      file ReportFile
++      paste
++      clear
++      file SourceFile
++      f
++      goto !e100_db2_loop
++   endif
+    scan:/@line/:/SELECT/ if (found) copy f goto !e100_db2_copy_loop
+    scan:/@line/:/UPDATE/ if (found) copy f goto !e100_db2_copy_loop
+    scan:/@line/:/INSERT INTO/ if (found) copy f goto !e100_db2_copy_loop
+    scan:/@line/:/DELETE FROM/ if (found) copy f goto !e100_db2_copy_loop
+    scan:/@line/:/FROM/ if (found) call !e110_from_loop goto !e100_db2_copy_loop
+    f
+    goto !e100_db2_copy_loop
+
+!e100_db2_done
+    b    
+    return
+
+!e110_from_loop
+//    print:"e110_from_loop [@line@]" wait
+    copy
+    scan:/@line/:/,/
+    if (found) f goto !e110_from_loop
+    f
+    return
+
+//************************************************************************
+//* Scan Cobol Copy Source
+//************************************************************************
+!e200_scan_copy
+    TotalFiles ++
+    TotalcpyFiles ++
+    b f;* TotalLines = TotalLines + pcount
+    TotalcpyLines = TotalcpyLines + pcount
+    b
+    return
+
+//************************************************************************
+//* Scan jcl Source
+//************************************************************************
+!e300_scan_jcl
+    scanr:/@Filename@/:/./
+    scanr:"@left":"\"
+    File = "@right@|"
+    FileHold = File
+    SystemName = "@File[3-4]@"
+    call !s100_systemname
+    TotalFiles ++
+    TotaljclFiles ++
+    b f;* TotalLines = TotalLines + pcount
+    TotaljclLines = TotaljclLines + pcount
+    b
+    call !e310_expandsets
+    call !e320_expandprocs
+    call !e330_walkjcl
+    return
+
+//************************************************************************
+//* Expand all substitutions
+//************************************************************************
+!e310_expandsets
+    b
+    fs:"// SET "
+    if (eof) goto !e310_done
+    scan:"@line":"// SET "
+    scan:/@right/:/=/
+    ChangeFrom = "&@left@."
+    ChangeFrom2 = "&@left@,"
+    scan:/@right/:word
+    ChangeTo = left
+    scan:/@ChangeTo/:/,/ if (found) ChangeTo = left
+    d
+//    print:"Changing [@ChangeFrom@] to [@ChangeTo@]" wait
+    b rs:/@ChangeFrom@/:/@ChangeTo@/;*
+    b rs:/@ChangeFrom2@/:/@ChangeTo@/;*
+    goto !e310_expandsets
+!e310_done
+    b
+//    write SourceFile TempJCL.txt
+//    wait
+    return
+
+//************************************************************************
+//* Expand all Procs
+//************************************************************************   
+!e320_expandprocs
+    b
+!e320_loop
+    if (eof) goto !e320_done
+    fs:/ EXEC / scan:/@line/:/PGM=/ if (found) f goto !e320_loop
+    if (eof) goto !e320_done
+    scan:/@line/:/ EXEC /
+    scan:/@right/:word
+    Proc = left
+    scan:/@Proc/:/,/ if (found) Proc = left
+    Procname = 'c:\cdcheck\3090\proc\@Proc@.prc'
+//    print:"Opening proc @Procname@" wait
+    open ProcFile @Procname error print:"Unable to open @Procname@" file SourceFile rs:/EXEC/:/RUN / goto !e320_loop
+
+    file SourceFile
+    scan:/@line/:/,/
+    if (!found) 
++      d 
++      goto !e320_subsdone
++   endif
+    rs:/EXEC/:/RUN /
+    f
+
+!e320_subsloop
+    file SourceFile
+    scan:"@line":"//"
+    scan:/@right/:word
+    ChangeFrom = left
+    scan:/@ChangeFrom/:/=/
+    ChangeFrom = "&@left@."
+    ChangeFrom2 = "&@left@,"
+    ChangeTo = right scan:/@ChangeTo/:/,/ if (found) ChangeTo = left
+    file ProcFile
+//    print:"Changing [@ChangeFrom@] to [@ChangeTo@]" wait
+    b rs:/@ChangeFrom/:/@ChangeTo/;*
+    b rs:/@ChangeFrom2/:/@ChangeTo/;*
+    file SourceFile
+    scan:/@line/:/,/
+    if (!found) f goto !e320_subsdone
+    f
+    if (eof) goto !e320_subsdone
+    goto !e320_subsloop
+
+!e320_subsdone
+    file ProcFile
+    b
+    copy;*
+    close ProcFile
+    file SourceFile
+    paste
+    b
+    goto !e320_loop
+
+!e320_done
+    b
+//    print:"Proc Subs Complete, written temp file for debug" write SourceFile TempJCL.txt wait
+    return
+
+//************************************************************************
+//* Inspect for Programs
+//************************************************************************   
+!e330_walkjcl
+    file SourceFile
+    b
+    //**********************************
+    //* Fix all lines that start with @
+    //**********************************
+    subs |
+    rs:/@/:/-/;* //wait
+    subs @
+
+    b
+!e330_loop
+    if (eof) goto !e330_done
+    scan:/@line/:/ DSN=/ if (found) call !e331_dsn goto !e330_next
+    scan:/@line/:/ PGM=/ if (found) call !e332_pgm goto !e330_next
+
+!e330_next
+    file SourceFile
+    f
+    goto !e330_loop
+
+!e330_done    
+    return
+
+//************************************************************************
+//* Process DSN Records
+//************************************************************************
+!e331_dsn
+//    print:"e331_dsn @line@"
+    scan:/@right/:word
+    Record = left scan:/@Record/:/,/ if (found) Record = left
+    scan:/@Record/:/DISP=/ if (found) Record = left //*** 12/05/2002
+
+    AccessModeDetail = null
+
+    scan:/@line/:/DISP=/    
+    if (!found) f scan:/@line/:/DISP=/    
+    if (found) scan:/@right/:word AccessModeDetail = left
+    pack AccessModeDetail
+    splitr:/@AccessModeDetail/;1 if (right = ',') AccessModeDetail = left
+    scan:/@AccessModeDetail/:/),/ if (found) AccessModeDetail = '@left@)'
+
+    scan:/@AccessModeDetail/:/,DSN=/ if (found) AccessModeDetail = '@left@' //*** 12/05/2002
+    scan:/@AccessModeDetail/:/,UNIT=/ if (found) AccessModeDetail = '@left@' //*** 12/05/2002
+    scan:/@AccessModeDetail/:/,AMP=/ if (found) AccessModeDetail = '@left@' //*** 12/05/2002
+
+    AccessMode = 'Read'
+    scan:/@AccessModeDetail/:/NEW/ if (found) AccessMode = 'Write'
+    scan:/@AccessModeDetail/:/MOD/ if (found) AccessMode = 'Write'
+    scan:/@AccessModeDetail/:/DEL/ if (found) AccessMode = 'Write'
+    scan:/@AccessModeDetail/:/CAT/ if (found) AccessMode = 'Write'
+    scan:/@AccessModeDetail/:/OLD/ if (found) AccessMode = 'Read'
+
+    scan:/@File@/:/|/
+    if (AccessModeDetail = "") AccessModeDetail = 'File' // 01-14-2003
+    if (right = "")
++       Newline = "Fleet Services|@SystemName@|g1iu00ap.ca7.jcl|@left@|@FileType@||||@Database@|@AccessMode@|@AccessModeDetail@|@Schema@|@Record@|3090"
++   else
++       Newline = "Fleet Services|@SystemName@|g1iu00ap.ca7.jcl|@left@|@FileType@|g1iu00ap.ca7.jcl|@right@|PGM|@Database@|@AccessMode@|@AccessModeDetail@|@Schema@|@Record@|3090"
++   endif
+    file Jclxref
+    b fs:/@Newline/ if (eof) i:/@Newline/ DSN = DSN + 1
+//    p wait
+    file SourceFile
+
+    //**************************************************************
+    //* Check JCL for SYSCTL and COBOL Retrievel (Inefficient Error)
+    //**************************************************************
+    SysctlCheck = 'n'
+    scan:/@line/:/SYSCTL/
+    if (!found) goto !e331_done
+    scan:'@left@':'//*' if (found) goto !e331_done
+
+    SysctlCheck = 'y'
+    //print:"SYSCTL JCL : Testing @TestCobol@ for USAGE-MODE RETRIEVAL" wait
+
+    if (SysctlCheck) and (!SysctlUpdate)
++      SysctlRetrieveErrors ++
++      Errors ++
++      ReportLine = "          ***** JCL Program @Program@ : SYSCTL USAGE-MODE RETRIEVAL (Error)" call !z100_report_line    
++   endif
+
+!e331_done
+    file SourceFile
+    return
+
+//************************************************************************
+//* Process Program Records
+//************************************************************************
+!e332_pgm
+//    print:"e332_pgm @line@"
+    scan:/@right/:word
+    Program = left
+    scan:/@Program/:/,/ if (found) Program = left
+    File = '@FileHold@@Program@'
+    rs:/PGM=/:/RUN=/
+
+    //***************************************
+    //* Find all Calls
+    //***************************************
+    TestCobol = 'c:\cdcheck\3090\cobol\@Program@.cob'
+    SysctlUpdate = 'n'
+
+    open CallStack null
+    i:/@TestCobol@/
+    open CallStackProcessed null
+    i:/@TestCobol@/
+    CallCount = 0
+    CallErrorCount = 0
+  
+!e332_callstack_loop
+    //print:"!e332_callstack_loop" wait
+    file CallStack
+    b
+    if (eof) goto !e332_callstack_done
+    TestCobol = line
+    d
+
+    scan:/@FileHold/:/|/
+    ReportLine = "          ***** @left@ JCL CONTAINS @Program@" call !z100_report_line
+
+    scanr:/@TestCobol@/:/\/
+    TestProgName = right
+    scan:/@right/:/./
+    if (found) TestProgName = left
+    CallCount ++
+    open TestCobolFile @TestCobol error CallErrorCount ++ goto !e332_callstack_loop
+    print:"******************* Processing @TestCobol@"
+    b
+
+    file ScannedForCall
+    b
+    fs:/@TestCobol@/
+    if (!eof) file TestCobolFile b goto !e332_find_update
+    i:/@TestCobol@/
+
+    file TestCobolFile b
+
+!e332_find_call_loop
+    //print:"!e332_find_call_loop" wait
+    if (eof) b goto !e332_find_update
+    fs:/ CALL /
+    if (eof) b goto !e332_find_update
+    //print:"!e332_find_call_loop found CALL[@line@]" wait
+    scan:/@line/:/ CALL /
+    scan:/@right/:word
+    TestCall = left
+    scan:/@TestCall/:/'/
+    if (!found) goto !e332_ws_call
+    scan:/@right/:/'/
+    if (!found) goto !e332_ws_call
+!e332_call_found
+    //print:"!e332_call_found[@line@]" wait
+    CallProgram = 'c:\cdcheck\3090\cobol\@left@.cob'
+    ReportLine = "          ***** @TestProgName@ CALLS PROGRAM @left@" call !z100_report_line    
+!e332_call_found_ws
+    //print:"Test Add [@CallProgram@]" wait
+    file CallStackProcessed
+    //print:"CallStackProcessed" b p;* wait
+    b
+    fs:/@CallProgram@/
+    if (!eof) goto !e332_find_call_next
+    file CallStack
+    if (exists @CallProgram) i:/@CallProgram@/ file CallStackProcessed i:/@CallProgram@/
+    goto !e332_find_call_next
+!e332_ws_call
+    //print:"!e332_ws_call[@TestCall@]" wait
+    i:/fgb-001-fgb/
+    b
+!e332_ws_call_loop
+    //print:"!e332_ws_call_loop [@TestCall@] line[@line@]" wait
+    if (eof) goto !e332_ws_reset
+    fs:/@TestCall@/
+    if (eof) goto !e332_ws_reset
+    //print:"!e332_ws_call fs:[@TestCall@] line[@line@]" wait
+    scan:/@line/:/@TestCall@/
+    if (!found) f goto !e332_ws_call_loop
+    scan:/@right/:/'/
+    if (!found) f goto !e332_ws_call_loop
+    scan:/@right/:/'/
+    if (!found) f goto !e332_ws_call_loop
+    //print:"!e332_ws_call_loop Found[@line@]" wait
+    CallProgram = 'c:\cdcheck\3090\cobol\@left@.cob'
+    ReportLine = "          ***** @Program@ CALLS PROGRAM @left@" call !z100_report_line
+    file TestCobolFile
+    fs:/fgb-001-fgb/ 
+    //print:"fgb-001-fgb line [@line@]" wait
+    d
+    b;1
+    //print:"wait line [@line@]" wait
+    goto !e332_call_found
+    
+!e332_ws_reset
+    //print:"!e332_ws_reset" wait
+    file TestCobolFile
+    b
+    fs:/fgb-001-fgb/
+    d
+    b;1
+
+!e332_find_call_next
+    //print:"!e332_find_call_next" wait
+    file TestCobolFile
+    f
+    goto !e332_find_call_loop
+    
+!e332_find_update
+
+    //print:"!e332_find_update" wait
+    //**********************************
+    //* OK if Updating
+    //**********************************
+    pattern on
+    fs:/USAGE-MODE*UPDATE/
+    pattern off
+    if (!eof) 
++      split:/@line/;6
++      split:/@right/;1
++      if (left != '/') and (left != '*') 
++         SysctlUpdate = 'y'
++         close TestCobolFile goto !e332_done
++   endif
+    if (!eof) f goto !e332_find_update
+    b
+    //**********************************
+    //* Error if Not Updating and Retrieving
+    //**********************************
+!e332_find_retrieval
+    pattern on
+    fs:/USAGE-MODE*RETRIEVAL/
+    pattern off
+    if (!eof) 
++      split:/@line/;6
++      split:/@right/;1
++      if (left = '/') or (left = '*')
++         f goto !e332_find_retrieval
+    if (eof) close TestCobolFile goto !e332_done
+    //print:"*********************** Error Program[@Program@] line[@line@]" wait
+    close TestCobolFile
+!e332_done
+    //print:"!e332_done" wait
+    goto !e332_callstack_loop
+!e332_callstack_done
+    //print:"e332_done" wait
+
+    close CallStack error
+    close CallStackProcessed error
+
+    if (CallCount = 1) and (CallErrorCount = 1) ReportLine = "          ***** Unable to open @TestCobol@" call !z100_report_line
+
+    return
+
+//************************************************************************
+//* Scan proc Source
+//************************************************************************
+!e400_scan_proc
+    TotalFiles ++
+    TotalprcFiles ++
+    b f;* TotalLines = TotalLines + pcount
+    TotalprcLines = TotalprcLines + pcount
+    b
+    return
+
+//************************************************************************
+//* Find all of the Database Fields used
+//************************************************************************
+!k100_fields
+    //print:"k100_fields FileType:@FileType@" wait
+    open RecordsFile null
+    if (FileType = 'ads') or (FileType = 'cob')
++   else
++      goto !k100_done
++   endif
+    if (FileType = 'ads') call !k200_adso_records
+    if (FileType = 'cob') call !k210_cobol_records
+    open FieldsFile null
+    if (FileType = 'ads') call !k300_adso_fields
+    if (FileType = 'cob') call !k310_cobol_fields
+!k100_done
+    //print:"k100_done" wait
+    close RecordsFile error
+    close FieldsFile error
+    return
+
+
+//************************************************************************
+//* Find all of the ADSO Database Records used
+//************************************************************************
+!k200_adso_records
+    //print:"k200_adso_records"
+    file SourceFile
+    b
+!k200_find
+    fs:/ RECORD /
+    if (eof) goto !k200_done
+    scan:/@line/:/ RECORD COPIED/ if (found) goto !k200_next
+    scan:/@line/:/ RECORD NAME/ if (found) goto !k200_next
+    scan:/@line/:/ RECORD EVENT/ if (found) goto !k200_next
+    scan:/@line/:/ RECORD SYNONYM/ if (found) goto !k200_next
+    scan:/@line/:word split:/@left/;1 if (left = '!') or (left = /'/) goto !k200_next
+    scan:/@line/:/ RECORD /
+    scan:/@right/:word
+    RecordRec = left
+    if (RecordRec = null) goto !k200_next
+    file RecordsFile
+    b
+    fs:/@RecordRec/ if (eof) i:/@RecordRec/
+!k200_next
+    file SourceFile
+    f
+    goto !k200_find
+!k200_done
+    file RecordsFile
+    //b p;* wait
+    return
+
+//************************************************************************
+//* Find all of the COBOL Database Records used
+//************************************************************************
+!k210_cobol_records
+    //print:"k210-cobol-records"
+    file SourceFile
+    b
+!k210_find
+    fs:/ COPY IDMS /
+    if (eof) goto !k210_done
+    scan:/@line/:/ COPY IDMS RECORD/ if (found) goto !k210_next
+    scan:/@line/:/ IDMS-STATUS/ if (found) goto !k210_next
+    scan:/@line/:/ COPY IDMS /
+    scan:/@right/:word
+    RecordRec = left
+    if (RecordRec = null) goto !k210_next
+    scan:/@RecordRec/:/./ if (found) RecordRec = left
+    file RecordsFile
+    b
+    fs:/@RecordRec/ if (eof) i:/@RecordRec/
+!k210_next
+    file SourceFile
+    f
+    goto !k210_find
+!k210_done
+    file RecordsFile
+    //print:"Records list" b p;* wait
+    return
+
+//************************************************************************
+//* Capture all of the ADSO IDMS fields used
+//************************************************************************   
+!k300_adso_fields
+    open IDMSFieldsFile null
+    file SourceFile
+    b
+    file RecordsFile
+    b
+!k300_records_loop
+    if (eof) goto !k300_records_done
+    RecordRec = line
+    file SourceFile
+    b
+    SearchRec = "@RecordRec@-"
+!k300_search
+    fs:/@SearchRec/
+    if (eof) goto !k300_next_record
+    scan:/@line/:/@SearchRec/
+    scan:/@right/:word
+    if (left = 'AREA') or (left = 'IX') goto !k300_next_search
+    IDMSRec = "@SearchRec@@left@"
+    scan:/@IDMSRec@/:/./ if (found) IDMSRec = left
+    scan:/@IDMSRec@/:/(/ if (found) IDMSRec = left
+    scan:/@IDMSRec@/:/)/ if (found) IDMSRec = left
+    scan:/@IDMSRec@/:/:/ if (found) IDMSRec = left
+    scan:/@IDMSRec@/:/,/ if (found) IDMSRec = left
+    pack IDMSRec
+    file IDMSFieldsFile
+    b
+    fs:/@IDMSRec/ if (eof) i:/@IDMSRec/ ReportLine = "     ADSO IDMS Field:@IDMSRec@" call !z100_report_line_print
+!k300_next_search
+    file SourceFile
+    f
+    goto !k300_search
+!k300_next_record
+    file RecordsFile
+    f
+    goto !k300_records_loop
+!k300_records_done 
+    close IDMSFieldsFile   
+    return
+
+//************************************************************************
+//* Capture all of the COBOL IDMS fields used
+//************************************************************************   
+!k310_cobol_fields
+    open IDMSFieldsFile null
+    file SourceFile
+    b
+    file RecordsFile
+    b
+!k310_records_loop
+    if (eof) goto !k310_records_done
+    RecordRec = line
+    file SourceFile
+    b
+    SearchRec = "@RecordRec@-"
+!k310_search
+    fs:/@SearchRec/
+    if (eof) goto !k310_next_record
+    scan:/@line/:/@SearchRec/
+    scan:/@right/:word
+    IDMSRec = "@SearchRec@@left@"
+    scan:/@IDMSRec@/:/./ if (found) IDMSRec = left
+    scan:/@IDMSRec@/:/(/ if (found) IDMSRec = left
+    scan:/@IDMSRec@/:/)/ if (found) IDMSRec = left
+    scan:/@IDMSRec@/:/:/ if (found) IDMSRec = left
+    scan:/@IDMSRec@/:/,/ if (found) IDMSRec = left
+    pack IDMSRec
+    file IDMSFieldsFile
+    b
+    fs:/@IDMSRec/ if (eof) i:/@IDMSRec/ ReportLine = "     COBOL IDMS Field:@IDMSRec@" call !z100_report_line_print
+!k310_next_search
+    file SourceFile
+    f
+    goto !k310_search
+!k310_next_record
+    file RecordsFile
+    f
+    goto !k310_records_loop
+!k310_records_done    
+    close IDMSFieldsFile   
+    return
+
+//************************************************************************
+//* Update the System Name
+//************************************************************************   
+!s100_systemname
+    if (SystemName = 'D1') SystemName = 'MF Bridge' goto !s100_done
+    if (SystemName = 'D2') SystemName = 'Fleet Query' goto !s100_done
+    if (SystemName = 'D3') SystemName = 'FleetNet' goto !s100_done
+    if (SystemName = 'D4') SystemName = 'Canada Operations' goto !s100_done
+    if (SystemName = 'D6') SystemName = 'Security' goto !s100_done
+    if (SystemName = 'D8') SystemName = 'Common' goto !s100_done
+    if (SystemName = 'D9') SystemName = 'Billing Capping' goto !s100_done
+
+    if (SystemName = 'Q0') SystemName = 'Finance' goto !s100_done
+    if (SystemName = 'Q1') SystemName = 'Tresury/Security' goto !s100_done
+    if (SystemName = 'Q2') SystemName = 'ASM' goto !s100_done
+    if (SystemName = 'Q3') SystemName = 'Chargeback' goto !s100_done
+    if (SystemName = 'Q4') SystemName = 'Services' goto !s100_done
+    if (SystemName = 'Q5') SystemName = 'DB2' goto !s100_done
+    if (SystemName = 'Q6') SystemName = 'Management Reporting' goto !s100_done
+    if (SystemName = 'Q7') SystemName = 'MSO' goto !s100_done
+    if (SystemName = 'Q8') SystemName = 'Invoice Entry' goto !s100_done
+    if (SystemName = 'QA') SystemName = 'Rapidtag' goto !s100_done
+    if (SystemName = 'QB') SystemName = 'Invoice Audit' goto !s100_done
+    if (SystemName = 'QC') SystemName = 'MCC' goto !s100_done
+    if (SystemName = 'QD') SystemName = 'Expense Reporting' goto !s100_done
+    if (SystemName = 'QE') SystemName = 'National Accounts' goto !s100_done
+    if (SystemName = 'QF') SystemName = 'Issuance' goto !s100_done
+    if (SystemName = 'QG') SystemName = 'Warranty' goto !s100_done
+    if (SystemName = 'QH') SystemName = 'Accident Services' goto !s100_done
+    if (SystemName = 'QI') SystemName = 'Title & License' goto !s100_done
+    if (SystemName = 'QJ') SystemName = 'Tax' goto !s100_done
+    if (SystemName = 'QK') SystemName = 'AP' goto !s100_done
+    if (SystemName = 'QL') SystemName = 'Client Services' goto !s100_done
+    if (SystemName = 'QM') SystemName = 'Make/Model' goto !s100_done
+    if (SystemName = 'QN') SystemName = 'Exec Info' goto !s100_done
+
+    if (SystemName = 'QP') SystemName = 'Rebate' goto !s100_done
+    if (SystemName = 'QQ') SystemName = 'Generic Table' goto !s100_done
+    if (SystemName = 'QR') SystemName = 'Carms' goto !s100_done
+    if (SystemName = 'QS') SystemName = 'Flex Bill' goto !s100_done
+    if (SystemName = 'QT') SystemName = 'NVP' goto !s100_done
+    if (SystemName = 'QU') SystemName = 'Supplier' goto !s100_done
+    if (SystemName = 'QV') SystemName = 'G/L' goto !s100_done
+    if (SystemName = 'QW') SystemName = 'Individual' goto !s100_done
+    if (SystemName = 'QX') SystemName = 'Call Tracking' goto !s100_done
+    if (SystemName = 'QY') SystemName = 'Common Trans' goto !s100_done
+    if (SystemName = 'QZ') SystemName = 'McCullagh' goto !s100_done
+
+    SystemName = "Misc3090"
+
+!s100_done
+    return
+
+
+//************************************************************************
+//* Write Report File (Display is optional)
+//************************************************************************
+!z100_report_line_print
+    print:"@ReportLine@"
+!z100_report_line
+    file ReportFile
+    i:/@ReportLine@/
+    return
+
+//************************************************************************
+//* End of Program CHK3090.BED
+//************************************************************************

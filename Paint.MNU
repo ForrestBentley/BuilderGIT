@@ -1,0 +1,22 @@
+***********************************
+* M E N U
+***********************************
+TITLE,Paint
+MENU,~Test
+ITEM,Paint_Paintwin_MSOBJ,Paint_Paintwin_WIN
+ITEM,Paint_Colors_MSOBJ,Paint_Colors_WIN
+ITEM,Paint_Stdcolors_MSOBJ,Paint_Stdcolors_WIN
+ITEM,Paint_Testwindow_MSOBJ,Paint_Testwindow_WIN
+--------------------
+ITEM,Paint_Main_Exit_MSOBJ,E~xit
+***********************************
+* M E N U
+***********************************
+MENU,~Misc
+ITEM,Paint_Main_Banneron_MSOBJ,Banner O~n
+ITEM,Paint_Main_Banneroff_MSOBJ,Banner O~ff
+***********************************
+* M E N U
+***********************************
+MENU,~Help
+ITEM,Paint_Main_About_MSOBJ,~About Paint System

@@ -1,0 +1,595 @@
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_System_WIN,105,10,508,350,Builder System
+STTXT1,Builder_System_Systemname_STTXT,27,40,89,19,System
+EFOBJL,Builder_System_Systemname_EFOBJ,127,37,159,24,
+COOBJL,Builder_System_SystemList_COOBJ,128,78,160,400,
+STTXT1,Builder_System_Title_STTXT,28,119,88,24,Title
+EFOBJL,Builder_System_Title_EFOBJ,128,117,274,24,
+STTXT1,Builder_System_Desc_STTXT,29,152,88,24,Description
+MLOBJ1,Builder_System_Desc_MLOBJ,129,150,274,104,
+PBOBJ1,Builder_System_Create_PBOBJ,299,37,55,24,C&reate
+PBOBJ1,Builder_System_Backup_PBOBJ,358,37,55,24,&Backup
+PBOBJ1,Builder_System_Modify_PBOBJ,299,77,55,24,&Modify
+PBOBJ1,Builder_System_Assist_PBOBJ,299,77,55,24,&Assist
+PBOBJ1,Builder_System_Open_PBOBJ,358,77,54,24,&Open
+PBOBJ1,Builder_System_Debug_PBOBJ,417,77,54,24,&Debug
+PBOBJ1,Builder_System_Cancel_PBOBJ,195,265,80,24,&Close
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Window_WIN,120,128,494,290,Window Maintenance
+STTXT1,Builder_Window_Systemname_STTXT,135,25,184,24,
+STTXT1,Builder_Window_Systemnametext_STTXT,24,25,94,24,System Name
+STTXT1,Builder_Window_Windowname_STTXT,25,63,94,24,Window Name
+EFOBJL,Builder_Window_Windowname_EFOBJ,134,63,184,24,
+STTXT1,Builder_Window_WindowTitleText_STTXT,25,163,94,24,Window Title
+EFOBJL,Builder_Window_WindowTitle_EFOBJ,135,160,184,24,
+PBOBJ1,Builder_Window_Create_PBOBJ,349,63,94,24,C&reate
+PBOBJ1,Builder_Window_Backup_PBOBJ,349,25,94,24,&Backup
+STTXTF,Builder_Window_Generate_STTXT,120,99,344,54,
+COOBJL,Builder_Window_Windownamelist_COOBJ,138,115,200,200,
+PBOBJ1,Builder_Window_Modify_PBOBJ,349,114,94,24,&Modify
+PBOBJ1,Builder_Window_Code_PBOBJ,349,172,94,24,Co&de
+PBOBJ1,Builder_Window_Save_PBOBJ,15,207,74,24,&Generate
+PBOBJ1,Builder_Window_Test_PBOBJ,94,207,74,24,&Test
+PBOBJ1,Builder_Window_View_PBOBJ,172,207,74,24,&View
+PBOBJ1,Builder_Window_Debug_PBOBJ,251,207,74,24,&Debug
+PBOBJ1,Builder_Window_Close_PBOBJ,349,207,94,24,&Close
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Control_WIN,5,5,1350,650,Builder Window Control Maintenance
+STTXT1,Builder_Control_Background_STTXT,0,0,3000,49,
+STTXTR,Builder_Control_Separator_STTXT,0,49,3000,2,
+STTXT1,Builder_Control_Control_STTXT,3,3,40,22,Name
+EFOBJL,Builder_Control_Control_EFOBJ,45,1,260,22,
+EFOBJL,Builder_Control_ControlText_EFOBJ,345,1,270,22,
+PBOBJ1,Builder_Control_ControlText_PBOBJ,308,1,35,22,&Text
+COOBJL,Builder_Control_ControlList_COOBJ,618,1,295,600,
+PBOBJ1,Builder_Control_Focus_PBOBJ,916,1,45,22,&Focus
+PBOBJ1,Builder_Control_Undo_PBOBJ,964,1,40,22,&Undo
+PBOBJ1,Builder_Control_Refresh_PBOBJ,1007,1,60,22,R&efresh
+RBOBJ1,Builder_Control_Pos_RBOBJ,1187,1,50,22,&Pos
+RBOBJ1,Builder_Control_Size_RBOBJ,1187,23,50,22,&Size
+EFOBJL,Builder_Control_Size_EFOBJ,1240,11,35,22,
+PBOBJ1,Builder_Control_SizeXMinus_PBOBJ,1300,1,20,20,^
+PBOBJ1,Builder_Control_SizeXPlus_PBOBJ,1300,24,20,20,v
+PBOBJ1,Builder_Control_SizeYPlus_PBOBJ,1320,12,20,20,>
+PBOBJ1,Builder_Control_SizeYMinus_PBOBJ,1280,12,20,20,<
+COOBJL,Builder_Control_Windownamelist_COOBJ,730,25,183,600,
+PBOBJ1,Builder_Control_Go_PBOBJ,916,25,19,22,G
+PBOBJ1,Builder_Control_Test_PBOBJ,937,25,19,22,T
+PBOBJ1,Builder_Control_View_PBOBJ,958,25,19,22,V
+PBOBJ1,Builder_Control_Code_PBOBJ,979,25,19,22,C
+PBOBJ1,Builder_Control_WinSize_PBOBJ,1000,25,40,22,Win
+PBOBJ1,Builder_Control_Swap_PBOBJ,1042,25,30,22,SW
+STTXT1,Builder_Control_Height_STTXT,1084,1,50,20,Height
+EFOBJL,Builder_Control_Height_EFOBJ,1136,1,45,22,
+STTXT1,Builder_Control_Length_STTXT,1084,28,50,20,Length
+EFOBJL,Builder_Control_Length_EFOBJ,1136,25,45,22,
+STTXT1,Builder_Control_X_STTXT,5000,28,45,22,X-Pos
+EFOBJL,Builder_Control_X_EFOBJ,5000,25,40,22,
+STTXT1,Builder_Control_Y_STTXT,5000,28,45,22,Y-Pos
+EFOBJL,Builder_Control_Y_EFOBJ,5000,25,40,22,
+PBOBJ1,Builder_Control_Save_PBOBJ,1,25,40,22,&Save
+PBOBJ1,Builder_Control_Cancel_PBOBJ,43,25,50,22,&Cancel
+COOBJL,Builder_Control_ControlType_COOBJ,95,24,100,600,
+PBOBJ1,Builder_Control_Create_PBOBJ,197,25,50,22,C&reate
+PBOBJ1,Builder_Control_Modify_PBOBJ,249,25,35,22,&Mod
+PBOBJ1,Builder_Control_Delete_PBOBJ,286,25,27,22,&Del
+PBOBJ1,Builder_Control_Buttonaction_PBOBJ,315,25,40,22,&B-Act
+PBOBJ1,Builder_Control_Entryaction_PBOBJ,357,25,40,22,E-Act
+PBOBJ1,Builder_Control_Color_PBOBJ,399,25,45,22,Color
+PBOBJ1,Builder_Control_Duplicate_PBOBJ,446,25,40,22,Dup
+PBOBJ1,Builder_Control_Front_PBOBJ,488,25,20,22,+
+PBOBJ1,Builder_Control_Back_PBOBJ,510,25,20,22,-
+PBOBJ1,Builder_Control_Align_PBOBJ,532,25,45,22,Align
+PBOBJ1,Builder_Control_Copy_PBOBJ,579,25,40,22,Copy
+PBOBJ1,Builder_Control_Paste_PBOBJ,621,25,42,22,Paste
+PBOBJ1,Builder_Control_Connectcreate_PBOBJ,665,25,20,22,/
+PBOBJ1,Builder_Control_Connectchoose_PBOBJ,687,25,20,22,P
+PBOBJ1,Builder_Control_Disconnect_PBOBJ,709,25,20,22,X
+PBOBJ1,Builder_Control_Font_PBOBJ,660,590,35,24,Font
+COOBJL,Builder_Control_Fonts_COOBJ,700,588,150,650,
+STTXT1,Builder_Control_Font_STTXT,855,590,200,24,
+PBOBJ1,Builder_Control_Bitmap_PBOBJ,645,588,70,20,Bitmap
+EFOBJL,Builder_Control_Bitmap_EFOBJ,720,588,600,20,
+RBOBJ1,Builder_Control_Button_RBOBJ,5000,5000,100,24,&Button
+RBOBJ1,Builder_Control_Entry_RBOBJ,5000,5000,100,24,&Entry
+RBOBJ1,Builder_Control_Text_RBOBJ,5000,5000,100,24,&Text
+RBOBJ1,Builder_Control_Check_RBOBJ,5000,5000,100,24,&Check
+RBOBJ1,Builder_Control_List_RBOBJ,5000,5000,100,24,&List
+RBOBJ1,Builder_Control_Group_RBOBJ,5000,5000,100,24,&Group
+RBOBJ1,Builder_Control_Radio_RBOBJ,5000,5000,100,24,&Radio
+RBOBJ1,Builder_Control_MLE_RBOBJ,5000,5000,100,24,&Multi-Line
+RBOBJ1,Builder_Control_Combo_RBOBJ,5000,5000,100,24,&Combo
+RBOBJ1,Builder_Control_Drop_RBOBJ,5000,5000,100,24,&Drop Down
+RBOBJ1,Builder_Control_Rectangle_RBOBJ,5000,5000,100,24,&Rectangle
+RBOBJ1,Builder_Control_Box_RBOBJ,5000,5000,100,24,&Box
+RBOBJ1,Builder_Control_Boxcolor_RBOBJ,5000,5000,90,24,Box Color
+RBOBJ1,Builder_Control_Boxround_RBOBJ,5000,5000,90,24,Box Round
+RBOBJ1,Builder_Control_Box3D_RBOBJ,5000,5000,90,24,Box-3D
+RBOBJ1,Builder_Control_Ellipse_RBOBJ,5000,5000,90,24,Ellipse
+RBOBJ1,Builder_Control_Ellipse3D_RBOBJ,5000,5000,90,24,Ellipse-3D
+RBOBJ1,Builder_Control_Circle_RBOBJ,5000,5000,90,24,Circle
+RBOBJ1,Builder_Control_Diamond_RBOBJ,5000,5000,90,24,Diamond
+RBOBJ1,Builder_Control_Line_RBOBJ,5000,5000,90,24,Line
+RBOBJ1,Builder_Control_Arrow_RBOBJ,5000,5000,90,24,Arrow
+RBOBJ1,Builder_Control_Textfont_RBOBJ,5000,5000,90,24,Text Font
+RBOBJ1,Builder_Control_TextTilt_RBOBJ,5000,5000,90,24,Text Tilt
+RBOBJ1,Builder_Control_Bitmap_RBOBJ,5000,5000,90,24,Bitmap
+RBOBJ1,Builder_Control_Bitmapfit_RBOBJ,5000,5000,90,24,Bitmap Fit
+RBOBJ1,Builder_Control_Triangle_RBOBJ,5000,5000,90,24,Triangle
+RBOBJ1,Builder_Control_Rectanglecolor_RBOBJ,5000,5000,90,24,Rectangle Color
+STTXTF,Builder_Control_Frame_STTXT,1,45,1300,565,
+GBOBJ1,Builder_Control_WindowSize_GBOBJ,1,45,1300,565,
+STTXT1,Builder_Control_XLabel_STTXT,5000,5000,15,20,X:
+STTXT1,Builder_Control_Xpos_STTXT,5000,5000,45,20,
+STTXT1,Builder_Control_YLabel_STTXT,5000,5000,15,20,Y:
+STTXT1,Builder_Control_Ypos_STTXT,5000,5000,45,20,8
+PBOBJ1,Builder_Control_Gotolanguage_PBOBJ,5000,1,35,22,&Gotolanguage
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Language_WIN,5,670,1350,62,Language Interface
+MLOBJ1,Builder_Language_Commands_MLOBJ,2,2,1330,20,
+PBOBJ1,Builder_Language_Apply_PBOBJ,26,100,44,24,&Apply
+PBOBJ1,Builder_Language_Close_PBOBJ,78,100,51,24,&Close
+PBOBJ1,Builder_Language_Execute_PBOBJ,200,100,51,24,&Execute
+PBOBJ1,Builder_Language_Gotopallet_PBOBJ,300,100,51,24,&Pallet
+PBOBJ1,Builder_Language_Clean_PBOBJ,500,100,51,24,&Clean
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Nav_WIN,31,84,870,270,Navigation Maintenance
+STTXT1,Builder_Nav_Controlnametext_STTXT,35,20,94,24,Control Name
+STTXT1,Builder_Nav_Controlname_STTXT,134,20,694,24,
+STTXT1,Builder_Nav_Windownametext_STTXT,35,50,94,24,Window
+STTXT1,Builder_Nav_Windowname_STTXT,134,50,694,24,
+COOBJL,Builder_Nav_Windowlist_COOBJ,36,77,534,200,
+GBOBJ1,Builder_Nav_Action_GBOBJ,36,108,792,58,Action
+RBOBJ1,Builder_Nav_Open_RBOBJ,46,130,58,24,&Open
+RBOBJ1,Builder_Nav_Close_RBOBJ,111,130,60,24,C&lose
+RBOBJ1,Builder_Nav_Start_RBOBJ,186,130,60,24,&Start
+EFOBJL,Builder_Nav_Start_EFOBJ,249,132,490,20,
+PBOBJ1,Builder_Nav_Find_PBOBJ,745,130,70,24,&Browse
+PBOBJ1,Builder_Nav_Ok_PBOBJ,35,176,69,24,&OK
+PBOBJ1,Builder_Nav_Cancel_PBOBJ,113,176,94,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Entryaction_WIN,20,50,460,380,Entry Field Action
+STTXT1,Builder_Entryaction_Fieldnametext_STTXT,33,37,34,24,Field
+STTXT1,Builder_Entryaction_Fieldname_STTXT,74,37,334,24,
+GBOBJ1,Builder_Entryaction_Actiongroup_GBOBJ,33,70,134,258,Action
+RBOBJ1,Builder_Entryaction_Alpha_RBOBJ,43,94,114,24,Alphabetic
+RBOBJ1,Builder_Entryaction_Numeric_RBOBJ,43,118,114,24,Numeric
+RBOBJ1,Builder_Entryaction_Uppercase_RBOBJ,43,142,114,24,Uppercase
+RBOBJ1,Builder_Entryaction_Lowercase_RBOBJ,43,166,114,24,Lowercase
+RBOBJ1,Builder_Entryaction_Mixedcase_RBOBJ,43,190,114,24,Mixedcase
+RBOBJ1,Builder_Entryaction_Date_RBOBJ,43,214,114,24,Date
+RBOBJ1,Builder_Entryaction_Dollar_RBOBJ,43,238,114,24,Dollar
+RBOBJ1,Builder_Entryaction_Phone_RBOBJ,43,262,114,24,Phone
+RBOBJ1,Builder_Entryaction_Text_RBOBJ,43,286,114,24,Text
+STTXT1,Builder_Entryaction_Size_STTXT,187,78,29,24,Size
+EFOBJL,Builder_Entryaction_Size_EFOBJ,220,78,49,24,
+CBOBJ1,Builder_Entryaction_Password_CBOBJ,187,118,100,24,Password
+PBOBJ1,Builder_Entryaction_Set_PBOBJ,185,164,114,24,&Set
+PBOBJ1,Builder_Entryaction_Delete_PBOBJ,186,199,114,24,&Delete
+PBOBJ1,Builder_Entryaction_Cancel_PBOBJ,187,261,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_View_WIN,5,24,1350,675,Builder Window Viewer
+PBOBJ1,Builder_View_Html_PBOBJ,20,480,90,24,&HTML
+PBOBJ1,Builder_View_Open_PBOBJ,20,510,90,24,&Open
+PBOBJ1,Builder_View_Comments_PBOBJ,20,540,90,24,Co&mments
+PBOBJ1,Builder_View_Filter_PBOBJ,20,570,90,24,&Filter
+PBOBJ1,Builder_View_Cancel_PBOBJ,20,600,90,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Filter_WIN,66,60,430,295,Filter
+STTXT1,Builder_Filter_Windowlist_STTXT,35,35,150,24,Windows/Modules/Classes
+LBOBJM,Builder_Filter_Windowlist_LBOBJ,35,64,281,155,
+PBOBJ1,Builder_Filter_OK_PBOBJ,35,220,114,24,&OK
+PBOBJ1,Builder_Filter_Comments_PBOBJ,325,69,82,24,Co&mments
+PBOBJ1,Builder_Filter_View_PBOBJ,325,100,82,24,&View
+PBOBJ1,Builder_Filter_Cancel_PBOBJ,158,220,114,24,&No Filter
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Comments_WIN,16,60,890,475,Comments
+STTXT1,Builder_Comments_Module_STTXT,22,26,450,24,
+LBOBJ1,Builder_Comments_Comments_LBOBJ,22,52,840,340,
+PBOBJ1,Builder_Comments_Ok_PBOBJ,373,402,114,24,&OK
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Import_WIN,90,35,540,335,View Program Flow
+STTXT1,Builder_Import_Filename_STTXT,34,25,114,24,Filename
+EFOBJL,Builder_Import_Filename_EFOBJ,160,25,344,24,
+GBOBJ1,Builder_Import_Search_GBOBJ,35,58,474,139,Search
+PBOBJ1,Builder_Import_3090_PBOBJ,406,112,74,24,&3090
+PBOBJ1,Builder_Import_Browse_PBOBJ,45,81,69,24,&Directory
+EFOBJL,Builder_Import_Directory_EFOBJ,117,81,362,24,
+EFOBJL,Builder_Import_Extension_EFOBJ,117,112,54,24,
+STTXT1,Builder_Import_Extension_STTXT,45,113,69,24,Extension
+PBOBJ1,Builder_Import_Lookup_PBOBJ,182,112,74,24,&Lookup
+COOBJL,Builder_Import_Files_COOBJ,117,140,364,200,
+PBOBJ1,Builder_Import_Copydir_PBOBJ,45,168,69,24,Copy &Dir
+EFOBJL,Builder_Import_Copydir_EFOBJ,117,168,364,24,
+PBOBJ1,Builder_Import_Ok_PBOBJ,48,236,114,24,&OK
+PBOBJ1,Builder_Import_Cancel_PBOBJ,170,236,114,24,&Cancel
+GBOBJ1,Builder_Import_Viewtype_GBOBJ,317,202,164,90,B-Edit View Type
+RBOBJ1,Builder_Import_Viewmods_RBOBJ,323,220,114,24,&Modules
+RBOBJ1,Builder_Import_Viewfiles_RBOBJ,323,242,114,24,&Files
+RBOBJ1,Builder_Import_Viewvars_RBOBJ,323,264,114,24,&Variables
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Callflow_WIN,30,30,485,175,COBOL Call Flow
+PBOBJ1,Builder_Callflow_Directory_PBOBJ,29,38,64,24,&Directory
+EFOBJL,Builder_Callflow_Directory_EFOBJ,98,39,334,24,
+PBOBJ1,Builder_Callflow_Ok_PBOBJ,100,80,114,24,&OK
+PBOBJ1,Builder_Callflow_Cancel_PBOBJ,223,80,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_POM_WIN,30,30,485,175,POM Dependency Viewer
+PBOBJ1,Builder_POM_Directory_PBOBJ,29,38,64,24,&Directory
+EFOBJL,Builder_POM_Directory_EFOBJ,98,39,334,24,
+PBOBJ1,Builder_POM_Ok_PBOBJ,100,80,114,24,&OK
+PBOBJ1,Builder_POM_Cancel_PBOBJ,223,80,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_3090_WIN,110,35,540,365,Download 3090 COBOL Source
+STTXT1,Builder_3090_Userid_STTXT,195,62,74,24,Userid
+EFOBJL,Builder_3090_Userid_EFOBJ,278,61,114,24,
+STTXT1,Builder_3090_Password_STTXT,194,90,74,24,Password
+EFOBJL,Builder_3090_Password_EFOBJ,279,89,114,24,
+STTXT1,Builder_3090_Fullname_STTXT,48,238,74,24,File Name
+EFOBJL,Builder_3090_Filename_EFOBJ,275,196,114,24,
+STTXT1,Builder_3090_Filename_STTXT,276,168,74,24,File Name
+EFOBJL,Builder_3090_Fullname_EFOBJ,126,238,354,24,
+GBOBJ1,Builder_3090_Login_GBOBJ,30,38,384,94,Login
+RBOBJ1,Builder_3090_Prod_RBOBJ,50,62,94,24,&Prod (MVS)
+RBOBJ1,Builder_3090_Test_RBOBJ,50,90,104,24,&Test (MVST)
+GBOBJ1,Builder_3090_Sourcelocation_GBOBJ,32,151,464,124,Source Location
+RBOBJ1,Builder_3090_Prodsrc_RBOBJ,48,176,174,24,g1d800ap.prod.srcelib
+RBOBJ1,Builder_3090_Testsrc_RBOBJ,48,203,174,24,g1d800at.test.srcelib
+PBOBJ1,Builder_3090_Ok_PBOBJ,129,284,114,24,&OK
+PBOBJ1,Builder_3090_Cancel_PBOBJ,253,284,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Progress_WIN,50,56,450,140,Progress
+STTXTF,Builder_Progress_Progressframe_STTXT,16,30,414,24,
+STTXTR,Builder_Progress_Progress_STTXT,18,32,410,20,
+PBOBJ1,Builder_Progress_Cancel_PBOBJ,155,63,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Download3090_WIN,50,50,705,325,Download 3090 Files
+GBOBJ1,Builder_Download3090_Login_GBOBJ,37,34,344,94,Login
+RBOBJ1,Builder_Download3090_Prod_RBOBJ,52,60,114,24,&Prod (MVS)
+RBOBJ1,Builder_Download3090_Test_RBOBJ,52,84,114,24,&Test (MVST)
+STTXT1,Builder_Download3090_Userid_STTXT,166,60,74,24,Userid
+STTXT1,Builder_Download3090_Password_STTXT,166,84,74,24,Password
+EFOBJL,Builder_Download3090_Userid_EFOBJ,249,60,114,24,
+EFOBJL,Builder_Download3090_Password_EFOBJ,249,86,114,24,
+GBOBJ1,Builder_Download3090_Location_GBOBJ,39,136,624,100,Location
+STTXT1,Builder_Download3090_From_STTXT,46,158,84,20,From 3090
+STTXT1,Builder_Download3090_Filter_STTXT,476,158,68,24,Filter
+STTXT1,Builder_Download3090_Extension_STTXT,475,181,69,24,Extension
+EFOBJL,Builder_Download3090_From_EFOBJ,137,156,334,24,
+EFOBJL,Builder_Download3090_Filter_EFOBJ,547,155,99,24,
+PBOBJ1,Builder_Download3090_Todir_PBOBJ,45,182,85,24,To &Directory
+EFOBJL,Builder_Download3090_To_EFOBJ,137,182,334,24,
+EFOBJL,Builder_Download3090_Extension_EFOBJ,547,181,40,24,
+CBOBJ1,Builder_Download3090_Copies_CBOBJ,475,204,69,24,Copies
+PBOBJ1,Builder_Download3090_Ok_PBOBJ,51,245,114,24,&OK
+PBOBJ1,Builder_Download3090_Cancel_PBOBJ,171,245,114,24,&Cancel
+STTXT1,Builder_Download3090_Filterdesc1_STTXT,409,36,250,24,Filter:
+STTXT1,Builder_Download3090_Filterdesc2_STTXT,409,54,250,24,   ? = Match Any Character
+STTXT1,Builder_Download3090_Filterdesc3_STTXT,409,73,250,24,   # = Match any Number
+STTXT1,Builder_Download3090_Filterdesc4_STTXT,409,91,250,24,   % = Match any Alpha Character
+STTXT1,Builder_Download3090_Filterdesc5_STTXT,409,110,250,24,   * = Match to End or Next Character
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Align_WIN,163,99,220,210,Group Align
+PBOBJ1,Builder_Align_Top_PBOBJ,80,15,59,24,Top
+PBOBJ1,Builder_Align_Bottom_PBOBJ,80,100,59,24,Bottom
+PBOBJ1,Builder_Align_Midhoriz_PBOBJ,87,71,44,24,----
+PBOBJ1,Builder_Align_Midvert_PBOBJ,87,43,44,24,|
+PBOBJ1,Builder_Align_Left_PBOBJ,23,55,59,24,Left
+PBOBJ1,Builder_Align_Right_PBOBJ,136,55,59,24,Right
+STTXTR,Builder_Align_Line_STTXT,1,131,218,3,
+PBOBJ1,Builder_Align_Distvert_PBOBJ,39,100,34,24,=
+PBOBJ1,Builder_Align_Cancel_PBOBJ,47,142,124,24,Cancel
+PBOBJ1,Builder_Align_Disthoriz_PBOBJ,147,100,34,24,||
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Search_WIN,1,30,720,365,Search
+PBOBJ1,Builder_Search_Directory_PBOBJ,88,28,64,24,&Directory
+EFOBJL,Builder_Search_Directory_EFOBJ,155,28,384,24,
+STTXT1,Builder_Search_Extension_STTXT,82,58,70,24,Extension
+EFOBJL,Builder_Search_Extension_EFOBJ,155,58,59,24,
+CBOBJ1,Builder_Search_Subdir_CBOBJ,544,28,114,24,Sub&directories
+STTXT1,Builder_Search_String_STTXT,59,88,93,24,Search String
+EFOBJL,Builder_Search_String_EFOBJ,155,88,384,24,
+PBOBJ1,Builder_Search_And_PBOBJ,544,88,44,24,&AND
+PBOBJ1,Builder_Search_Or_PBOBJ,593,88,44,24,&OR
+LBOBJ1,Builder_Search_List_LBOBJ,155,120,384,150,
+PBOBJ1,Builder_Search_Remove_PBOBJ,544,164,68,24,&Remove
+PBOBJ1,Builder_Search_Clear_PBOBJ,544,194,68,24,C&lear
+PBOBJ1,Builder_Search_Search_PBOBJ,173,275,114,24,&Search
+PBOBJ1,Builder_Search_Help_PBOBJ,297,275,114,24,&Help
+PBOBJ1,Builder_Search_Cancel_PBOBJ,419,275,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Searchresults_WIN,20,20,530,405,Search Results
+STTXT1,Builder_Searchresults_Results_STTXT,26,19,460,24,Search Results
+LBOBJ1,Builder_Searchresults_Results_LBOBJ,26,50,460,260,
+PBOBJ1,Builder_Searchresults_Open_PBOBJ,26,321,114,24,&Open
+PBOBJ1,Builder_Searchresults_Cancel_PBOBJ,145,321,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Help_WIN,11,1,600,365,Help
+LBOBJ1,Builder_Help_Help_LBOBJ,20,26,550,270,
+PBOBJ1,Builder_Help_Ok_PBOBJ,238,294,114,24,&OK
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_About_WIN,60,90,500,330,About B-Edit Analysis System
+STTXT1,Builder_About_System_STTXT,44,21,55,24,System:
+STTXT1,Builder_About_System_EFOBJ,99,21,200,24,
+STTXT1,Builder_About_Version_STTXT,44,56,55,24,Version:
+STTXT1,Builder_About_Version_EFOBJ,99,56,35,24,
+STTXT1,Builder_About_Author_STTXT,45,90,55,24,Author:
+STTXT1,Builder_About_Author_EFOBJ,100,90,105,24,
+MLOBJ1,Builder_About_Desc_MLOBJ,44,128,414,110,
+PBOBJ1,Builder_About_Ok_PBOBJ,175,255,114,24,&OK
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Browse_WIN,10,100,650,335,Browse
+STTXT1,Builder_Browse_Directory_STTXT,41,25,65,24,Directory
+PBOBJ1,Builder_Browse_Back_PBOBJ,112,25,44,24,<<
+EFOBJL,Builder_Browse_Directory_EFOBJ,164,25,444,24,
+PBOBJ1,Builder_Browse_Newdir_PBOBJ,156,57,114,24,&New Directory
+STTXT1,Builder_Browse_Extension_STTXT,366,57,69,24,Extension
+EFOBJL,Builder_Browse_Extension_EFOBJ,445,57,44,24,
+PBOBJ1,Builder_Browse_Refresh_PBOBJ,500,57,64,24,&Refresh
+STTXT1,Builder_Browse_Subdir_STTXT,41,57,104,24,Sub-Directories
+LBOBJ1,Builder_Browse_Subdir_LBOBJ,42,86,250,160,
+STTXT1,Builder_Browse_Files_STTXT,307,57,34,24,Files
+LBOBJ1,Builder_Browse_Files_LBOBJ,305,86,260,161,
+PBOBJ1,Builder_Browse_Ok_PBOBJ,45,255,114,24,&OK
+PBOBJ1,Builder_Browse_Cancel_PBOBJ,174,255,114,24,&Cancel
+PBOBJ1,Builder_Browse_Open_PBOBJ,375,255,114,24,&Open
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Newdir_WIN,80,80,360,135,New Directory
+STTXT1,Builder_Newdir_Name_STTXT,11,17,44,24,Name
+EFOBJL,Builder_Newdir_Name_EFOBJ,64,17,264,24,
+PBOBJ1,Builder_Newdir_Ok_PBOBJ,64,52,114,24,&OK
+PBOBJ1,Builder_Newdir_Cancel_PBOBJ,189,52,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Codecheck_WIN,65,90,450,310,Code Check
+STTXT1,Builder_Codecheck_System_STTXT,35,25,54,24,System
+EFOBJL,Builder_Codecheck_System_EFOBJ,92,25,194,24,
+LBOBJ1,Builder_Codecheck_System_LBOBJ,92,48,194,150,
+PBOBJ1,Builder_Codecheck_Directory_PBOBJ,12,200,74,24,&Directory
+EFOBJL,Builder_Codecheck_Directory_EFOBJ,92,200,334,24,
+PBOBJ1,Builder_Codecheck_Ok_PBOBJ,93,235,114,24,&OK
+PBOBJ1,Builder_Codecheck_Cancel_PBOBJ,216,235,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Code_WIN,90,45,500,384,Code Selection
+STTXT1,Builder_Code_Codemodules_STTXT,39,22,114,24,Code Modules
+LBOBJ1,Builder_Code_Codemodules_LBOBJ,37,51,426,250,
+PBOBJ1,Builder_Code_Ok_PBOBJ,35,302,64,24,&OK
+PBOBJ1,Builder_Code_Cancel_PBOBJ,102,302,64,24,&Close
+PBOBJ1,Builder_Code_Assist_PBOBJ,190,302,64,24,&Assist
+PBOBJ1,Builder_Code_Refresh_PBOBJ,259,302,64,24,&Refresh
+PBOBJ1,Builder_Code_Test_PBOBJ,407,302,54,24,&Test
+PBOBJ1,Builder_Code_View_PBOBJ,340,302,64,24,&View
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Codeassist_WIN,85,41,1200,610,Code Assist
+PBOBJ1,Builder_Codeassist_Add_PBOBJ,550,449,54,24,&Add
+STTXT1,Builder_Codeassist_Code_STTXT,14,23,450,24,Code
+LBOBJ1,Builder_Codeassist_Code_LBOBJ,14,53,470,400,
+STTXT1,Builder_Codeassist_Commands_STTXT,547,23,78,24,Commands
+LBOBJ1,Builder_Codeassist_Commands_LBOBJ,547,53,200,400,
+STTXT1,Builder_Codeassist_Variables_STTXT,755,23,65,24,Variables
+LBOBJ1,Builder_Codeassist_Variables_LBOBJ,755,53,410,180,
+STTXT1,Builder_Codeassist_Modules_STTXT,755,238,60,20,Modules
+LBOBJ1,Builder_Codeassist_Modules_LBOBJ,755,260,410,180,
+PBOBJ1,Builder_Codeassist_Up_PBOBJ,493,87,47,24,&Up
+PBOBJ1,Builder_Codeassist_Down_PBOBJ,493,116,47,24,&Down
+PBOBJ1,Builder_Codeassist_Left_PBOBJ,492,149,24,24,&<
+PBOBJ1,Builder_Codeassist_Right_PBOBJ,516,149,24,24,&>
+PBOBJ1,Builder_Codeassist_Delete_PBOBJ,493,183,47,24,&Del
+EFOBJL,Builder_Codeassist_Code_EFOBJ,15,449,524,24,
+PBOBJ1,Builder_Codeassist_Modify_PBOBJ,610,449,54,24,&Modify
+PBOBJ1,Builder_Codeassist_Find_PBOBJ,675,449,54,24,&Find
+PBOBJ1,Builder_Codeassist_Undo_PBOBJ,735,449,54,24,&Undo
+PBOBJ1,Builder_Codeassist_Code_PBOBJ,857,449,64,24,Co&de
+PBOBJ1,Builder_Codeassist_Refresh_PBOBJ,925,449,64,24,&Refresh
+PBOBJ1,Builder_Codeassist_Ok_PBOBJ,15,480,90,24,&Save
+PBOBJ1,Builder_Codeassist_Close_PBOBJ,115,480,90,24,&Close
+PBOBJ1,Builder_Codeassist_Test_PBOBJ,240,480,90,24,&Test
+PBOBJ1,Builder_Codeassist_Log_PBOBJ,335,480,90,24,&Log
+PBOBJ1,Builder_Codeassist_Edit_PBOBJ,451,480,74,24,&Edit Code
+PBOBJ1,Builder_Codeassist_View_PBOBJ,550,480,54,24,&View
+RBOBJ1,Builder_Codeassist_Viewmods_RBOBJ,615,480,117,24,Modules
+RBOBJ1,Builder_Codeassist_Viewfiles_RBOBJ,615,503,117,24,Files
+RBOBJ1,Builder_Codeassist_Viewvars_RBOBJ,615,525,117,24,Variables
+GBOBJ1,Builder_Codeassist_Debug_GBOBJ,16,512,447,55,Debug
+PBOBJ1,Builder_Codeassist_Debugrun_PBOBJ,24,535,42,20,Run
+PBOBJ1,Builder_Codeassist_Debugstep_PBOBJ,70,535,30,20,>
+PBOBJ1,Builder_Codeassist_Debuggo_PBOBJ,102,535,30,20,>>
+PBOBJ1,Builder_Codeassist_Debugstepover_PBOBJ,136,535,30,20,S
+PBOBJ1,Builder_Codeassist_Debugsetbreak_PBOBJ,170,535,30,20,+
+PBOBJ1,Builder_Codeassist_Debugsetbrks_PBOBJ,204,535,30,20,++
+PBOBJ1,Builder_Codeassist_Debugcond_PBOBJ,236,535,24,20,C
+PBOBJ1,Builder_Codeassist_Debugdelbreak_PBOBJ,262,535,30,20,-
+PBOBJ1,Builder_Codeassist_Debugclearbrks_PBOBJ,295,535,30,20,X
+PBOBJ1,Builder_Codeassist_Debugfiles_PBOBJ,329,535,44,20,Files
+PBOBJ1,Builder_Codeassist_Debugstop_PBOBJ,376,535,42,20,Stop
+PBOBJ1,Builder_Codeassist_Debughelp_PBOBJ,422,535,30,20,?
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Find_WIN,55,60,595,220,Find / Replace
+STTXT1,Builder_Find_Find_STTXT,44,33,69,24,Find what
+EFOBJL,Builder_Find_Find_EFOBJ,115,33,350,24,
+STTXT1,Builder_Find_Replace_STTXT,29,68,84,24,Replace with
+EFOBJL,Builder_Find_Replace_EFOBJ,115,68,350,24,
+PBOBJ1,Builder_Find_Find_PBOBJ,471,33,84,24,&Find
+PBOBJ1,Builder_Find_Replace_PBOBJ,471,68,84,24,&Replace
+PBOBJ1,Builder_Find_Replaceall_PBOBJ,471,98,84,24,Replace &All
+PBOBJ1,Builder_Find_Cancel_PBOBJ,471,129,84,24,&Close
+CBOBJ1,Builder_Find_Matchcase_CBOBJ,115,129,98,24,&Match case
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Debugfiles_WIN,91,101,420,360,Debug File List View
+STTXT1,Builder_Debugfiles_Files_STTXT,31,27,38,24,Files
+LBOBJ1,Builder_Debugfiles_Filelist_LBOBJ,31,59,340,200,
+PBOBJ1,Builder_Debugfiles_View_PBOBJ,31,262,114,24,&View
+PBOBJ1,Builder_Debugfiles_Close_PBOBJ,155,262,114,24,&Close
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Debugdata_WIN,60,40,830,560,Debug View File Data
+STTXT1,Builder_Debugdata_Filename_STTXT,42,18,754,24,File Name
+LBOBJ1,Builder_Debugdata_Filedata_LBOBJ,44,52,750,425,
+PBOBJ1,Builder_Debugdata_Close_PBOBJ,362,486,114,24,&Close
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Debughelp_WIN,41,51,730,515,Debug Help
+STTXT1,Builder_Debughelp_Filler_STTXT,1,1,720,500,
+PBOBJ1,Builder_Debughelp_Debugrun_PBOBJ,27,25,42,20,Run
+PBOBJ1,Builder_Debughelp_Debugstep_PBOBJ,39,57,30,20,>
+PBOBJ1,Builder_Debughelp_Debuggo_PBOBJ,39,93,30,20,>>
+PBOBJ1,Builder_Debughelp_Debugstepover_PBOBJ,39,128,30,20,S
+PBOBJ1,Builder_Debughelp_Debugsetbreak_PBOBJ,39,163,30,20,+
+PBOBJ1,Builder_Debughelp_Debugsetbrks_PBOBJ,39,198,30,20,++
+PBOBJ1,Builder_Debughelp_Debugcond_PBOBJ,45,234,24,20,C
+PBOBJ1,Builder_Debughelp_Debugdelbreak_PBOBJ,39,267,30,20,-
+PBOBJ1,Builder_Debughelp_Debugclearbrks_PBOBJ,39,301,30,20,X
+PBOBJ1,Builder_Debughelp_Debugfiles_PBOBJ,25,334,44,20,Files
+PBOBJ1,Builder_Debughelp_Debugstop_PBOBJ,27,367,42,20,Stop
+PBOBJ1,Builder_Debughelp_Debughelp_PBOBJ,39,400,30,20,?
+STTXT1,Builder_Debughelp_Run_STTXT,81,23,600,24,Start the Interactive Debugger
+STTXT1,Builder_Debughelp_Step_STTXT,81,55,600,24,Run 1 line of code
+STTXT1,Builder_Debughelp_Runbreak_STTXT,81,91,600,24,Run all lines of code up to the next Break-Point
+STTXT1,Builder_Debughelp_Stepover_STTXT,81,126,600,24,Run the current line but don't step into a called module
+STTXT1,Builder_Debughelp_Breakpoint_STTXT,81,161,600,24,Mark a line of code with a Break-Point
+STTXT1,Builder_Debughelp_Setbreaks_STTXT,-39,-49,114,24,Mark every line of code with a Break-Point that contains the Code Entry Field data
+STTXT1,Builder_Debughelp_Setbreakpts_STTXT,81,196,600,24,Mark every line of code with a Break-Point that contains the Code Entry Field data
+STTXT1,Builder_Debughelp_Setcond-pts_STTXT,81,232,600,24,Set Conditional Break-Points (e.g. break when a variable changes to a specified value)
+STTXT1,Builder_Debughelp_Delbreak_STTXT,81,265,600,24,Remove a Break-Point from a line of code
+STTXT1,Builder_Debughelp_Removeall_STTXT,81,299,600,24,Remove all Break-Points
+STTXT1,Builder_Debughelp_Viewfiles_STTXT,81,332,600,24,View the currently opened files and their contents
+STTXT1,Builder_Debughelp_Stop_STTXT,81,365,600,24,Stop the Interactive Debugger (Remember to close the running program window also!)
+STTXT1,Builder_Debughelp_Help_STTXT,81,398,600,24,Interractive Debugger Help
+PBOBJ1,Builder_Debughelp_Close_PBOBJ,324,439,114,24,&Close
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Debugcond_WIN,30,40,580,575,Debug Conditional Breakpoints
+STTXT1,Builder_Debugcond_Vars_STTXT,39,28,64,24,Variables
+LBOBJ1,Builder_Debugcond_Vars_LBOBJ,39,58,350,200,
+STTXT1,Builder_Debugcond_Conditions_STTXT,407,28,74,24,Conditions
+LBOBJ1,Builder_Debugcond_Conditions_LBOBJ,407,58,88,150,
+STTXT1,Builder_Debugcond_Value_STTXT,39,260,44,24,Value
+EFOBJL,Builder_Debugcond_Value_EFOBJ,87,260,384,24,
+PBOBJ1,Builder_Debugcond_Add_PBOBJ,478,260,64,24,&Add
+LBOBJ1,Builder_Debugcond_Setcond_LBOBJ,40,294,430,200,
+PBOBJ1,Builder_Debugcond_Delete_PBOBJ,478,296,64,24,&Delete
+PBOBJ1,Builder_Debugcond_Ok_PBOBJ,41,496,114,24,&OK
+PBOBJ1,Builder_Debugcond_Cancel_PBOBJ,165,496,114,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Stdcolors_WIN,1,1,190,230,Colors
+PBOBJ1,Builder_Stdcolors_Ok_PBOBJ,10,160,45,20,&OK
+PBOBJ1,Builder_Stdcolors_Cancel_PBOBJ,62,160,55,20,&Cancel
+PBOBJ1,Builder_Stdcolors_More_PBOBJ,125,160,45,20,&More
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Colors_WIN,1,1,360,345,Color Selection
+STTXTF,Builder_Colors_Border_STTXT,8,8,261,261,
+STTXT1,Builder_Colors_Red_STTXT,275,74,14,24,R
+EFOBJL,Builder_Colors_Red_EFOBJ,296,74,34,24,
+STTXT1,Builder_Colors_Green_STTXT,275,105,14,24,G
+EFOBJL,Builder_Colors_Green_EFOBJ,296,105,34,24,
+STTXT1,Builder_Colors_Blue_STTXT,275,136,14,24,B
+EFOBJL,Builder_Colors_Blue_EFOBJ,296,136,34,24,
+PBOBJ1,Builder_Colors_Bluedown_PBOBJ,296,162,16,24,<
+PBOBJ1,Builder_Colors_Blueup_PBOBJ,314,162,16,24,>
+PBOBJ1,Builder_Colors_Ok_PBOBJ,10,276,100,24,&OK
+PBOBJ1,Builder_Colors_Cancel_PBOBJ,120,276,100,24,&Cancel
+PBOBJ1,Builder_Colors_Refresh_PBOBJ,230,276,100,24,&Refresh
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Connectselect_WIN,613,28,332,311,Connector Selection
+PBOBJ1,Builder_Connectselect_Straight_PBOBJ,69,28,50,20,Select
+PBOBJ1,Builder_Connectselect_Straight1_PBOBJ,69,66,50,20,Select
+PBOBJ1,Builder_Connectselect_Straight2_PBOBJ,69,104,50,20,Select
+PBOBJ1,Builder_Connectselect_Straight3_PBOBJ,69,142,50,20,Select
+PBOBJ1,Builder_Connectselect_Straight4_PBOBJ,69,180,50,20,Select
+PBOBJ1,Builder_Connectselect_Bent_PBOBJ,224,28,50,20,Select
+PBOBJ1,Builder_Connectselect_Bent1_PBOBJ,224,66,50,20,Select
+PBOBJ1,Builder_Connectselect_Bent2_PBOBJ,224,104,50,20,Select
+PBOBJ1,Builder_Connectselect_Bent3_PBOBJ,224,142,50,20,Select
+PBOBJ1,Builder_Connectselect_Bent4_PBOBJ,224,180,50,20,Select
+PBOBJ1,Builder_Connectselect_Cancel_PBOBJ,128,243,50,20,Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Specialobjects_WIN,101,1,810,355,Select Special Objects
+PBOBJ1,Builder_Specialobjects_Cancel_PBOBJ,41,275,100,24,&Cancel
+*******************************************************************
+*                           WINDOW                                *
+*******************************************************************
+WINDOW,Builder_Textedit_WIN,308,1,667,266,Object Text Edit
+STTXT1,Builder_Textedit_Name_STTXT,10,33,54,24,Name
+STTXT1,Builder_Textedit_Name_EFOBJ,67,33,400,24,
+STTXT1,Builder_Textedit_Text_STTXT,10,62,54,24,Text
+EFOBJL,Builder_Textedit_Text_EFOBJ,67,62,400,24,
+PBOBJ1,Builder_Textedit_Font_PBOBJ,10,91,54,24,&Font
+COOBJL,Builder_Textedit_Font_COOBJ,68,91,205,500,
+STTXT1,Builder_Textedit_Font_EFOBJ,278,91,190,24,
+RBOBJ1,Builder_Textedit_Pos_RBOBJ,486,50,55,24,&Pos
+RBOBJ1,Builder_Textedit_Size_RBOBJ,486,74,55,24,&Size
+EFOBJL,Builder_Textedit_Size_EFOBJ,570,59,35,24,
+PBOBJ1,Builder_Textedit_Yminus_PBOBJ,577,39,20,18,^
+PBOBJ1,Builder_Textedit_Yplus_PBOBJ,577,85,20,18,v
+PBOBJ1,Builder_Textedit_Xminus_PBOBJ,547,62,20,18,<
+PBOBJ1,Builder_Textedit_Xplus_PBOBJ,608,62,20,18,>
+GBOBJ1,Builder_Textedit_Possize_GBOBJ,477,25,170,92,Position/Size
+STTXT1,Builder_Textedit_Bubble_STTXT,10,120,54,24,Bubble
+MLOBJ1,Builder_Textedit_Bubble_MLOBJ,68,120,400,54,
+PBOBJ1,Builder_Textedit_Color_PBOBJ,477,130,54,24,Color
+PBOBJ1,Builder_Textedit_Ok_PBOBJ,69,183,100,24,&OK
+

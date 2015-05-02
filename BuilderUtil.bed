@@ -1,0 +1,62 @@
+//*****************************************************************************
+//* Program : BuilderUtil.bed
+//* Date    : 03/06/2014
+//* Author  : Forrest Bentley
+//* Desc    : This program is a collection of utility routines
+//*
+//*****************************************************************************
+//* Functions:
+//*     $GetMiddle = Find the characters in MS between M1 and M2, results->MResult
+//*     $GetMidPack = Same as GetMiddle but remove leading and trailing spaces
+//*
+//*****************************************************************************
+//*                                 Maintenance Log
+//*
+//* Date       Author           Description
+//* ---------- ---------------- -------------------------------------------------
+//* 03/06/2014 Forrest Bentley  Added $GetMiddle, GetMidPack
+//*
+//*****************************************************************************
+
+//*****************************************************************************
+//* Setup Variables
+//*****************************************************************************
+!a100_init
+    string MS           error
+    string M1           error
+    string M2           error
+    string MResult      error
+    string GetMiddle    error
+    GetMiddle = 'call BuilderUtil.bed!a100_get_middle'
+
+    string GetMidPack   error
+    GetMidPack = 'call BuilderUtil.bed!a100_get_middle_pack'
+
+    return
+
+
+//*****************************************************************************
+//* Find the characters in MS between M1 and M2, results -> MResult
+//*****************************************************************************
+!a100_get_middle
+    MResult = null 
+    scan:/@MS@/:/@M1@/ 
+    if  (found) 
++       scan:/@right@/:/@M2@/ 
++       if  (found) 
++           MResult = left
++   endif
+    return
+
+//*****************************************************************************
+//* Get Middle, then remove leading and trailing spaces
+//*****************************************************************************
+!a100_get_middle_pack
+    call !a100_get_middle
+    leftjust MResult
+    pack MResult
+    return
+
+//*****************************************************************************
+//* End of BuilderUtil.bed
+//*****************************************************************************

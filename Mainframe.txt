@@ -1,0 +1,20 @@
+    string Builder_Download3090_Password_EFOBJ           = "call !z999_entryaction_return"
+    window action Builder_Download3090_Password_EFOBJ
+    window edit Builder_Download3090_Password_EFOBJ upper 8
+
+    window conceal before window open
+
+
+    open GetFile null
+    i:/open/
+    i:/mvs/
+    i:/user/
+    i:/@Userid@/
+    i:/@Password@/
+    Newline = "get 'g1d800ap.prod.srcelib(@Program@)' c:\gizmo\dc-cobol\cics\@Program@.cob"
+    i:/@Newline@/
+    i:/bye/
+    write GetFile GetFile.in
+    close GetFile
+    system:/ftp -n -s:GetFile.in/
+    system:/del GetFile.in/

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Code_Check_Results
+[
+ 
+     <!ELEMENT Code_Check_Results (Version, System, Directory, Run_Date, Run_Time, Total_Lines, Total_Errors, Total_Warnings, Sigma_Level, DPMO, Opportunities)>
+     <!ELEMENT Version (#PCDATA)>
+     <!ELEMENT System (#PCDATA)>
+     <!ELEMENT Directory (#PCDATA)>
+     <!ELEMENT Run_Date (#PCDATA)>
+     <!ELEMENT run_Time (#PCDATA)>
+     <!ELEMENT Total_Lines (#PCDATA)>
+     <!ELEMENT Total_Errors (#PCDATA)>
+     <!ELEMENT Total_Warnings (#PCDATA)>
+     <!ELEMENT Sigma_Level (#PCDATA)>
+     <!ELEMENT Sigma_Level (#PCDATA)>
+     <!ELEMENT Opportunities (#PCDATA)>
+     <!ELEMENT DPMO (#PCDATA)>
+     <!ELEMENT Code_Line_Errors (#PCDATA)>
+     <!ELEMENT JSP__Comment_Errors (#PCDATA)>
+     <!ELEMENT Line_Length_Errors (#PCDATA)>
+     <!ELEMENT Comment_Errors (#PCDATA)>
+     <!ELEMENT JSP_Java_Percent_Errors (#PCDATA)>
+     <!ELEMENT JSP_Java_Code_Errors (#PCDATA)>
+     <!ELEMENT Display_Errors (#PCDATA)>
+     <!ELEMENT Hardcoded_IP_Errors (#PCDATA)>
+     <!ELEMENT File_Size_Errors (#PCDATA)>
+     <!ELEMENT Src_Line_Errors (#PCDATA)>
+     <!ELEMENT Function_Errors (#PCDATA)>
+     <!ELEMENT Function_Size_Errors (#PCDATA)>
+     <!ELEMENT SQL_Errors (#PCDATA)>
+     <!ELEMENT Misc_Errors (#PCDATA)>
+     <!ELEMENT Critical_Warnings (#PCDATA)>
+     <!ELEMENT HTML_File_Count_Check_Multilingual (#PCDATA)>
+]>
+ 
+<Code_Check_Results>
+     <Version> V2007.04.20 </Version>
+     <System> Javamail </System>
+     <Directory> c:\JavaMail </Directory>
+     <Run_Date> 09/17/14 </Run_Date>
+     <Run_Time> 13:14:44 </Run_Time>
+     <Total_Lines> 758 </Total_Lines>
+     <Total_Errors> 64 </Total_Errors>
+     <Total_Warnings> 10 </Total_Warnings>
+     <Sigma_Level> 4.0 </Sigma_Level>
+     <Opportunities> 16.000000 </Opportunities>
+     <DPMO> 5277 </DPMO>
+     <Code_Line_Errors> 0 </Code_Line_Errors>
+     <JSP__Comment_Errors> 0 </JSP__Comment_Errors>
+     <JSP__Comment_Errors> 0 </JSP__Comment_Errors>
+     <Comment_Errors> 2 </Comment_Errors>
+     <JSP_Java_Percent_Errors> 0 </JSP_Java_Percent_Errors>
+     <JSP_Java_Code_Errors> 0 </JSP_Java_Code_Errors>
+     <Display_Errors> 9 </Display_Errors>
+     <Hardcoded_IP_Errors> 0 </Hardcoded_IP_Errors>
+     <File_Size_Errors> 0 </File_Size_Errors>
+     <Src_Line_Errors> 0 </Src_Line_Errors>
+     <Function_Errors> 0 </Function_Errors>
+     <Function_Size_Errors> 0 </Function_Size_Errors>
+     <SQL_Errors> 0 </SQL_Errors>
+     <Misc_Errors> 53 </Misc_Errors>
+     <Critical_Warnings> 0 </Critical_Warnings>
+     <HTML_File_Count_Check_Multilingual> 0 </HTML_File_Count_Check_Multilingual>
+</Code_Check_Results>
+ 

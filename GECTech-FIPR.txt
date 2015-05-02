@@ -1,0 +1,3 @@
+Target: \\fltepmnpfiprc2\EPMNSHARED2$\ITDOC\Strategy&Planning\Bentley\BEdit\GECATechnology\BEDITWIN.exe call GECATechnology.bed
+
+Start in: \\fltepmnpfiprc2\EPMNSHARED2$\ITDOC\Strategy&Planning\Bentley\BEdit\GECATechnology

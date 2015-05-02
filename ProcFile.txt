@@ -1,0 +1,34 @@
+c:\JavaMail\Contact.java
+    Processing
+c:\JavaMail\EMail.class
+c:\JavaMail\EMail.java
+    Processing
+c:\JavaMail\JavaMail.java
+    Processing
+c:\JavaMail\JavaMailMain.class
+c:\JavaMail\Backup\EMail.class
+c:\JavaMail\Backup\EMail.java
+    Processing
+c:\JavaMail\Backup\JavaMail.java
+    Processing
+c:\JavaMail\Backup\JavaMailer.class
+c:\JavaMail\Backup\JavaMailer.java
+    Processing
+c:\JavaMail\Backup\JavaMailMain.class
+c:\JavaMail\Backup\Test.class
+c:\JavaMail\Backup\Test.java
+    Processing
+c:\JavaMail\Backup\Testing.class
+c:\JavaMail\Backup\Testing.java
+    Processing
+c:\JavaMail\Backup\TestMain.class
+c:\JavaMail\GenericSource\EMail.class
+c:\JavaMail\GenericSource\EMail.java
+    Processing
+c:\JavaMail\GenericSource\JavaMail.java
+    Processing
+c:\JavaMail\GenericSource\JavaMailMain.class
+c:\JavaMail\Old\EMail.java
+    Processing
+c:\JavaMail\Old\JavaMail.java
+    Processing
